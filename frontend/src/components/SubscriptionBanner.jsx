@@ -27,7 +27,7 @@ const SubscriptionBanner = () => {
     return (
         <div className="bg-red-600 text-white px-4 py-2 text-sm font-bold flex items-center justify-center gap-2 z-50">
             <AlertTriangle size={16} />
-            Your restaurant's subscription has been frozen. You cannot perform operational actions. Please contact your restaurant admin.
+            Your subscription has expired. Please renew to continue using the platform.
         </div>
     );
 };

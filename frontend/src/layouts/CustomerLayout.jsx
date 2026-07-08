@@ -14,7 +14,7 @@ const CustomerLayout = () => {
             
             <header className="bg-white shadow-sm sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-3">
+                    <Link to="/explore" className="flex items-center gap-3">
                         <div className="bg-orange-500 text-white p-2 rounded-lg">
                             <UtensilsCrossed size={24} />
                         </div>
@@ -24,7 +24,7 @@ const CustomerLayout = () => {
                     </Link>
 
                     <nav className="hidden md:flex gap-8">
-                        <Link to="/" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Home</Link>
+                        <Link to="/explore" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Home</Link>
                         <Link to="/menu" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Menu</Link>
                         <Link to="/reservations" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Reservations</Link>
                     </nav>
@@ -52,10 +52,10 @@ const CustomerLayout = () => {
                             </Link>
                         ) : (
                             <>
-                                <Link to="/register" className="hidden md:block text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
+                                <Link to="/register?type=customer" className="hidden md:block text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
                                     Register
                                 </Link>
-                                <Link to="/login" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                                <Link to="/login?type=customer" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20" style={{ fontFamily: 'Outfit, sans-serif' }}>
                                     <User size={16} />
                                     Sign In
                                 </Link>

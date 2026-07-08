@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+const fs = require('fs');
+
+const code = `import { useState, useEffect } from 'react';
 import { 
     Search, MapPin, Star, ChevronDown, User, ShoppingBag, Clock, Percent, 
     Store, Calculator, QrCode, Boxes, CalendarDays, LineChart, Monitor, Users, 
@@ -16,16 +18,15 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [isYearly, setIsYearly] = useState(false);
     const [openFaq, setOpenFaq] = useState(0);
-    const [showContact, setShowContact] = useState(false);
 
     // Dummy data for the landing page grid (just in case they need to see demo restaurants)
     const dummyRestaurants = [
-        { _id: 'demo1', name: 'Pizza Palace', rating: 4.8, time: '20-25', tags: 'Italian, Pizzas, Fast Food', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
+        { _id: 'demo1', name: 'Pizza Palace', rating: 4.8, time: '20-25', tags: 'Italian, Pizzas, Fast Food', img: 'https://images.unsplash.com/photo-1604381536136-22461f05a10b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
         { _id: 'demo2', name: 'Burger Hub', rating: 4.5, time: '15-20', tags: 'American, Burgers, Beverages', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
-        { _id: 'demo3', name: 'South Indian Cafe', rating: 4.9, time: '10-15', tags: 'South Indian, Breakfast', img: 'https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
+        { _id: 'demo3', name: 'South Indian Cafe', rating: 4.9, time: '10-15', tags: 'South Indian, Breakfast', img: 'https://images.unsplash.com/photo-1610192244261-3f33de7155e9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
         { _id: 'demo4', name: 'Chinese Bowl', rating: 4.2, time: '25-30', tags: 'Chinese, Asian, Noodles', img: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
         { _id: 'demo5', name: 'BBQ Nation', rating: 4.7, time: '30-40', tags: 'BBQ, Grilled, Non-Veg', img: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
-        { _id: 'demo6', name: 'Juice Corner', rating: 4.6, time: '5-10', tags: 'Beverages, Healthy, Shakes', img: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }
+        { _id: 'demo6', name: 'Juice Corner', rating: 4.6, time: '5-10', tags: 'Beverages, Healthy, Shakes', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }
     ];
 
     useEffect(() => {
@@ -134,7 +135,7 @@ const Home = () => {
                 </section>
 
                 {/* Optional: Demo Customer View (Grid) */}
-                <section id="demo" className="mb-24">
+                <section className="mb-24">
                     <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-8">See how your restaurant will look to customers</h2>
                     {loading ? (
                         <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500"></div></div>
@@ -143,7 +144,7 @@ const Home = () => {
                             {restaurants.slice(0,6).map((restaurant, idx) => (
                                 <div key={idx} className="group cursor-pointer block hover:scale-105 transition-transform duration-200">
                                     <div className="relative rounded-2xl overflow-hidden aspect-square mb-3 shadow-sm">
-                                        <img src={restaurant.img || restaurant.logo || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} alt={restaurant.name} className="w-full h-full object-cover" />
+                                        <img src={restaurant.img || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} alt={restaurant.name} className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                         <div className="absolute bottom-2 left-3 right-3 text-white">
                                             <h3 className="text-sm font-bold truncate">{restaurant.name}</h3>
@@ -161,7 +162,7 @@ const Home = () => {
                     <div className="flex overflow-x-auto gap-4 pb-8 pt-2 no-scrollbar justify-start lg:justify-center">
                         {coreFeatures.map((feature, idx) => (
                             <div key={idx} className="flex flex-col items-center gap-3 min-w-[110px] cursor-pointer group">
-                                <div className={`w-20 h-20 rounded-2xl ${feature.bg} flex items-center justify-center ${feature.color} transform group-hover:-translate-y-2 group-hover:shadow-lg transition-all duration-300`}>
+                                <div className={\`w-20 h-20 rounded-2xl \$\{feature.bg} flex items-center justify-center \$\{feature.color} transform group-hover:-translate-y-2 group-hover:shadow-lg transition-all duration-300\`}>
                                     {feature.icon}
                                 </div>
                                 <span className="text-sm font-bold text-gray-600 group-hover:text-gray-900">{feature.name}</span>
@@ -299,6 +300,19 @@ const Home = () => {
                     </div>
                 </section>
 
+                {/* 8. Integrations */}
+                <section className="mb-24 bg-gray-50 rounded-[3rem] p-8 md:p-16 text-center border border-gray-100">
+                    <h2 className="text-3xl font-black mb-4">Powerful Integrations</h2>
+                    <p className="text-gray-500 font-medium max-w-2xl mx-auto mb-12">Built on a modern technology stack to ensure reliability, scale, and a seamless experience.</p>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        {['Razorpay', 'Stripe', 'Google Maps', 'Cloudinary', 'Firebase', 'Twilio'].map((brand, i) => (
+                            <div key={i} className="px-6 py-4 bg-white rounded-2xl shadow-sm border border-gray-200 font-black text-xl text-gray-400 hover:text-gray-800 transition-colors cursor-pointer">
+                                {brand}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
                 {/* 9. Mobile App Preview */}
                 <section className="mb-24 flex flex-col md:flex-row items-center gap-12 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[3rem] p-8 md:p-16 text-white overflow-hidden">
                     <div className="flex-1 space-y-6 relative z-10">
@@ -350,14 +364,14 @@ const Home = () => {
                         <p className="text-gray-500 font-medium max-w-2xl mx-auto mb-8">No hidden fees, no long-term contracts. Choose the plan that fits your growth.</p>
                         
                         <div className="flex items-center justify-center gap-3">
-                            <span className={`font-bold ${!isYearly ? 'text-gray-900' : 'text-gray-400'}`}>Monthly</span>
+                            <span className={\`font-bold \$\{!isYearly ? 'text-gray-900' : 'text-gray-400'}\`}>Monthly</span>
                             <button 
                                 onClick={() => setIsYearly(!isYearly)}
                                 className="w-14 h-8 bg-red-500 rounded-full relative transition-colors duration-300"
                             >
-                                <div className={`w-6 h-6 bg-white rounded-full absolute top-1 transition-transform duration-300 shadow-sm ${isYearly ? 'left-7' : 'left-1'}`}></div>
+                                <div className={\`w-6 h-6 bg-white rounded-full absolute top-1 transition-transform duration-300 shadow-sm \$\{isYearly ? 'left-7' : 'left-1'}\`}></div>
                             </button>
-                            <span className={`font-bold flex items-center gap-2 ${isYearly ? 'text-gray-900' : 'text-gray-400'}`}>
+                            <span className={\`font-bold flex items-center gap-2 \$\{isYearly ? 'text-gray-900' : 'text-gray-400'}\`}>
                                 Yearly <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Save 20%</span>
                             </span>
                         </div>
@@ -367,8 +381,8 @@ const Home = () => {
                         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
                             <h3 className="text-xl font-bold mb-2">Starter</h3>
                             <p className="text-gray-500 text-sm font-medium mb-6">Perfect for small cafes and food trucks.</p>
-                            <div className="text-4xl font-black mb-6">${isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
-                            <Link to={`/register?plan=Starter&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Start Free Trial</Link>
+                            <div className="text-4xl font-black mb-6">\${isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
+                            <button className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8">Start Free Trial</button>
                             <div className="space-y-4">
                                 {['1 Outlet', 'Basic POS Billing', 'QR Ordering', 'Email Support'].map((f, i) => (
                                     <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-green-500" /><span className="font-medium text-sm text-gray-600">{f}</span></div>
@@ -380,8 +394,8 @@ const Home = () => {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">Most Popular</div>
                             <h3 className="text-xl font-bold mb-2">Professional</h3>
                             <p className="text-gray-400 text-sm font-medium mb-6">For growing restaurants and multi-locations.</p>
-                            <div className="text-4xl font-black mb-6">${isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
-                            <Link to={`/register?plan=Professional&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10 flex justify-center items-center">Choose Plan</Link>
+                            <div className="text-4xl font-black mb-6">\${isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
+                            <button className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10">Choose Plan</button>
                             <div className="space-y-4">
                                 {['Up to 3 Outlets', 'Kitchen Display System', 'Online Ordering App', 'Advanced Analytics', 'Priority Support'].map((f, i) => (
                                     <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-red-400" /><span className="font-medium text-sm text-gray-300">{f}</span></div>
@@ -393,19 +407,7 @@ const Home = () => {
                             <h3 className="text-xl font-bold mb-2">Enterprise</h3>
                             <p className="text-gray-500 text-sm font-medium mb-6">Custom solutions for massive chains.</p>
                             <div className="text-4xl font-black mb-6">Custom</div>
-                            {showContact ? (
-                                <div className="w-full p-4 rounded-xl border-2 border-red-100 bg-red-50 text-left mb-8 transition-all animate-fade-in">
-                                    <div className="flex items-center gap-2 font-bold text-gray-900 mb-2 text-lg">
-                                        <Phone size={18} className="text-red-500" /> +1 (800) 123-4567
-                                    </div>
-                                    <div className="flex items-start gap-2 text-sm font-medium text-gray-700 leading-tight">
-                                        <MapPin size={18} className="text-red-500 shrink-0" /> 
-                                        <span>123 Innovation Way, Suite 500<br/>San Francisco, CA 94103</span>
-                                    </div>
-                                </div>
-                            ) : (
-                                <button onClick={() => setShowContact(true)} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Contact Sales</button>
-                            )}
+                            <button className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8">Contact Sales</button>
                             <div className="space-y-4">
                                 {['Unlimited Outlets', 'Custom APIs & Webhooks', 'Dedicated Account Manager', 'SLA Guarantee'].map((f, i) => (
                                     <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-green-500" /><span className="font-medium text-sm text-gray-600">{f}</span></div>
@@ -495,3 +497,6 @@ const Home = () => {
 };
 
 export default Home;
+`;
+fs.writeFileSync('src/pages/customer/Home.jsx', code);
+console.log("Successfully rebuilt Home.jsx");
