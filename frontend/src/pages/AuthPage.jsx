@@ -1,17 +1,25 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, UtensilsCrossed, ArrowRight, Mail, Lock, User as UserIcon, Tag, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const AuthPage = () => {
-    const [mode, setMode] = useState('login'); // 'login' | 'register'
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    
+    // Determine initial mode from path or URL params
+    const initialMode = location.pathname.includes('register') ? 'register' : 'login';
+    const [mode, setMode] = useState(initialMode); // 'login' | 'register'
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
     const [authError, setAuthError] = useState('');
-    const navigate = useNavigate();
+    
     const { login, register: registerUser } = useAuth();
+    
+    const isCustomerMode = searchParams.get('type') === 'customer';
 
     const { register, handleSubmit, watch, formState: { errors }, reset } = useForm();
 
@@ -23,7 +31,8 @@ const AuthPage = () => {
         if (mode === 'login') {
             result = await login(data.email, data.password);
         } else {
-            result = await registerUser(data.name, data.email, data.password, data.role);
+            const finalRole = isCustomerMode ? 'Customer' : data.role;
+            result = await registerUser(data.name, data.email, data.password, finalRole);
         }
         
         setLoading(false);
@@ -147,8 +156,8 @@ const AuthPage = () => {
                             {errors.email && <p className="text-orange-500 text-xs mt-1.5 ml-1 font-medium">{errors.email.message}</p>}
                         </div>
 
-                        {/* Role - Register only */}
-                        {mode === 'register' && (
+                        {/* Role - Register only (Hidden for customers) */}
+                        {mode === 'register' && !isCustomerMode && (
                             <div>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-500 transition-colors">
@@ -159,8 +168,7 @@ const AuthPage = () => {
                                         className={`w-full pl-11 pr-4 py-3.5 bg-gray-50 border rounded-xl text-sm outline-none transition-all appearance-none ${errors.role ? 'border-orange-400 focus:ring-4 focus:ring-orange-100' : 'border-gray-200 hover:border-gray-300 focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100'}`}
                                     >
                                         <option value="" disabled hidden>Select Account Type</option>
-                                        <option value="Customer">Customer</option>
-                                        <option value="RestaurantAdmin">Admin</option>
+                                        <option value="RestaurantAdmin">Restaurant Owner</option>
                                         <option value="BranchManager">Manager</option>
                                         <option value="Chef">Chef</option>
                                         <option value="Waiter">Waiter</option>

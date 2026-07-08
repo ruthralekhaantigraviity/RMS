@@ -50,6 +50,7 @@ import CashierOverview from './pages/staff/CashierOverview';
 import CashierDashboard from './pages/staff/CashierDashboard';
 import CashierHistory from './pages/staff/CashierHistory';
 import Home from './pages/customer/Home';
+import Explore from './pages/customer/Explore';
 import Menu from './pages/customer/Menu';
 import RestaurantDetails from './pages/customer/RestaurantDetails';
 import CustomerDashboard from './pages/customer/CustomerDashboard';
@@ -74,6 +75,7 @@ function App() {
       {/* Customer Facing Application */}
       <Route path="/" element={<PublicLayout />}>
         <Route index element={<Home />} />
+        <Route path="explore" element={<Explore />} />
       </Route>
       <Route path="/" element={<CartProvider><CustomerLayout /></CartProvider>}>
         <Route path="menu" element={<Menu />} />

@@ -47,10 +47,7 @@ import taxRoutes from './routes/taxRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 
-// Basic route
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
+
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -74,9 +71,25 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/tables', tableRoutes);
 
+import path from 'path';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 const PORT = process.env.PORT || 5000;
+const __dirname = path.resolve();
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    app.get('*', (req, res) =>
+        res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'))
+    );
+} else {
+    // Basic route for development
+    app.get('/', (req, res) => {
+        res.send('API is running...');
+    });
+}
 
 app.use(notFound);
 app.use(errorHandler);
