@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Store, Users, CreditCard, ShoppingBag, TrendingUp, AlertCircle } from 'lucide-react';
+import { Store, Users, CreditCard, ShoppingBag, TrendingUp, AlertCircle, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SuperAdminDashboard = () => {
     const { api } = useAuth();
@@ -69,7 +70,89 @@ const SuperAdminDashboard = () => {
                         </div>
                     );
                 })}
-        </div>
+            </div>
+
+            {/* Recent Onboarded Restaurants Table */}
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900 font-sans tracking-tight">Recent Onboarded Restaurants</h2>
+                        <p className="text-sm text-gray-500 mt-1">Restaurants that have recently joined the platform.</p>
+                    </div>
+                    <Link to="/super-admin/restaurants" className="flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl">
+                        View All <ArrowRight size={16} />
+                    </Link>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-white border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wider">
+                                <th className="p-5 font-bold">Restaurant</th>
+                                <th className="p-5 font-bold">Plan</th>
+                                <th className="p-5 font-bold">Status</th>
+                                <th className="p-5 font-bold text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50">
+                            {restaurants.slice(0, 5).map(restaurant => (
+                                <tr key={restaurant._id} className="hover:bg-gray-50/80 transition-colors">
+                                    <td className="p-5">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
+                                                {restaurant.logo ? (
+                                                    <img src={restaurant.logo} alt={restaurant.name} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600 font-bold text-lg">
+                                                        {restaurant.name.charAt(0)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <span className="font-bold text-gray-900 block text-base">{restaurant.name}</span>
+                                                <span className="text-sm text-gray-500">{restaurant.ownerId?.email || 'No Owner'}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="p-5">
+                                        <span className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-bold rounded-lg border border-purple-100">
+                                            {restaurant.subscription?.plan || 'N/A'}
+                                        </span>
+                                    </td>
+                                    <td className="p-5">
+                                        <span className={`px-3 py-1.5 text-xs font-bold rounded-lg border ${
+                                            restaurant.subscription?.status === 'Active' 
+                                            ? 'bg-green-50 text-green-700 border-green-100' 
+                                            : 'bg-red-50 text-red-700 border-red-100'
+                                        }`}>
+                                            {restaurant.subscription?.status || 'Unknown'}
+                                        </span>
+                                    </td>
+                                    <td className="p-5 text-right">
+                                        <button 
+                                            onClick={() => handleFreezeAccount(restaurant._id, restaurant.subscription?.status)}
+                                            className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
+                                                restaurant.subscription?.status === 'Active' 
+                                                ? 'text-red-600 bg-red-50 hover:bg-red-100'
+                                                : 'text-green-600 bg-green-50 hover:bg-green-100'
+                                            }`}
+                                        >
+                                            {restaurant.subscription?.status === 'Active' ? 'Freeze' : 'Unfreeze'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                            {restaurants.length === 0 && (
+                                <tr>
+                                    <td colSpan="4" className="p-10 text-center">
+                                        <Store className="mx-auto text-gray-300 mb-3" size={40} />
+                                        <p className="text-gray-500 font-medium text-lg">No restaurants registered yet.</p>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 };
