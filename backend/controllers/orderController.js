@@ -10,11 +10,25 @@ export const addOrderItems = async (req, res) => {
         res.status(400).json({ message: 'No order items' });
         return;
     } else {
+        let finalBranchId = branchId || (req.user ? req.user.branchId : null);
+        let finalRestaurantId = restaurantId || (req.user ? req.user.restaurantId : null);
+
+        // If the user is an owner/admin testing the system and doesn't have a branchId, 
+        // fallback to the first branch of the restaurant so schema validation doesn't fail
+        if (!finalBranchId && finalRestaurantId) {
+            const mongoose = await import('mongoose');
+            const Branch = mongoose.model('Branch');
+            const firstBranch = await Branch.findOne({ restaurantId: finalRestaurantId });
+            if (firstBranch) {
+                finalBranchId = firstBranch._id;
+            }
+        }
+
         const order = new Order({
             orderItems,
             user: req.user ? req.user._id : null,
-            restaurantId: restaurantId || (req.user ? req.user.restaurantId : null),
-            branchId: branchId || (req.user ? req.user.branchId : null),
+            restaurantId: finalRestaurantId,
+            branchId: finalBranchId,
             orderType,
             source,
             paymentMethod,
