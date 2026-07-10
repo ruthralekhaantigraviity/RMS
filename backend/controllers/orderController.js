@@ -13,8 +13,8 @@ export const addOrderItems = async (req, res) => {
         const order = new Order({
             orderItems,
             user: req.user ? req.user._id : null,
-            restaurantId,
-            branchId,
+            restaurantId: restaurantId || (req.user ? req.user.restaurantId : null),
+            branchId: branchId || (req.user ? req.user.branchId : null),
             orderType,
             source,
             paymentMethod,
