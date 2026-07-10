@@ -8,6 +8,7 @@ import Branch from './models/Branch.js';
 import MenuItem from './models/MenuItem.js';
 import Order from './models/Order.js';
 import Table from './models/Table.js';
+import Plan from './models/Plan.js';
 
 dotenv.config();
 
@@ -32,6 +33,14 @@ const importData = async () => {
         await MenuItem.deleteMany();
         await Order.deleteMany();
         await Table.deleteMany();
+        await Plan.deleteMany();
+
+        console.log('Creating SaaS Plans...');
+        await Plan.insertMany([
+            {name:'Starter', price:49, billingCycle:'Monthly', features:['1 Branch', 'Basic Reporting', 'Email Support'], isActive:true},
+            {name:'Professional', price:129, billingCycle:'Monthly', features:['3 Branches', 'Advanced Analytics', 'Priority Support'], isActive:true},
+            {name:'Enterprise', price:299, billingCycle:'Monthly', features:['Unlimited Branches', 'Custom Features', '24/7 Dedicated Support'], isActive:true}
+        ]);
 
         console.log('Creating Super Admin...');
         const superAdmin = await User.create({

@@ -14,11 +14,18 @@ export const getMenuItems = async (req, res) => {
             filter.branchId = req.query.branchId;
         }
         
-        // If staff is logged in, filter by their branch
-        if (req.user && req.user.branchId) {
-            filter.branchId = req.user.branchId;
-        } else if (req.user && req.user.restaurantId) {
+        // If staff is logged in, filter by their restaurant
+        if (req.user && req.user.restaurantId) {
             filter.restaurantId = req.user.restaurantId;
+            
+            // If they belong to a specific branch, allow global items OR branch-specific items
+            if (req.user.branchId) {
+                filter.$or = [
+                    { branchId: req.user.branchId },
+                    { branchId: { $exists: false } },
+                    { branchId: null }
+                ];
+            }
         }
 
         const items = await MenuItem.find(filter);
