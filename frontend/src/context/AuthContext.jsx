@@ -42,8 +42,12 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('restosys_user', JSON.stringify(data));
             return { success: true, data };
         } catch (error) {
-            console.error('Login error:', error.response?.data || error.message);
-            return { success: false, message: error.response?.data?.message || 'Login failed' };
+            const errorMsg = error.response?.data?.message || 'Login failed';
+            // Only log actual network errors, not standard 401 unauthorized errors
+            if (!error.response || error.response.status !== 401) {
+                console.error('Login error:', errorMsg);
+            }
+            return { success: false, message: errorMsg };
         }
     };
 
