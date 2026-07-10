@@ -4,7 +4,7 @@ import Order from '../models/Order.js';
 // @route   POST /api/orders
 // @access  Private (Customer/Waiter)
 export const addOrderItems = async (req, res) => {
-    const { orderItems, orderType, source, restaurantId, branchId, paymentMethod, taxPrice, totalPrice } = req.body;
+    const { orderItems, orderType, source, restaurantId, branchId, paymentMethod, taxPrice, totalPrice, tableNumber, notes } = req.body;
 
     if (orderItems && orderItems.length === 0) {
         res.status(400).json({ message: 'No order items' });
@@ -70,7 +70,7 @@ export const addOrderItems = async (req, res) => {
 // @route   PUT /api/orders/:id/items
 // @access  Private (Staff)
 export const appendOrderItems = async (req, res) => {
-    const { orderItems, totalPrice, taxPrice } = req.body;
+    const { orderItems, totalPrice, taxPrice, notes } = req.body;
     
     if (orderItems && orderItems.length === 0) {
         res.status(400).json({ message: 'No new order items provided' });
@@ -84,6 +84,10 @@ export const appendOrderItems = async (req, res) => {
             // Recalculate total price
             order.totalPrice += totalPrice;
             if (taxPrice) order.taxPrice += taxPrice;
+            
+            if (notes) {
+                order.notes = order.notes ? `${order.notes}\n${notes}` : notes;
+            }
             
             // If the order was already completed/ready, we might want to change it back to Preparing
             // But usually this means printing a new kitchen ticket. For now, let's just save.
