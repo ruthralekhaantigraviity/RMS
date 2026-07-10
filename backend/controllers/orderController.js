@@ -24,9 +24,31 @@ export const addOrderItems = async (req, res) => {
             }
         }
 
+        // Ultimate fallback for manually created local test users who have NO restaurantId or branchId
+        if (!finalRestaurantId || !finalBranchId) {
+            const mongoose = await import('mongoose');
+            const Restaurant = mongoose.model('Restaurant');
+            const Branch = mongoose.model('Branch');
+            const firstRestaurant = await Restaurant.findOne();
+            const firstBranch = await Branch.findOne();
+            if (firstRestaurant) finalRestaurantId = firstRestaurant._id;
+            if (firstBranch) finalBranchId = firstBranch._id;
+        }
+
+        let finalUserId = req.user ? req.user._id : null;
+        if (!finalUserId) {
+            const mongoose = await import('mongoose');
+            const User = mongoose.model('User');
+            let guestUser = await User.findOne({ role: 'Customer' });
+            if (!guestUser) {
+                guestUser = await User.findOne();
+            }
+            if (guestUser) finalUserId = guestUser._id;
+        }
+
         const order = new Order({
             orderItems,
-            user: req.user ? req.user._id : null,
+            user: finalUserId,
             restaurantId: finalRestaurantId,
             branchId: finalBranchId,
             orderType,
