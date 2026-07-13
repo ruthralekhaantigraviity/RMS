@@ -38,7 +38,8 @@ const Explore = () => {
     useEffect(() => {
         const fetchRestaurants = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/restaurants');
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                const res = await axios.get(`${API_URL}/restaurants`);
                 let realRest = res.data.filter(r => r.subscription?.status === 'Active' && r.isActive !== false);
                 let combined = [...realRest];
                 if (combined.length < 6) {

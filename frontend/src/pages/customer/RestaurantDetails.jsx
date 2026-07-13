@@ -18,8 +18,9 @@ const RestaurantDetails = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
                 // Fetch branches
-                const branchRes = await axios.get(`http://localhost:5000/api/restaurants/${id}/branches`);
+                const branchRes = await axios.get(`${API_URL}/restaurants/${id}/branches`);
                 setBranches(branchRes.data);
                 if (branchRes.data.length > 0) {
                     setSelectedBranch(branchRes.data[0]._id);
@@ -28,11 +29,11 @@ const RestaurantDetails = () => {
                 // For a real app, we'd have a specific /api/restaurants/:id endpoint
                 // and /api/menu?restaurantId=...
                 // Using existing /api/menu and filtering on client for simplicity since it's a demo
-                const menuRes = await axios.get('http://localhost:5000/api/menu');
+                const menuRes = await axios.get(`${API_URL}/menu`);
                 setMenu(menuRes.data.filter(m => m.restaurantId === id));
                 
                 // Get restaurant details from list
-                const restRes = await axios.get('http://localhost:5000/api/restaurants');
+                const restRes = await axios.get(`${API_URL}/restaurants`);
                 setRestaurant(restRes.data.find(r => r._id === id));
                 
             } catch (error) {
