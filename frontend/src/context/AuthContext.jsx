@@ -17,7 +17,12 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const user = JSON.parse(localStorage.getItem('restosys_user'));
     if (user && user.token) {
-        config.headers.Authorization = `Bearer ${user.token}`;
+        if (config.headers && typeof config.headers.set === 'function') {
+            config.headers.set('Authorization', `Bearer ${user.token}`);
+        } else {
+            config.headers = config.headers || {};
+            config.headers.Authorization = `Bearer ${user.token}`;
+        }
     }
     return config;
 });
