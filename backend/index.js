@@ -20,6 +20,7 @@ app.use(cors({
         callback(null, true);
     },
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 app.use(cookieParser());
 
