@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
+import CustomerProtectedRoute from './components/CustomerProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/admin/DashboardHome';
 import BranchesManagement from './pages/admin/BranchesManagement';
@@ -59,7 +60,9 @@ import Checkout from './pages/customer/Checkout';
 import Reservations from './pages/customer/Reservations';
 import OrderTracking from './pages/customer/OrderTracking';
 import OrderHistory from './pages/customer/OrderHistory';
-import AuthPage from './pages/AuthPage';
+import CustomerAuthPage from './pages/CustomerAuthPage';
+import StaffAuthPage from './pages/StaffAuthPage';
+import { CustomerAuthProvider } from './context/CustomerAuthContext';
 import { CartProvider } from './context/CartContext';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
@@ -82,19 +85,22 @@ function App() {
           <Route index element={<Home />} />
           <Route path="explore" element={<Explore />} />
         </Route>
-        <Route path="/" element={<CartProvider><CustomerLayout /></CartProvider>}>
+        <Route path="/" element={<CustomerAuthProvider><CartProvider><CustomerLayout /></CartProvider></CustomerAuthProvider>}>
           <Route path="menu" element={<Menu />} />
           <Route path="restaurant/:id" element={<RestaurantDetails />} />
-          <Route path="profile" element={<CustomerDashboard />} />
-          <Route path="profile/orders" element={<OrderHistory />} />
-          <Route path="checkout" element={<Checkout />} />
-          <Route path="track/:id" element={<OrderTracking />} />
-          <Route path="reservations" element={<Reservations />} />
+          <Route path="profile" element={<CustomerProtectedRoute><CustomerDashboard /></CustomerProtectedRoute>} />
+          <Route path="profile/orders" element={<CustomerProtectedRoute><OrderHistory /></CustomerProtectedRoute>} />
+          <Route path="checkout" element={<CustomerProtectedRoute><Checkout /></CustomerProtectedRoute>} />
+          <Route path="track/:id" element={<CustomerProtectedRoute><OrderTracking /></CustomerProtectedRoute>} />
+          <Route path="reservations" element={<CustomerProtectedRoute><Reservations /></CustomerProtectedRoute>} />
         </Route>
         
         {/* Auth */}
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<AuthPage />} />
+        <Route path="/login" element={<CustomerAuthProvider><CustomerAuthPage /></CustomerAuthProvider>} />
+        <Route path="/register" element={<CustomerAuthProvider><CustomerAuthPage /></CustomerAuthProvider>} />
+        
+        <Route path="/staff/login" element={<StaffAuthPage />} />
+        <Route path="/staff/register" element={<StaffAuthPage />} />
 
         {/* Super Admin Routes */}
         <Route path="/super-admin" element={<ProtectedRoute allowedRoles={['SuperAdmin']}><SuperAdminLayout /></ProtectedRoute>}>

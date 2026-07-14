@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, ChefHat, Bike, PackageOpen, ChevronLeft, Phone, MapPin } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const OrderTracking = () => {
     const { id } = useParams();
