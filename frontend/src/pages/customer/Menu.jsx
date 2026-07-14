@@ -3,7 +3,7 @@ import { Search, Heart, ShoppingBag, Star, Filter, Info, Flame, Leaf } from 'luc
 import { useCart } from '../../context/CartContext';
 
 import { useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const categories = ['All', 'Starters', 'Salads', 'Mains', 'Desserts', 'Beverages'];
 

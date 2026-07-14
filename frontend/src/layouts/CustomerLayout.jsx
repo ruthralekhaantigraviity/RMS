@@ -1,11 +1,11 @@
 import { Outlet, Link } from 'react-router-dom';
 import { ShoppingCart, User, UtensilsCrossed, Heart } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
 
 const CustomerLayout = () => {
-    const { user } = useAuth();
+    const { user } = useCustomerAuth();
     const { cartCount, setIsCartOpen } = useCart();
 
     return (
@@ -52,10 +52,10 @@ const CustomerLayout = () => {
                             </Link>
                         ) : (
                             <>
-                                <Link to="/register?type=customer" className="hidden md:block text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
+                                <Link to="/register" className="hidden md:block text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
                                     Register
                                 </Link>
-                                <Link to="/login?type=customer" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                                <Link to="/login" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20" style={{ fontFamily: 'Outfit, sans-serif' }}>
                                     <User size={16} />
                                     Sign In
                                 </Link>

@@ -13,7 +13,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req, res) => {
-    const { name, email, password, roleName } = req.body;
+    const { name, email, password, roleName, loginType } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -23,6 +23,14 @@ export const registerUser = async (req, res) => {
         }
 
         const role = roleName || 'Customer';
+
+        // Check if customer is trying to register in staff portal or vice versa
+        if (loginType === 'staff' && role === 'Customer') {
+            return res.status(403).json({ message: 'Cannot register as customer from staff portal' });
+        }
+        if (loginType === 'customer' && role !== 'Customer') {
+            return res.status(403).json({ message: 'Cannot register as staff from customer portal' });
+        }
 
         const user = await User.create({
             name,
@@ -34,7 +42,8 @@ export const registerUser = async (req, res) => {
         if (user) {
             const token = generateToken(user._id);
             
-            res.cookie('jwt', token, {
+            const cookieName = loginType === 'customer' ? 'jwt_customer' : 'jwt_staff';
+            res.cookie(cookieName, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development',
                 sameSite: 'none',
@@ -60,16 +69,24 @@ export const registerUser = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, loginType } = req.body;
 
     try {
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
+            if (loginType === 'staff' && user.role === 'Customer') {
+                return res.status(403).json({ message: 'Customers cannot log into the staff portal' });
+            }
+            if (loginType === 'customer' && user.role !== 'Customer') {
+                return res.status(403).json({ message: 'Staff cannot log into the customer portal' });
+            }
+
             const token = generateToken(user._id);
             
             // Set cookie (optional, for HttpOnly cookie approach)
-            res.cookie('jwt', token, {
+            const cookieName = loginType === 'customer' ? 'jwt_customer' : 'jwt_staff';
+            res.cookie(cookieName, token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
                 sameSite: 'none', // Allow cross-site cookies for Vercel/Render
@@ -97,11 +114,14 @@ export const loginUser = async (req, res) => {
 // @route   POST /api/auth/logout
 // @access  Private
 export const logoutUser = (req, res) => {
-    res.cookie('jwt', '', {
+    const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV !== 'development',
         sameSite: 'none',
         expires: new Date(0),
-    });
+    };
+    res.cookie('jwt_staff', '', cookieOptions);
+    res.cookie('jwt_customer', '', cookieOptions);
+    res.cookie('jwt', '', cookieOptions); // Clear old cookie just in case
     res.status(200).json({ message: 'Logged out successfully' });
 };

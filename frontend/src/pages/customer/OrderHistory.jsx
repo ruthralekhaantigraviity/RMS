@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Star, ShoppingBag, MessageSquare, ExternalLink } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const OrderHistory = () => {
     const { api } = useAuth();

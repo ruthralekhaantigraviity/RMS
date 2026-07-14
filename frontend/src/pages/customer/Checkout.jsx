@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { CreditCard, MapPin, Ticket, ChevronRight, Utensils, CheckCircle, ShieldCheck, ArrowRight } from 'lucide-react';
 

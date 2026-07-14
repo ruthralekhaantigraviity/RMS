@@ -15,7 +15,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem('restosys_user'));
+    const user = JSON.parse(localStorage.getItem('restosys_staff_user'));
     if (user && user.token) {
         if (config.headers && typeof config.headers.set === 'function') {
             config.headers.set('Authorization', `Bearer ${user.token}`);
@@ -31,9 +31,9 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            localStorage.removeItem('restosys_user');
-            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-                window.location.href = '/login';
+            localStorage.removeItem('restosys_staff_user');
+            if (window.location.pathname !== '/staff/login' && window.location.pathname !== '/staff/register') {
+                window.location.href = '/staff/login';
             }
         }
         return Promise.reject(error);
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('restosys_user');
+        const storedUser = localStorage.getItem('restosys_staff_user');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
@@ -54,9 +54,9 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const { data } = await api.post('/auth/login', { email, password });
+            const { data } = await api.post('/auth/login', { email, password, loginType: 'staff' });
             setUser(data);
-            localStorage.setItem('restosys_user', JSON.stringify(data));
+            localStorage.setItem('restosys_staff_user', JSON.stringify(data));
             return { success: true, data };
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'Login failed';
@@ -70,9 +70,9 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password, roleName) => {
         try {
-            const { data } = await api.post('/auth/register', { name, email, password, roleName });
+            const { data } = await api.post('/auth/register', { name, email, password, roleName, loginType: 'staff' });
             setUser(data);
-            localStorage.setItem('restosys_user', JSON.stringify(data));
+            localStorage.setItem('restosys_staff_user', JSON.stringify(data));
             return { success: true, data };
         } catch (error) {
             console.error('Register error:', error.response?.data || error.message);
@@ -87,8 +87,8 @@ export const AuthProvider = ({ children }) => {
             console.error('Logout error:', error);
         }
         setUser(null);
-        localStorage.removeItem('restosys_user');
-        window.location.href = '/login';
+        localStorage.removeItem('restosys_staff_user');
+        window.location.href = '/staff/login';
     };
 
     return (

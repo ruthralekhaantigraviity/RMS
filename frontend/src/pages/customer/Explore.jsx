@@ -3,10 +3,10 @@ import { Search, MapPin, Star, ChevronDown, User, ShoppingBag, Percent, Navigati
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const Explore = () => {
-    const { user } = useAuth();
+    const { user } = useCustomerAuth();
     const [restaurants, setRestaurants] = useState([]);
     const [search, setSearch] = useState('');
     const [location, setLocation] = useState(localStorage.getItem('userLocation') || 'San Francisco, CA');

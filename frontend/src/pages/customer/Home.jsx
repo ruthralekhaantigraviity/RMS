@@ -8,10 +8,10 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../../context/AuthContext';
+import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const Home = () => {
-    const { user } = useAuth();
+    const { user } = useCustomerAuth();
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isYearly, setIsYearly] = useState(false);
