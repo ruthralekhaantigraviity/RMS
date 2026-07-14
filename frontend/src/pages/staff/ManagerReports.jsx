@@ -1,4 +1,4 @@
-import { FileText, Printer, FileDown, CheckCircle } from 'lucide-react';
+import { FileText, Printer, FileDown, CheckCircle, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const mockReports = [
