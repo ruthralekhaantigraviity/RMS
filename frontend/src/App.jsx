@@ -70,112 +70,117 @@ import GlobalReports from './pages/superadmin/GlobalReports';
 
 import PublicLayout from './layouts/PublicLayout';
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
-    <Routes>
-      {/* Customer Facing Application */}
-      <Route path="/" element={<PublicLayout />}>
-        <Route index element={<Home />} />
-        <Route path="explore" element={<Explore />} />
-      </Route>
-      <Route path="/" element={<CartProvider><CustomerLayout /></CartProvider>}>
-        <Route path="menu" element={<Menu />} />
-        <Route path="restaurant/:id" element={<RestaurantDetails />} />
-        <Route path="profile" element={<CustomerDashboard />} />
-        <Route path="profile/orders" element={<OrderHistory />} />
-        <Route path="checkout" element={<Checkout />} />
-        <Route path="track/:id" element={<OrderTracking />} />
-        <Route path="reservations" element={<Reservations />} />
-      </Route>
-      
-      {/* Auth */}
-      <Route path="/login" element={<AuthPage />} />
-      <Route path="/register" element={<AuthPage />} />
+    <>
+      <Toaster position="top-right" />
+      <Routes>
+        {/* Customer Facing Application */}
+        <Route path="/" element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="explore" element={<Explore />} />
+        </Route>
+        <Route path="/" element={<CartProvider><CustomerLayout /></CartProvider>}>
+          <Route path="menu" element={<Menu />} />
+          <Route path="restaurant/:id" element={<RestaurantDetails />} />
+          <Route path="profile" element={<CustomerDashboard />} />
+          <Route path="profile/orders" element={<OrderHistory />} />
+          <Route path="checkout" element={<Checkout />} />
+          <Route path="track/:id" element={<OrderTracking />} />
+          <Route path="reservations" element={<Reservations />} />
+        </Route>
+        
+        {/* Auth */}
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<AuthPage />} />
 
-      {/* Super Admin Routes */}
-      <Route path="/super-admin" element={<ProtectedRoute allowedRoles={['SuperAdmin']}><SuperAdminLayout /></ProtectedRoute>}>
-        <Route index element={<SuperAdminDashboard />} />
-        <Route path="restaurants" element={<PlatformRestaurants />} />
-        <Route path="plans" element={<PlanManagement />} />
-        <Route path="tickets" element={<SupportTickets />} />
-        <Route path="reports" element={<GlobalReports />} />
-      </Route>
+        {/* Super Admin Routes */}
+        <Route path="/super-admin" element={<ProtectedRoute allowedRoles={['SuperAdmin']}><SuperAdminLayout /></ProtectedRoute>}>
+          <Route index element={<SuperAdminDashboard />} />
+          <Route path="restaurants" element={<PlatformRestaurants />} />
+          <Route path="plans" element={<PlanManagement />} />
+          <Route path="tickets" element={<SupportTickets />} />
+          <Route path="reports" element={<GlobalReports />} />
+        </Route>
 
-      {/* Admin Dashboard Routes */}
-      <Route path="/admin" element={<ProtectedRoute allowedRoles={['RestaurantAdmin', 'Admin']}><DashboardLayout /></ProtectedRoute>}>
-        <Route index element={<DashboardHome />} />
-        <Route path="activity" element={<ActivityLogs />} />
+        {/* Admin Dashboard Routes */}
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['RestaurantAdmin', 'Admin']}><DashboardLayout /></ProtectedRoute>}>
+          <Route index element={<DashboardHome />} />
+          <Route path="activity" element={<ActivityLogs />} />
+          
+          {/* Organization */}
+          <Route path="branches" element={<BranchesManagement />} />
+          
+          {/* People */}
+          <Route path="customers" element={<CustomerManagement />} />
+          <Route path="staff" element={<StaffManagement />} />
+          <Route path="users" element={<UsersManagement />} />
+          <Route path="roles" element={<RoleManagement />} />
+          
+          {/* Operations */}
+          <Route path="reservations" element={<ReservationManagement />} />
+          <Route path="orders" element={<OrderManagement />} />
+          
+          {/* Kitchen & Catalog */}
+          <Route path="menu" element={<MenuManagement />} />
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="inventory" element={<InventoryManagement />} />
+          <Route path="suppliers" element={<SupplierManagement />} />
+          
+          {/* Finance & Marketing */}
+          <Route path="payments" element={<PaymentManagement />} />
+          <Route path="offers" element={<OfferManagement />} />
+          <Route path="taxes" element={<TaxManagement />} />
+          
+          {/* Insights */}
+          <Route path="reports" element={<Reports />} />
+          <Route path="analytics" element={<Analytics />} />
+          
+          {/* System */}
+          <Route path="settings" element={<Settings />} />
+          <Route path="billing" element={<SubscriptionPortal />} />
+          <Route path="notifications" element={<NotificationCenter />} />
+        </Route>
         
-        {/* Organization */}
-        <Route path="branches" element={<BranchesManagement />} />
+        <Route path="/manager" element={<ProtectedRoute allowedRoles={['BranchManager', 'RestaurantAdmin']}><ManagerLayout /></ProtectedRoute>}>
+          <Route index element={<ManagerDashboard />} />
+          <Route path="orders" element={<ManagerOrderMonitoring />} />
+          <Route path="staff" element={<ManagerStaff />} />
+          <Route path="kitchen" element={<ManagerKitchenStatus />} />
+          <Route path="inventory" element={<ManagerInventory />} />
+          <Route path="reservations" element={<ManagerReservations />} />
+          <Route path="feedback" element={<ManagerFeedback />} />
+          <Route path="sales" element={<ManagerSales />} />
+          <Route path="reports" element={<ManagerReports />} />
+          <Route path="analytics" element={<ManagerAnalytics />} />
+          <Route path="settings" element={<ManagerSettings />} />
+          <Route path="notifications" element={<NotificationCenter />} />
+        </Route>
         
-        {/* People */}
-        <Route path="customers" element={<CustomerManagement />} />
-        <Route path="staff" element={<StaffManagement />} />
-        <Route path="users" element={<UsersManagement />} />
-        <Route path="roles" element={<RoleManagement />} />
+        {/* Staff Dashboards */}
+        <Route path="/waiter" element={<ProtectedRoute allowedRoles={['Waiter', 'RestaurantAdmin', 'BranchManager']}><WaiterLayout /></ProtectedRoute>}>
+          <Route index element={<WaiterDashboard />} />
+          <Route path="orders" element={<WaiterActiveOrders />} />
+          <Route path="pending" element={<WaiterPendingServes />} />
+          <Route path="completed" element={<WaiterCompleted />} />
+        </Route>
         
-        {/* Operations */}
-        <Route path="reservations" element={<ReservationManagement />} />
-        <Route path="orders" element={<OrderManagement />} />
+        <Route path="/chef" element={<ProtectedRoute allowedRoles={['Chef', 'RestaurantAdmin', 'BranchManager']}><ChefLayout /></ProtectedRoute>}>
+          <Route index element={<ChefDashboard />} />
+          <Route path="prep" element={<ChefPrepList />} />
+          <Route path="recipes" element={<ChefRecipes />} />
+          <Route path="inventory" element={<ChefInventory />} />
+        </Route>
         
-        {/* Kitchen & Catalog */}
-        <Route path="menu" element={<MenuManagement />} />
-        <Route path="categories" element={<CategoryManagement />} />
-        <Route path="inventory" element={<InventoryManagement />} />
-        <Route path="suppliers" element={<SupplierManagement />} />
-        
-        {/* Finance & Marketing */}
-        <Route path="payments" element={<PaymentManagement />} />
-        <Route path="offers" element={<OfferManagement />} />
-        <Route path="taxes" element={<TaxManagement />} />
-        
-        {/* Insights */}
-        <Route path="reports" element={<Reports />} />
-        <Route path="analytics" element={<Analytics />} />
-        
-        {/* System */}
-        <Route path="settings" element={<Settings />} />
-        <Route path="billing" element={<SubscriptionPortal />} />
-        <Route path="notifications" element={<NotificationCenter />} />
-      </Route>
-      
-      <Route path="/manager" element={<ProtectedRoute allowedRoles={['BranchManager', 'RestaurantAdmin']}><ManagerLayout /></ProtectedRoute>}>
-        <Route index element={<ManagerDashboard />} />
-        <Route path="orders" element={<ManagerOrderMonitoring />} />
-        <Route path="staff" element={<ManagerStaff />} />
-        <Route path="kitchen" element={<ManagerKitchenStatus />} />
-        <Route path="inventory" element={<ManagerInventory />} />
-        <Route path="reservations" element={<ManagerReservations />} />
-        <Route path="feedback" element={<ManagerFeedback />} />
-        <Route path="sales" element={<ManagerSales />} />
-        <Route path="reports" element={<ManagerReports />} />
-        <Route path="analytics" element={<ManagerAnalytics />} />
-        <Route path="settings" element={<ManagerSettings />} />
-        <Route path="notifications" element={<NotificationCenter />} />
-      </Route>
-      
-      {/* Staff Dashboards */}
-      <Route path="/waiter" element={<ProtectedRoute allowedRoles={['Waiter', 'RestaurantAdmin', 'BranchManager']}><WaiterLayout /></ProtectedRoute>}>
-        <Route index element={<WaiterDashboard />} />
-        <Route path="orders" element={<WaiterActiveOrders />} />
-        <Route path="pending" element={<WaiterPendingServes />} />
-        <Route path="completed" element={<WaiterCompleted />} />
-      </Route>
-      
-      <Route path="/chef" element={<ProtectedRoute allowedRoles={['Chef', 'RestaurantAdmin', 'BranchManager']}><ChefLayout /></ProtectedRoute>}>
-        <Route index element={<ChefDashboard />} />
-        <Route path="prep" element={<ChefPrepList />} />
-        <Route path="recipes" element={<ChefRecipes />} />
-        <Route path="inventory" element={<ChefInventory />} />
-      </Route>
-      
-      <Route path="/cashier" element={<ProtectedRoute allowedRoles={['Cashier', 'RestaurantAdmin', 'BranchManager']}><CashierLayout /></ProtectedRoute>}>
-        <Route index element={<CashierOverview />} />
-        <Route path="billing" element={<CashierDashboard />} />
-        <Route path="history" element={<CashierHistory />} />
-      </Route>
-    </Routes>
+        <Route path="/cashier" element={<ProtectedRoute allowedRoles={['Cashier', 'RestaurantAdmin', 'BranchManager']}><CashierLayout /></ProtectedRoute>}>
+          <Route index element={<CashierOverview />} />
+          <Route path="billing" element={<CashierDashboard />} />
+          <Route path="history" element={<CashierHistory />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 

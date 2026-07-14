@@ -1,4 +1,5 @@
 import { UtensilsCrossed, Clock, CheckCircle, AlertTriangle, ChefHat, Flame } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const mockStations = [
     { name: 'Grill', load: 'High', tickets: 8, avgTime: '18m', chef: 'Marcus W.', delay: true },
@@ -26,7 +27,7 @@ const ManagerKitchenStatus = () => {
                         <p className="text-2xl font-bold text-gray-900">12m 45s</p>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={() => alert('Refreshing display...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
+                        <button onClick={() => toast.success('Refreshing display...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
                             <RefreshCw size={16} /> Refresh Display
                         </button>
                         <button className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
@@ -96,7 +97,7 @@ const ManagerKitchenStatus = () => {
                             <div className="flex items-center gap-4">
                                 <span className="text-sm font-bold text-orange-600">{ticket.status}</span>
                                 <div className="flex gap-2">
-                                    <button onClick={() => alert('Expediting order...')} className="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-bold px-4 py-2 rounded-lg transition-colors border border-red-200">
+                                    <button onClick={() => toast.success('Expediting order...')} className="bg-red-50 hover:bg-red-100 text-red-700 text-sm font-bold px-4 py-2 rounded-lg transition-colors border border-red-200">
                                         Expedite
                                     </button>
                                 </div>

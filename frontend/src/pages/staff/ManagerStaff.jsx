@@ -1,4 +1,5 @@
 import { Search, Plus, Calendar, Clock, UserCheck, UserX, AlertTriangle, MessageSquare } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const mockShift = [
     { name: 'Marcus Wong', role: 'Head Chef', status: 'Active', timeIn: '08:00 AM', hours: '4h 30m', alert: false },
@@ -17,10 +18,10 @@ const ManagerStaff = () => {
                     <p className="text-gray-500 text-sm mt-1">Manage today's attendance, breaks, and shift coverage.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => alert('Opening weekly schedule view...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
+                    <button onClick={() => toast.success('Opening weekly schedule view...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
                         <Calendar size={16} /> Weekly Schedule
                     </button>
-                    <button onClick={() => alert('Opening shift assignment modal...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
+                    <button onClick={() => toast.success('Opening shift assignment modal...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
                         <Plus size={18} /> Assign Shift
                     </button>
                 </div>
@@ -102,8 +103,8 @@ const ManagerStaff = () => {
                                     <td className="px-6 py-4 text-sm font-bold text-gray-900">{staff.hours}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button onClick={() => alert(`Messaging ${staff.name}...`)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Message"><MessageSquare size={18} /></button>
-                                            <button onClick={() => alert(`Managing schedule for ${staff.name}`)} className="text-sm font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
+                                            <button onClick={() => toast.success(`Messaging ${staff.name}...`)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Message"><MessageSquare size={18} /></button>
+                                            <button onClick={() => toast.success(`Managing schedule for ${staff.name}`)} className="text-sm font-bold text-gray-700 bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
                                                 Manage
                                             </button>
                                         </div>

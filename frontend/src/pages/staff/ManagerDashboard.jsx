@@ -1,5 +1,6 @@
 import { Store, Users, ShoppingBag, Clock, AlertTriangle, CheckCircle2, MoreVertical, LogOut, Bell, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -84,7 +85,7 @@ const ManagerDashboard = () => {
                                     <p className="text-sm text-gray-600 mb-3">Dine-in • Table T-04 • 3 items</p>
                                     <div className="flex justify-between items-center pt-3 border-t border-orange-200/50">
                                         <span className="text-xs text-orange-600 font-bold flex items-center gap-1"><Clock size={12}/> 15 mins ago</span>
-                                        <button onClick={() => alert('Order marked as ready!')} className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-orange-600 transition-colors">Mark Ready</button>
+                                        <button onClick={() => toast.success('Order marked as ready!')} className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-orange-600 transition-colors">Mark Ready</button>
                                     </div>
                                 </div>
                                 {/* Order Card 2 */}
@@ -96,7 +97,7 @@ const ManagerDashboard = () => {
                                     <p className="text-sm text-gray-600 mb-3">456 Elm St • 4 items</p>
                                     <div className="flex justify-between items-center pt-3 border-t border-purple-200/50">
                                         <span className="text-xs text-purple-600 font-bold flex items-center gap-1"><Clock size={12}/> Waiting for Rider</span>
-                                        <button onClick={() => alert('Order dispatched!')} className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-purple-700 transition-colors">Dispatch</button>
+                                        <button onClick={() => toast.success('Order dispatched!')} className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-purple-700 transition-colors">Dispatch</button>
                                     </div>
                                 </div>
                             </div>
