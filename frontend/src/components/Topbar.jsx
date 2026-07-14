@@ -17,7 +17,15 @@ const Topbar = () => {
             </div>
             
             <div className="flex items-center gap-6">
-                <Link to="/admin/notifications" className="relative p-2 text-gray-500 hover:text-green-500 transition-colors">
+                <Link 
+                    to={
+                        user?.role?.toLowerCase().includes('admin') ? '/admin/notifications' :
+                        user?.role?.toLowerCase().includes('manager') ? '/manager/notifications' :
+                        user?.role?.toLowerCase().includes('superadmin') ? '/super-admin/notifications' :
+                        '/admin/notifications'
+                    } 
+                    className="relative p-2 text-gray-500 hover:text-green-500 transition-colors"
+                >
                     <Bell size={22} />
                     <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white"></span>
                 </Link>
