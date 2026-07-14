@@ -1,12 +1,12 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, CreditCard, 
-    Settings, Bell, LogOut 
+    Settings, Bell, LogOut, User 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const SuperAdminLayout = () => {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const location = useLocation();
 
     const navigation = [
@@ -66,9 +66,13 @@ const SuperAdminLayout = () => {
                         <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
                             <Bell size={20} />
                         </button>
-                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-                            <div className="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
-                                SA
+                        <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer group">
+                            <div className="text-right hidden md:block group-hover:opacity-80 transition-opacity">
+                                <p className="text-sm font-bold text-gray-900 capitalize">{user?.name || 'Super Admin'}</p>
+                                <p className="text-xs font-medium text-blue-600 capitalize">System Admin</p>
+                            </div>
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold border border-blue-200 group-hover:bg-blue-200 transition-colors">
+                                <User size={20} />
                             </div>
                         </div>
                     </div>

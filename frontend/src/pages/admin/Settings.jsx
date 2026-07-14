@@ -113,7 +113,7 @@ const Settings = () => {
 
                 {/* Settings Form Area */}
                 <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                        </div>
+                    <form onSubmit={handleSubmit}>
                         
                         {activeTab === 'general' && (
                             <>
