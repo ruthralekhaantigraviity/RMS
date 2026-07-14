@@ -102,8 +102,8 @@ const Home = () => {
                             </Link>
                         ) : (
                             <>
-                                <Link to="/login" className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
-                                <Link to="/register" className="bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-900/20 transition-all active:scale-95">Get Started Free</Link>
+                                <Link to="/staff/login" className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
+                                <Link to="/staff/register" className="bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-900/20 transition-all active:scale-95">Get Started Free</Link>
                             </>
                         )}
                     </div>
@@ -124,7 +124,7 @@ const Home = () => {
                         Streamline your operations, boost your sales, and delight your customers with our all-in-one POS, inventory, and online ordering platform.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/register" className="w-full sm:w-auto bg-red-500 text-white font-bold text-lg px-8 py-4 rounded-2xl hover:bg-red-600 shadow-xl shadow-red-500/30 transition-all flex items-center justify-center gap-2 group">
+                        <Link to="/staff/register" className="w-full sm:w-auto bg-red-500 text-white font-bold text-lg px-8 py-4 rounded-2xl hover:bg-red-600 shadow-xl shadow-red-500/30 transition-all flex items-center justify-center gap-2 group">
                             Start Your Free Trial <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <a href="#demo" className="w-full sm:w-auto bg-white text-gray-800 border border-gray-200 font-bold text-lg px-8 py-4 rounded-2xl hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
@@ -382,7 +382,7 @@ const Home = () => {
                             <h3 className="text-xl font-bold mb-2">Starter</h3>
                             <p className="text-gray-500 text-sm font-medium mb-6">Perfect for small cafes and food trucks.</p>
                             <div className="text-4xl font-black mb-6">${isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
-                            <Link to={`/register?plan=Starter&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Start Free Trial</Link>
+                            <Link to={`/staff/register?plan=Starter&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Start Free Trial</Link>
                             <div className="space-y-4">
                                 {['1 Outlet', 'Basic POS Billing', 'QR Ordering', 'Email Support'].map((f, i) => (
                                     <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-green-500" /><span className="font-medium text-sm text-gray-600">{f}</span></div>
@@ -395,7 +395,7 @@ const Home = () => {
                             <h3 className="text-xl font-bold mb-2">Professional</h3>
                             <p className="text-gray-400 text-sm font-medium mb-6">For growing restaurants and multi-locations.</p>
                             <div className="text-4xl font-black mb-6">${isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
-                            <Link to={`/register?plan=Professional&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10 flex justify-center items-center">Choose Plan</Link>
+                            <Link to={`/staff/register?plan=Professional&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10 flex justify-center items-center">Choose Plan</Link>
                             <div className="space-y-4">
                                 {['Up to 3 Outlets', 'Kitchen Display System', 'Online Ordering App', 'Advanced Analytics', 'Priority Support'].map((f, i) => (
                                     <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-red-400" /><span className="font-medium text-sm text-gray-300">{f}</span></div>
