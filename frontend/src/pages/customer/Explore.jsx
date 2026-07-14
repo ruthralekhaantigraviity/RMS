@@ -177,9 +177,13 @@ const Explore = () => {
                                 {user.name}
                             </Link>
                         ) : (
-                            <div className="hidden md:flex items-center gap-4 text-gray-700 text-lg font-light">
-                                <Link to="/login?type=customer" className="hover:text-red-500 transition-colors">Log in</Link>
-                                <Link to="/register?type=customer" className="hover:text-red-500 transition-colors">Sign up</Link>
+                            <div className="hidden md:flex items-center gap-3">
+                                <Link to="/login?type=customer" className="text-gray-600 hover:text-red-500 font-medium px-4 py-2 rounded-xl hover:bg-red-50 transition-colors">
+                                    Log in
+                                </Link>
+                                <Link to="/register?type=customer" className="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-2 rounded-xl shadow-sm hover:shadow transition-all">
+                                    Sign up
+                                </Link>
                             </div>
                         )}
                     </div>
