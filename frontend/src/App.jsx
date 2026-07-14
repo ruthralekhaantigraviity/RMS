@@ -81,7 +81,7 @@ function App() {
       <Toaster position="top-right" />
       <Routes>
         {/* Customer Facing Application */}
-        <Route path="/" element={<PublicLayout />}>
+        <Route path="/" element={<CustomerAuthProvider><PublicLayout /></CustomerAuthProvider>}>
           <Route index element={<Home />} />
           <Route path="explore" element={<Explore />} />
         </Route>
