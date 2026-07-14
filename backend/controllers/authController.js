@@ -14,7 +14,7 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const registerUser = async (req, res) => {
-    const { name, email, password, roleName, loginType } = req.body;
+    const { name, email, password, phoneNumber, roleName, loginType } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -37,16 +37,14 @@ export const registerUser = async (req, res) => {
             name,
             email,
             password,
+            phoneNumber,
             role: role,
         });
 
         if (role === 'RestaurantAdmin' && req.body.restaurantName) {
+            // Set 7-day trial expiry date
             const expiryDate = new Date();
-            if (req.body.billingCycle === 'yearly') {
-                expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-            } else {
-                expiryDate.setMonth(expiryDate.getMonth() + 1);
-            }
+            expiryDate.setDate(expiryDate.getDate() + 7);
             
             const restaurant = await Restaurant.create({
                 name: req.body.restaurantName,
@@ -55,6 +53,7 @@ export const registerUser = async (req, res) => {
                     status: 'Active',
                     plan: req.body.plan || 'Basic',
                     billingCycle: req.body.billingCycle || 'monthly',
+                    trialActive: true,
                     expiryDate: expiryDate
                 },
                 approvalStatus: 'Approved'

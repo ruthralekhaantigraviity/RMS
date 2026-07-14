@@ -36,6 +36,7 @@ const restaurantSchema = new mongoose.Schema({
         status: { type: String, enum: ['Active', 'Frozen', 'Cancelled'], default: 'Active' },
         plan: { type: String, enum: ['Basic', 'Pro', 'Enterprise'], default: 'Basic' },
         billingCycle: { type: String, enum: ['monthly', 'yearly'], default: 'monthly' },
+        trialActive: { type: Boolean, default: true },
         expiryDate: { type: Date }
     },
     approvalStatus: {
