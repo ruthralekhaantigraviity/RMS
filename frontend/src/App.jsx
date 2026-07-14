@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/admin/DashboardHome';
 import BranchesManagement from './pages/admin/BranchesManagement';
@@ -92,7 +93,7 @@ function App() {
       <Route path="/register" element={<AuthPage />} />
 
       {/* Super Admin Routes */}
-      <Route path="/super-admin" element={<SuperAdminLayout />}>
+      <Route path="/super-admin" element={<ProtectedRoute allowedRoles={['SuperAdmin']}><SuperAdminLayout /></ProtectedRoute>}>
         <Route index element={<SuperAdminDashboard />} />
         <Route path="restaurants" element={<PlatformRestaurants />} />
         <Route path="plans" element={<PlanManagement />} />
@@ -101,7 +102,7 @@ function App() {
       </Route>
 
       {/* Admin Dashboard Routes */}
-      <Route path="/admin" element={<DashboardLayout />}>
+      <Route path="/admin" element={<ProtectedRoute allowedRoles={['RestaurantAdmin', 'Admin']}><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<DashboardHome />} />
         <Route path="activity" element={<ActivityLogs />} />
         
@@ -139,7 +140,7 @@ function App() {
         <Route path="notifications" element={<NotificationCenter />} />
       </Route>
       
-      <Route path="/manager" element={<ManagerLayout />}>
+      <Route path="/manager" element={<ProtectedRoute allowedRoles={['BranchManager', 'RestaurantAdmin']}><ManagerLayout /></ProtectedRoute>}>
         <Route index element={<ManagerDashboard />} />
         <Route path="orders" element={<ManagerOrderMonitoring />} />
         <Route path="staff" element={<ManagerStaff />} />
@@ -154,21 +155,21 @@ function App() {
       </Route>
       
       {/* Staff Dashboards */}
-      <Route path="/waiter" element={<WaiterLayout />}>
+      <Route path="/waiter" element={<ProtectedRoute allowedRoles={['Waiter', 'RestaurantAdmin', 'BranchManager']}><WaiterLayout /></ProtectedRoute>}>
         <Route index element={<WaiterDashboard />} />
         <Route path="orders" element={<WaiterActiveOrders />} />
         <Route path="pending" element={<WaiterPendingServes />} />
         <Route path="completed" element={<WaiterCompleted />} />
       </Route>
       
-      <Route path="/chef" element={<ChefLayout />}>
+      <Route path="/chef" element={<ProtectedRoute allowedRoles={['Chef', 'RestaurantAdmin', 'BranchManager']}><ChefLayout /></ProtectedRoute>}>
         <Route index element={<ChefDashboard />} />
         <Route path="prep" element={<ChefPrepList />} />
         <Route path="recipes" element={<ChefRecipes />} />
         <Route path="inventory" element={<ChefInventory />} />
       </Route>
       
-      <Route path="/cashier" element={<CashierLayout />}>
+      <Route path="/cashier" element={<ProtectedRoute allowedRoles={['Cashier', 'RestaurantAdmin', 'BranchManager']}><CashierLayout /></ProtectedRoute>}>
         <Route index element={<CashierOverview />} />
         <Route path="billing" element={<CashierDashboard />} />
         <Route path="history" element={<CashierHistory />} />

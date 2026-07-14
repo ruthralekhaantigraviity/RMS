@@ -83,7 +83,18 @@ const Home = () => {
 
                     <div className="flex items-center gap-4 text-sm font-bold">
                         {user ? (
-                            <Link to="/profile" className="flex items-center gap-2 hover:bg-gray-50 px-4 py-2 rounded-xl transition-colors border border-gray-200">
+                            <Link 
+                                to={
+                                    user.role?.toLowerCase().includes('admin') ? '/admin' :
+                                    user.role?.toLowerCase().includes('manager') ? '/manager' :
+                                    user.role?.toLowerCase().includes('chef') ? '/chef' :
+                                    user.role?.toLowerCase().includes('waiter') ? '/waiter' :
+                                    user.role?.toLowerCase().includes('cashier') ? '/cashier' :
+                                    user.role?.toLowerCase().includes('superadmin') ? '/super-admin' :
+                                    '/profile'
+                                }
+                                className="flex items-center gap-2 hover:bg-gray-50 px-4 py-2 rounded-xl transition-colors border border-gray-200"
+                            >
                                 <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center text-red-600">
                                     <User size={16} />
                                 </div>
