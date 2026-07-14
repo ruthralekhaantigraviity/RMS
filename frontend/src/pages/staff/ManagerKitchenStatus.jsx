@@ -1,4 +1,4 @@
-import { UtensilsCrossed, Clock, CheckCircle, AlertTriangle, ChefHat, Flame } from 'lucide-react';
+import { UtensilsCrossed, Clock, CheckCircle, AlertTriangle, ChefHat, Flame, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const mockStations = [
