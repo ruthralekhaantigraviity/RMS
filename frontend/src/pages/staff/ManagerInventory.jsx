@@ -1,4 +1,5 @@
-import { PackageSearch, AlertTriangle, ArrowDown, ArrowUp, RefreshCw, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
+import { PackageSearch, AlertTriangle, ArrowDown, ArrowUp, RefreshCw, ShoppingCart, CheckCircle2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const mockInventory = [
@@ -10,6 +11,11 @@ const mockInventory = [
 ];
 
 const ManagerInventory = () => {
+    const [showSyncModal, setShowSyncModal] = useState(false);
+    const [showReorderModal, setShowReorderModal] = useState(false);
+    const [selectedItemForAction, setSelectedItemForAction] = useState(null);
+    const [actionType, setActionType] = useState(''); // 'reorder' or 'adjust'
+
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans">
             <div className="flex justify-between items-end mb-6">
@@ -18,10 +24,10 @@ const ManagerInventory = () => {
                     <p className="text-gray-500 text-sm mt-1">Track local branch stock levels and manage reorder requests.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => toast.success('Syncing stock with central database...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
+                    <button onClick={() => setShowSyncModal(true)} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
                         <RefreshCw size={16} /> Sync Stock
                     </button>
-                    <button onClick={() => toast.success('Opening new reorder form...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
+                    <button onClick={() => { setSelectedItemForAction(null); setActionType('reorder'); setShowReorderModal(true); }} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
                         <ShoppingCart size={18} /> New Reorder
                     </button>
                 </div>
@@ -95,11 +101,11 @@ const ManagerInventory = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {item.status !== 'In Stock' ? (
-                                            <button onClick={() => toast.success(`Reordering ${item.item}...`)} className="text-sm font-bold text-white bg-green-600 px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                                            <button onClick={() => { setSelectedItemForAction(item); setActionType('reorder'); setShowReorderModal(true); }} className="text-sm font-bold text-white bg-green-600 px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
                                                 Reorder
                                             </button>
                                         ) : (
-                                            <button onClick={() => toast.success(`Adjusting stock for ${item.item}...`)} className="text-sm font-bold text-gray-500 bg-gray-100 px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                                            <button onClick={() => { setSelectedItemForAction(item); setActionType('adjust'); setShowReorderModal(true); }} className="text-sm font-bold text-gray-500 bg-gray-100 px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
                                                 Adjust
                                             </button>
                                         )}
@@ -110,6 +116,118 @@ const ManagerInventory = () => {
                     </table>
                 </div>
             </div>
+
+            {/* Sync Stock Modal */}
+            {showSyncModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2"><RefreshCw size={20} className="text-blue-600" /> Sync Inventory</h3>
+                            <button onClick={() => setShowSyncModal(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6">
+                            <p className="text-gray-600 text-sm">You are about to sync the local branch inventory levels with the central database. This will update the status of pending deliveries and stock alerts.</p>
+                            <p className="text-gray-600 text-sm mt-2 font-bold">Are you sure you want to proceed?</p>
+                        </div>
+                        <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                            <button onClick={() => setShowSyncModal(false)} className="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
+                            <button onClick={() => { setShowSyncModal(false); toast.success('Inventory synced successfully!'); }} className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">Sync Now</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reorder / Adjust Modal */}
+            {showReorderModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                                {actionType === 'reorder' ? <ShoppingCart size={20} className="text-green-600" /> : <PackageSearch size={20} className="text-orange-600" />}
+                                {actionType === 'reorder' ? (selectedItemForAction ? 'Reorder Item' : 'New Reorder') : 'Adjust Stock'}
+                            </h3>
+                            <button onClick={() => setShowReorderModal(false)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Item Name</label>
+                                {selectedItemForAction ? (
+                                    <input type="text" readOnly value={selectedItemForAction.item} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-50 text-gray-500 focus:outline-none" />
+                                ) : (
+                                    <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        <option value="">Select Item...</option>
+                                        <option value="beef">Premium Ground Beef</option>
+                                        <option value="avocado">Avocado (Haas)</option>
+                                        <option value="cheese">Cheddar Cheese</option>
+                                    </select>
+                                )}
+                            </div>
+                            
+                            {actionType === 'reorder' && (
+                                <>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Quantity</label>
+                                            <input type="number" placeholder="0" className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Unit</label>
+                                            <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                                <option>lbs</option>
+                                                <option>kg</option>
+                                                <option>units</option>
+                                                <option>boxes</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Urgency</label>
+                                        <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                            <option>Standard Delivery</option>
+                                            <option>Express (Next Day)</option>
+                                            <option>Emergency (Today)</option>
+                                        </select>
+                                    </div>
+                                </>
+                            )}
+
+                            {actionType === 'adjust' && (
+                                <>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">Current Stock</label>
+                                            <input type="text" readOnly value={selectedItemForAction?.stock || ''} className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-50 text-gray-500 focus:outline-none" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-bold text-gray-700 mb-1">New Stock</label>
+                                            <input type="number" placeholder="0" className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Reason for Adjustment</label>
+                                        <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                            <option>Manual Count Correction</option>
+                                            <option>Spoilage / Waste</option>
+                                            <option>Damage</option>
+                                            <option>Internal Use</option>
+                                        </select>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                        <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                            <button onClick={() => setShowReorderModal(false)} className="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
+                            <button onClick={() => { setShowReorderModal(false); toast.success(actionType === 'reorder' ? 'Reorder submitted successfully!' : 'Stock adjusted successfully!'); }} className={`px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-colors ${actionType === 'reorder' ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-600 hover:bg-orange-700'}`}>
+                                {actionType === 'reorder' ? 'Submit Order' : 'Update Stock'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
