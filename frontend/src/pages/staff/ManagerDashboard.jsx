@@ -1,5 +1,5 @@
 import { Store, Users, ShoppingBag, Clock, AlertTriangle, CheckCircle2, MoreVertical, LogOut, Bell, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const ManagerDashboard = () => {
     const navigate = useNavigate();
@@ -70,9 +70,9 @@ const ManagerDashboard = () => {
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                                 <h3 className="font-bold text-gray-900 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>Live Orders Attention</h3>
-                                <button className="text-sm font-bold text-green-600 hover:text-green-700 flex items-center gap-1 transition-colors">
+                                <Link to="/manager/orders" className="text-sm font-bold text-green-600 hover:text-green-700 flex items-center gap-1 transition-colors">
                                     View All <ChevronRight size={16} />
-                                </button>
+                                </Link>
                             </div>
                             <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Order Card 1 */}
@@ -84,7 +84,7 @@ const ManagerDashboard = () => {
                                     <p className="text-sm text-gray-600 mb-3">Dine-in • Table T-04 • 3 items</p>
                                     <div className="flex justify-between items-center pt-3 border-t border-orange-200/50">
                                         <span className="text-xs text-orange-600 font-bold flex items-center gap-1"><Clock size={12}/> 15 mins ago</span>
-                                        <button className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-orange-600 transition-colors">Mark Ready</button>
+                                        <button onClick={() => alert('Order marked as ready!')} className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-orange-600 transition-colors">Mark Ready</button>
                                     </div>
                                 </div>
                                 {/* Order Card 2 */}
@@ -96,7 +96,7 @@ const ManagerDashboard = () => {
                                     <p className="text-sm text-gray-600 mb-3">456 Elm St • 4 items</p>
                                     <div className="flex justify-between items-center pt-3 border-t border-purple-200/50">
                                         <span className="text-xs text-purple-600 font-bold flex items-center gap-1"><Clock size={12}/> Waiting for Rider</span>
-                                        <button className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-purple-700 transition-colors">Dispatch</button>
+                                        <button onClick={() => alert('Order dispatched!')} className="text-xs bg-purple-600 text-white px-3 py-1.5 rounded-lg font-bold hover:bg-purple-700 transition-colors">Dispatch</button>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +120,7 @@ const ManagerDashboard = () => {
                                         <p className="text-red-600 font-bold text-sm">5 lbs left</p>
                                         <p className="text-xs text-gray-400">Min: 20 lbs</p>
                                     </div>
-                                    <button className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
+                                    <button onClick={() => navigate('/manager/inventory')} className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
                                 </div>
                                 <div className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
                                     <div>
@@ -131,7 +131,7 @@ const ManagerDashboard = () => {
                                         <p className="text-orange-600 font-bold text-sm">45 lbs left</p>
                                         <p className="text-xs text-gray-400">Min: 50 lbs</p>
                                     </div>
-                                    <button className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
+                                    <button onClick={() => navigate('/manager/inventory')} className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +183,7 @@ const ManagerDashboard = () => {
                                 ))}
                             </div>
                             <div className="p-4 border-t border-gray-50">
-                                <button className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">
+                                <button onClick={() => navigate('/manager/staff')} className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">
                                     Manage Schedule
                                 </button>
                             </div>
