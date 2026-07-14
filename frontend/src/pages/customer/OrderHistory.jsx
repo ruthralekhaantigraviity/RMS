@@ -4,7 +4,7 @@ import { ChevronLeft, Star, ShoppingBag, MessageSquare, ExternalLink } from 'luc
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const OrderHistory = () => {
-    const { api } = useAuth();
+    const { api } = useCustomerAuth();
     const [pastOrders, setPastOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [reviewingId, setReviewingId] = useState(null);

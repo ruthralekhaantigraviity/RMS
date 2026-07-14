@@ -9,7 +9,7 @@ const categories = ['All', 'Starters', 'Salads', 'Mains', 'Desserts', 'Beverages
 
 const Menu = () => {
     const { addToCart, wishlist, toggleWishlist } = useCart();
-    const { api } = useAuth();
+    const { api } = useCustomerAuth();
     
     const [menuItems, setMenuItems] = useState([]);
     const [loading, setLoading] = useState(true);
