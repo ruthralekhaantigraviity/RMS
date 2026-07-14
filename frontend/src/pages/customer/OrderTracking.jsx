@@ -5,7 +5,7 @@ import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const OrderTracking = () => {
     const { id } = useParams();
-    const { api } = useAuth();
+    const { api } = useCustomerAuth();
     const [order, setOrder] = useState(null);
     const [progress, setProgress] = useState(1); // 1: Received, 2: Preparing, 3: On the Way, 4: Delivered
 

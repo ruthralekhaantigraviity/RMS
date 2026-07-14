@@ -6,7 +6,7 @@ import { CreditCard, MapPin, Ticket, ChevronRight, Utensils, CheckCircle, Shield
 
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
-    const { api } = useAuth();
+    const { api } = useCustomerAuth();
     const navigate = useNavigate();
     
     const [orderType, setOrderType] = useState('dine_in');
