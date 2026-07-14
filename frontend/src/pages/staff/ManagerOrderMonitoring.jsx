@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Clock, CheckCircle2, ChevronRight, ShoppingBag, Truck, Utensils, AlertCircle, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const getTypeIcon = (type) => {
     switch (type) {
@@ -56,7 +57,7 @@ const ManagerOrderMonitoring = () => {
             setSelectedOrder(null);
         } catch (error) {
             console.error('Failed to update status', error);
-            alert('Failed to update order status');
+            toast.success('Failed to update order status');
         }
     };
 

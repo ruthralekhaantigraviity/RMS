@@ -1,4 +1,5 @@
 import { FileText, Printer, FileDown, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const mockReports = [
     { name: 'End of Day Summary', desc: 'Cash drawer closing and net sales summary.', freq: 'Daily', time: '11:00 PM' },
@@ -34,7 +35,7 @@ const ManagerReports = () => {
                                 <span className="text-gray-400">Cash Expected</span>
                                 <span className="text-white font-bold">$1,245.00</span>
                             </div>
-                            <button onClick={() => alert('Generating report...')} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-md mt-4 flex items-center justify-center gap-2">
+                            <button onClick={() => toast.success('Generating report...')} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-md mt-4 flex items-center justify-center gap-2">
                                 <FileText size={18} /> Generate Report
                             </button>
                         </div>
@@ -60,10 +61,10 @@ const ManagerReports = () => {
                                 <p className="text-sm text-gray-500 mb-4 h-10">{report.desc}</p>
                                 
                                 <div className="flex gap-2 mt-4">
-                                    <button onClick={() => alert('Viewing report...')} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold py-2 rounded-lg transition-colors flex justify-center items-center gap-1 border border-gray-200">
+                                    <button onClick={() => toast.success('Viewing report...')} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold py-2 rounded-lg transition-colors flex justify-center items-center gap-1 border border-gray-200">
                                         <FileText size={14} /> View
                                     </button>
-                                    <button onClick={() => alert('Downloading report...')} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold py-2 rounded-lg transition-colors flex justify-center items-center gap-1 border border-gray-200">
+                                    <button onClick={() => toast.success('Downloading report...')} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold py-2 rounded-lg transition-colors flex justify-center items-center gap-1 border border-gray-200">
                                         <Download size={14} /> Download
                                     </button>
                                 </div>

@@ -1,4 +1,5 @@
 import { PackageSearch, AlertTriangle, ArrowDown, ArrowUp, RefreshCw, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const mockInventory = [
     { item: 'Premium Ground Beef', category: 'Meat', stock: '12 lbs', min: '20 lbs', status: 'Low Stock', lastOrder: '2 days ago' },
@@ -17,10 +18,10 @@ const ManagerInventory = () => {
                     <p className="text-gray-500 text-sm mt-1">Track local branch stock levels and manage reorder requests.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => alert('Syncing stock with central database...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
+                    <button onClick={() => toast.success('Syncing stock with central database...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
                         <RefreshCw size={16} /> Sync Stock
                     </button>
-                    <button onClick={() => alert('Opening new reorder form...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
+                    <button onClick={() => toast.success('Opening new reorder form...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
                         <ShoppingCart size={18} /> New Reorder
                     </button>
                 </div>
@@ -94,11 +95,11 @@ const ManagerInventory = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         {item.status !== 'In Stock' ? (
-                                            <button onClick={() => alert(`Reordering ${item.item}...`)} className="text-sm font-bold text-white bg-green-600 px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                                            <button onClick={() => toast.success(`Reordering ${item.item}...`)} className="text-sm font-bold text-white bg-green-600 px-4 py-1.5 rounded-lg hover:bg-green-700 transition-colors shadow-sm">
                                                 Reorder
                                             </button>
                                         ) : (
-                                            <button onClick={() => alert(`Adjusting stock for ${item.item}...`)} className="text-sm font-bold text-gray-500 bg-gray-100 px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
+                                            <button onClick={() => toast.success(`Adjusting stock for ${item.item}...`)} className="text-sm font-bold text-gray-500 bg-gray-100 px-4 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
                                                 Adjust
                                             </button>
                                         )}

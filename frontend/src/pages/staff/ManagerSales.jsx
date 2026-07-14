@@ -1,4 +1,5 @@
 import { DollarSign, TrendingUp, CreditCard, Wallet, Calendar, Download, PieChart, BarChart } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const ManagerSales = () => {
     return (
@@ -9,10 +10,10 @@ const ManagerSales = () => {
                     <p className="text-gray-500 text-sm mt-1">Detailed view of transactions, tender types, and hourly revenue.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button onClick={() => alert('Exporting sales data...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
+                    <button onClick={() => toast.success('Exporting sales data...')} className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2.5 rounded-xl font-medium transition-colors text-sm shadow-sm flex items-center gap-2">
                         <Download size={16} /> Export
                     </button>
-                    <button onClick={() => alert('Viewing detailed report...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
+                    <button onClick={() => toast.success('Viewing detailed report...')} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md">
                         <TrendingUp size={18} /> Detailed Report
                     </button>
                 </div>
