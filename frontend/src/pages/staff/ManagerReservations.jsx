@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { CalendarCheck, Users, Clock, Check, X, Phone, MessageSquare, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -9,6 +10,8 @@ const mockReservations = [
 ];
 
 const ManagerReservations = () => {
+    const [actionModal, setActionModal] = useState({ show: false, type: '', reservation: null });
+
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans">
             <div className="flex justify-between items-end mb-6">
@@ -47,13 +50,13 @@ const ManagerReservations = () => {
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => toast.success(`Messaging customer ${res.name}...`)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors" title="Message Customer">
+                                <button onClick={() => setActionModal({ show: true, type: 'message', reservation: res })} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors" title="Message Customer">
                                     <MessageSquare size={20} />
                                 </button>
-                                <button onClick={() => toast.success(`Rejecting reservation ${res.id}...`)} className="flex items-center gap-1 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-bold text-sm transition-colors">
+                                <button onClick={() => setActionModal({ show: true, type: 'reject', reservation: res })} className="flex items-center gap-1 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-bold text-sm transition-colors">
                                     <X size={16} /> Reject
                                 </button>
-                                <button onClick={() => toast.success(`Approving reservation ${res.id}...`)} className="flex items-center gap-1 px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded-xl font-bold text-sm transition-colors shadow-sm">
+                                <button onClick={() => setActionModal({ show: true, type: 'approve', reservation: res })} className="flex items-center gap-1 px-4 py-2 bg-green-500 text-white hover:bg-green-600 rounded-xl font-bold text-sm transition-colors shadow-sm">
                                     <Check size={16} /> Approve
                                 </button>
                             </div>
@@ -83,6 +86,95 @@ const ManagerReservations = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Action Modals */}
+            {actionModal.show && actionModal.reservation && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                        
+                        {/* Header */}
+                        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                                {actionModal.type === 'message' && <><MessageSquare size={20} className="text-blue-600"/> Message Customer</>}
+                                {actionModal.type === 'reject' && <><X size={20} className="text-red-600"/> Reject Reservation</>}
+                                {actionModal.type === 'approve' && <><Check size={20} className="text-green-600"/> Approve Reservation</>}
+                            </h3>
+                            <button onClick={() => setActionModal({ show: false, type: '', reservation: null })} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6 space-y-4">
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                <p className="font-bold text-gray-800 text-sm">{actionModal.reservation.name}</p>
+                                <p className="text-xs text-gray-500">{actionModal.reservation.time} • {actionModal.reservation.guests} Guests • {actionModal.reservation.type}</p>
+                            </div>
+
+                            {actionModal.type === 'message' && (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Message Content (SMS/Email)</label>
+                                    <textarea rows="4" placeholder="Hello, we are contacting you regarding your reservation..." className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                </div>
+                            )}
+
+                            {actionModal.type === 'reject' && (
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Reason for Rejection</label>
+                                    <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-red-500 mb-3">
+                                        <option>Fully Booked</option>
+                                        <option>Outside Operating Hours</option>
+                                        <option>Invalid Contact Info</option>
+                                        <option>Other</option>
+                                    </select>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Note to Customer (Optional)</label>
+                                    <textarea rows="2" placeholder="Sorry, we are fully booked tonight..." className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"></textarea>
+                                </div>
+                            )}
+
+                            {actionModal.type === 'approve' && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Assign Table (Optional)</label>
+                                        <select className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                            <option value="">Auto-Assign Later</option>
+                                            <option>Table 12 (Window)</option>
+                                            <option>Table 4 (Booth)</option>
+                                            <option>Table 8 (Patio)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Internal Notes</label>
+                                        <input type="text" placeholder="e.g. Birthday anniversary, allergy" className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                    </div>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                            <button onClick={() => setActionModal({ show: false, type: '', reservation: null })} className="px-5 py-2.5 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">Cancel</button>
+                            <button 
+                                onClick={() => { 
+                                    toast.success(
+                                        actionModal.type === 'message' ? 'Message sent!' : 
+                                        actionModal.type === 'reject' ? 'Reservation rejected.' : 
+                                        'Reservation approved!'
+                                    );
+                                    setActionModal({ show: false, type: '', reservation: null }); 
+                                }} 
+                                className={`px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-colors ${
+                                    actionModal.type === 'message' ? 'bg-blue-600 hover:bg-blue-700' :
+                                    actionModal.type === 'reject' ? 'bg-red-600 hover:bg-red-700' :
+                                    'bg-green-600 hover:bg-green-700'
+                                }`}
+                            >
+                                {actionModal.type === 'message' ? 'Send Message' : actionModal.type === 'reject' ? 'Confirm Rejection' : 'Confirm Approval'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
