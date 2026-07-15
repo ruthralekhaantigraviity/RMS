@@ -332,18 +332,6 @@ const StaffAuthPage = () => {
             <h2 className="text-2xl font-black text-gray-900 mb-2">Choose Payment Method</h2>
             <p className="text-sm text-gray-500 mb-6 font-medium">Scan the QR code with your preferred UPI app to activate subscription.</p>
 
-            <div className="flex justify-center gap-3 mb-8">
-                <button type="button" onClick={() => setSelectedPayment('gpay')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'gpay' ? 'border-blue-500 bg-blue-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-4 object-contain" />
-                </button>
-                <button type="button" onClick={() => setSelectedPayment('phonepe')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'phonepe' ? 'border-purple-500 bg-purple-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-5 object-contain" />
-                </button>
-                <button type="button" onClick={() => setSelectedPayment('paytm')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'paytm' ? 'border-blue-400 bg-blue-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" className="h-3 object-contain" />
-                </button>
-            </div>
-
             <div 
                 className="relative w-56 h-56 mx-auto mb-8 bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex items-center justify-center overflow-hidden group cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-shadow"
                 onClick={!scanActive ? startDummyScan : undefined}
@@ -351,9 +339,9 @@ const StaffAuthPage = () => {
             >
                 {/* QR Code Graphic */}
                 <div className={`transition-all duration-1000 flex flex-col items-center justify-center ${scanActive ? 'scale-110 opacity-30 blur-sm' : ''}`}>
-                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=DummySubscriptionPayment&bgcolor=ffffff&color=${selectedPayment === 'gpay' ? '1a73e8' : selectedPayment === 'phonepe' ? '5f259f' : '00baf2'}`} alt="QR Code" className="w-40 h-40" />
+                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=DummySubscriptionPayment&bgcolor=ffffff&color=1a73e8`} alt="QR Code" className="w-40 h-40" />
                     <div className="mt-4 flex items-center gap-1.5">
-                        <ShieldCheck size={14} className={selectedPayment === 'gpay' ? 'text-blue-600' : selectedPayment === 'phonepe' ? 'text-purple-600' : 'text-blue-500'} />
+                        <ShieldCheck size={14} className="text-blue-600" />
                         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Secure UPI Payment</span>
                     </div>
                 </div>
@@ -475,7 +463,7 @@ const StaffAuthPage = () => {
                     <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
                         <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
                             <h3 className="text-lg font-black text-gray-900 mb-1">
-                                {selectedPayment === 'gpay' ? 'Google Pay' : selectedPayment === 'phonepe' ? 'PhonePe' : 'Paytm'} Simulator
+                                UPI Simulator
                             </h3>
                             <p className="text-sm text-gray-500 font-medium">Paying {getValues('restaurantName')} Subscription</p>
                         </div>
