@@ -14,8 +14,18 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     }
 
     if (!user) {
-        // Redirect to login but save the attempted url
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        // Redirect to appropriate login page based on the path
+        const path = location.pathname;
+        const isStaffPath = path.startsWith('/admin') || 
+                            path.startsWith('/manager') || 
+                            path.startsWith('/chef') || 
+                            path.startsWith('/waiter') || 
+                            path.startsWith('/cashier') || 
+                            path.startsWith('/super-admin');
+                            
+        const loginPath = isStaffPath ? '/staff/login' : '/login';
+        
+        return <Navigate to={loginPath} state={{ from: location }} replace />;
     }
 
     if (allowedRoles && allowedRoles.length > 0) {
