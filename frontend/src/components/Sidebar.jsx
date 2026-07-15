@@ -38,7 +38,6 @@ const Sidebar = () => {
             items: [
                 { name: 'Customers', path: '/admin/customers', icon: Heart },
                 { name: 'Staff', path: '/admin/staff', icon: UserCheck },
-                { name: 'Users', path: '/admin/users', icon: Users },
                 { name: 'Roles', path: '/admin/roles', icon: Key },
             ]
         },
