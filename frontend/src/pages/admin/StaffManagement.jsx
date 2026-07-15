@@ -22,6 +22,7 @@ const StaffManagement = () => {
         name: '',
         email: '',
         phone: '',
+        password: '',
         role: 'Waiter',
         branchId: ''
     });
@@ -54,7 +55,7 @@ const StaffManagement = () => {
             await api.post('/staff', formData);
             fetchData();
             setIsModalOpen(false);
-            setFormData({ name: '', email: '', phone: '', role: 'Waiter', branchId: branches[0]?._id || '' });
+            setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: branches[0]?._id || '' });
         } catch (error) {
             console.error('Failed to add employee', error);
             alert(error.response?.data?.message || 'Error creating employee');
@@ -221,6 +222,17 @@ const StaffManagement = () => {
                                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                                     placeholder="elena@restosys.com"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Initial Password</label>
+                                <input 
+                                    type="text" 
+                                    required
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
+                                    placeholder="TempPass123!"
                                 />
                             </div>
                             <div>

@@ -22,7 +22,7 @@ export const getStaff = async (req, res) => {
 // @route   POST /api/staff
 // @access  Private
 export const createStaff = async (req, res) => {
-    const { name, email, phone, role, branchId } = req.body;
+    const { name, email, phone, role, branchId, password } = req.body;
 
     try {
         const userExists = await User.findOne({ email });
@@ -39,7 +39,7 @@ export const createStaff = async (req, res) => {
             name,
             email,
             phone, // User model doesn't strictly have phone, but it will ignore it or save if strict is false
-            password: 'password123',
+            password: password || 'password123',
             role,
             restaurantId: req.user.restaurantId,
             branchId: branchId || null
