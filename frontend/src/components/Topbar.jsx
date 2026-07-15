@@ -22,7 +22,9 @@ const Topbar = () => {
                     className="bg-transparent border-none outline-none w-full ml-3 text-sm text-gray-700 placeholder-gray-400"
                 />
             </div>
+            </div>
             
+
             <div className="flex items-center gap-2 md:gap-6 ml-2 md:ml-0 shrink-0">
                 <Link 
                     to={
