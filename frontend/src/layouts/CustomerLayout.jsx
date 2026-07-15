@@ -52,11 +52,12 @@ const CustomerLayout = () => {
                             </Link>
                         ) : (
                             <>
-                                <Link to="/register" className="hidden md:block text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
-                                    Register
+                                <Link to="/register" className="text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
+                                    <span className="md:hidden">Sign Up</span>
+                                    <span className="hidden md:inline">Register</span>
                                 </Link>
-                                <Link to="/login" className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20" style={{ fontFamily: 'Outfit, sans-serif' }}>
-                                    <User size={16} />
+                                <Link to="/login" className="flex items-center gap-1.5 md:gap-2 bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 md:px-5 md:py-2 rounded-full font-bold transition-colors shadow-sm shadow-orange-600/20 text-sm md:text-base" style={{ fontFamily: 'Outfit, sans-serif' }}>
+                                    <User size={14} className="md:w-4 md:h-4" />
                                     Sign In
                                 </Link>
                             </>
