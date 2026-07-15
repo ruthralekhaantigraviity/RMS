@@ -307,8 +307,8 @@ const StaffAuthPage = () => {
             <button onClick={() => setStep(2)} disabled={scanActive} className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-6 inline-flex items-center gap-1 self-start mr-auto block">
                 &larr; Back
             </button>
-            <h2 className="text-2xl font-black text-gray-900 mb-2">Activate 7-Day Trial</h2>
-            <p className="text-sm text-gray-500 mb-8 font-medium">Scan to link your account. No charges will be made today.</p>
+            <h2 className="text-2xl font-black text-gray-900 mb-2">Activate Subscription</h2>
+            <p className="text-sm text-gray-500 mb-8 font-medium">Scan to link your account and process payment.</p>
 
             <div className="relative w-48 h-48 mx-auto mb-8 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center justify-center overflow-hidden">
                 <QrCode size={120} className={`text-gray-900 transition-all duration-1000 ${scanActive ? 'scale-110 opacity-50 blur-sm' : ''}`} strokeWidth={1} />
@@ -331,7 +331,7 @@ const StaffAuthPage = () => {
                 disabled={scanActive}
                 className="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
-                {scanActive ? 'Processing Secure Connection...' : 'Simulate Scan & Activate Trial'}
+                {scanActive ? 'Processing Secure Connection...' : 'Simulate Scan & Activate Subscription'}
             </button>
         </div>
     );
@@ -342,7 +342,7 @@ const StaffAuthPage = () => {
                 <Loader2 className="animate-spin text-green-500" size={40} />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Setting up your restaurant...</h2>
-            <p className="text-gray-500 font-medium">Applying 7-day free trial to {getValues('restaurantName')}</p>
+            <p className="text-gray-500 font-medium">Activating subscription for {getValues('restaurantName')}</p>
         </div>
     );
 
@@ -370,7 +370,7 @@ const StaffAuthPage = () => {
                         <span className="text-3xl font-bold text-white tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>RestoSys</span>
                     </Link>
                     <p className="text-green-50 text-sm font-medium relative z-10 opacity-90">
-                        {mode === 'login' ? 'Sign in to RestaurantHub Staff Portal' : 'Start your 7-Day Free Trial'}
+                        {mode === 'login' ? 'Sign in to RestaurantHub Staff Portal' : 'Subscribe and Get Started'}
                     </p>
                 </div>
 
@@ -391,7 +391,7 @@ const StaffAuthPage = () => {
                                 onClick={() => switchMode('register')}
                                 className={`flex-1 py-2 text-sm font-bold rounded-xl transition-all ${mode === 'register' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                Start Free Trial
+                                Subscribe Now
                             </button>
                         </div>
                     )}

@@ -103,7 +103,7 @@ const Home = () => {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link to="/staff/register" className="w-full sm:w-auto bg-red-500 text-white font-bold text-lg px-8 py-4 rounded-2xl hover:bg-red-600 shadow-xl shadow-red-500/30 transition-all flex items-center justify-center gap-2 group">
-                            Start Your Free Trial <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                            Subscribe Now <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
                         <a href="#demo" className="w-full sm:w-auto bg-white text-gray-800 border border-gray-200 font-bold text-lg px-8 py-4 rounded-2xl hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2">
                             <PlayCircle size={20} className="text-gray-400" /> View Demo
