@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStaff, createStaff, deleteStaff } from '../controllers/staffController.js';
+import { getStaff, createStaff, deleteStaff, updateStaff } from '../controllers/staffController.js';
 import { protect, authorize, checkSubscription } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -13,6 +13,7 @@ router.route('/')
     .post(createStaff);
 
 router.route('/:id')
+    .put(updateStaff)
     .delete(deleteStaff);
 
 export default router;

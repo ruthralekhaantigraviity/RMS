@@ -1,5 +1,45 @@
 import User from '../models/User.js';
 
+// @desc    Update a staff member
+// @route   PUT /api/staff/:id
+// @access  Private
+export const updateStaff = async (req, res) => {
+    const { name, phone, role, branchId, password } = req.body;
+
+    try {
+        const staff = await User.findById(req.params.id);
+
+        if (!staff) {
+            return res.status(404).json({ message: 'Staff member not found' });
+        }
+
+        if (staff.restaurantId?.toString() !== req.user.restaurantId.toString()) {
+            return res.status(403).json({ message: 'Not authorized to update this staff' });
+        }
+
+        const validRoles = ['BranchManager', 'Chef', 'Waiter', 'Cashier'];
+        if (role && !validRoles.includes(role)) {
+            return res.status(400).json({ message: 'Invalid staff role' });
+        }
+
+        staff.name = name || staff.name;
+        staff.phone = phone || staff.phone;
+        staff.role = role || staff.role;
+        staff.branchId = branchId || staff.branchId;
+        
+        if (password) {
+            staff.password = password;
+        }
+
+        await staff.save();
+        
+        const updatedStaff = await User.findById(staff._id).populate('branchId', 'name').select('-password');
+        res.json(updatedStaff);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Get all staff for a restaurant
 // @route   GET /api/staff
 // @access  Private

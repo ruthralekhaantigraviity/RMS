@@ -17,6 +17,8 @@ const StaffManagement = () => {
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingStaffId, setEditingStaffId] = useState(null);
+    const [permsModalData, setPermsModalData] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -52,14 +54,36 @@ const StaffManagement = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/staff', formData);
+            if (editingStaffId) {
+                await api.put(`/staff/${editingStaffId}`, formData);
+            } else {
+                await api.post('/staff', formData);
+            }
             fetchData();
             setIsModalOpen(false);
+            setEditingStaffId(null);
             setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: branches[0]?._id || '' });
         } catch (error) {
-            console.error('Failed to add employee', error);
-            alert(error.response?.data?.message || 'Error creating employee');
+            console.error('Failed to save employee', error);
+            alert(error.response?.data?.message || 'Error saving employee');
         }
+    };
+
+    const handleEditProfile = (staff) => {
+        setFormData({
+            name: staff.name,
+            email: staff.email, // email is usually readonly but we'll put it here, backend might ignore it for update
+            phone: staff.phone || '',
+            password: '', // blank password unless changing
+            role: staff.role,
+            branchId: staff.branchId?._id || ''
+        });
+        setEditingStaffId(staff._id);
+        setIsModalOpen(true);
+    };
+
+    const handleShowPerms = (role) => {
+        setPermsModalData(role);
     };
 
     const handleDelete = async (id) => {
@@ -87,7 +111,11 @@ const StaffManagement = () => {
                         <Calendar size={16} /> Manage Shifts
                     </button>
                     <button 
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            setEditingStaffId(null);
+                            setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: branches[0]?._id || '' });
+                            setIsModalOpen(true);
+                        }}
                         className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md shadow-green-900/10" 
                         style={{ fontFamily: 'Outfit, sans-serif' }}
                     >
@@ -178,10 +206,10 @@ const StaffManagement = () => {
                             
                             {/* Card Footer Actions */}
                             <div className="p-4 bg-white border-t border-gray-100 flex gap-2">
-                                <button className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">
+                                <button onClick={() => handleEditProfile(staff)} className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">
                                     Profile
                                 </button>
-                                <button className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5">
+                                <button onClick={() => handleShowPerms(staff.role)} className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5">
                                     <ShieldCheck size={16} /> Perms
                                 </button>
                             </div>
@@ -196,7 +224,7 @@ const StaffManagement = () => {
                     <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                            <h3 className="font-bold text-gray-900 text-lg">Add New Employee</h3>
+                            <h3 className="font-bold text-gray-900 text-lg">{editingStaffId ? 'Edit Employee Profile' : 'Add New Employee'}</h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                                 <X size={20} />
                             </button>
@@ -218,6 +246,7 @@ const StaffManagement = () => {
                                 <input 
                                     type="email" 
                                     required
+                                    disabled={!!editingStaffId} // Email cannot be changed once created
                                     value={formData.email}
                                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
@@ -225,14 +254,14 @@ const StaffManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Initial Password</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{editingStaffId ? 'New Password (leave blank to keep current)' : 'Initial Password'}</label>
                                 <input 
                                     type="text" 
-                                    required
+                                    required={!editingStaffId}
                                     value={formData.password}
                                     onChange={(e) => setFormData({...formData, password: e.target.value})}
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
-                                    placeholder="TempPass123!"
+                                    placeholder={editingStaffId ? "Leave blank to keep same" : "TempPass123!"}
                                 />
                             </div>
                             <div>
@@ -287,10 +316,68 @@ const StaffManagement = () => {
                                     type="submit" 
                                     className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-sm shadow-green-600/20 transition-colors text-sm"
                                 >
-                                    Hire Employee
+                                    {editingStaffId ? 'Save Changes' : 'Hire Employee'}
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Perms Modal */}
+            {permsModalData && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setPermsModalData(null)}></div>
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200 p-6">
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-green-100 rounded-xl text-green-700">
+                                    <ShieldCheck size={24} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">{permsModalData.replace(/([A-Z])/g, ' $1').trim()} Permissions</h3>
+                                    <p className="text-xs text-gray-500">Role Capabilities</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setPermsModalData(null)} className="text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        
+                        <ul className="space-y-3 mt-6">
+                            {permsModalData === 'Waiter' && (
+                                <>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> View & Manage Tables</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Take & Edit Orders</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Process Customer Payments</li>
+                                </>
+                            )}
+                            {permsModalData === 'Chef' && (
+                                <>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Access Kitchen Display System</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Update Order Prep Status</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> View Live Incoming Tickets</li>
+                                </>
+                            )}
+                            {permsModalData === 'Cashier' && (
+                                <>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Finalize Billings & Receipts</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Void Transactions</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> View Daily Sales Summary</li>
+                                </>
+                            )}
+                            {permsModalData === 'BranchManager' && (
+                                <>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Full Branch Analytics</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Manage Staff Shifts</li>
+                                    <li className="flex items-center gap-2 text-sm text-gray-700"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div> Inventory & Purchasing</li>
+                                </>
+                            )}
+                        </ul>
+                        
+                        <button onClick={() => setPermsModalData(null)} className="mt-8 w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors text-sm">
+                            Close
+                        </button>
                     </div>
                 </div>
             )}
