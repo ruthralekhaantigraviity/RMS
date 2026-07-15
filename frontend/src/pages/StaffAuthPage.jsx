@@ -119,8 +119,8 @@ const StaffAuthPage = () => {
         if (result.success) {
             navigate('/admin');
         } else {
-            setAuthError(result.message);
-            setStep(1); // Go back to fix errors
+            setAuthError(result.message || 'Failed to activate subscription. Please try again.');
+            setStep(5); // Go to error step instead of silently back to step 1
         }
     };
 
@@ -392,6 +392,23 @@ const StaffAuthPage = () => {
         </div>
     );
 
+    const renderRegisterStep5 = () => (
+        <div className="text-center py-8 animate-in fade-in zoom-in duration-500">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="text-red-500" size={40} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Activation Failed</h2>
+            <p className="text-red-500 font-medium mb-6 px-4">{authError}</p>
+            <p className="text-gray-500 text-sm mb-8">If you're testing, make sure to use a different email address each time, as accounts cannot share emails.</p>
+            <button 
+                onClick={() => setStep(1)}
+                className="bg-gray-900 text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors"
+            >
+                Start Over
+            </button>
+        </div>
+    );
+
     return (
         <div className="min-h-screen relative flex items-center justify-center p-4 font-sans bg-gray-900">
             {/* Full screen background */}
@@ -454,6 +471,7 @@ const StaffAuthPage = () => {
                     {mode === 'register' && step === 2 && renderRegisterStep2()}
                     {mode === 'register' && step === 3 && renderRegisterStep3()}
                     {mode === 'register' && step === 4 && renderRegisterStep4()}
+                    {mode === 'register' && step === 5 && renderRegisterStep5()}
                 </div>
             </div>
             
