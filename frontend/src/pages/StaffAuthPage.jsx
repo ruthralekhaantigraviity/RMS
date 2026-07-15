@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, UtensilsCrossed, ArrowRight, Mail, Lock, User as UserIcon, Tag, AlertCircle, Phone, CheckCircle2, QrCode, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, UtensilsCrossed, ArrowRight, Mail, Lock, User as UserIcon, Tag, AlertCircle, Phone, CheckCircle2, QrCode, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const StaffAuthPage = () => {
@@ -19,6 +19,7 @@ const StaffAuthPage = () => {
     const [loading, setLoading] = useState(false);
     const [authError, setAuthError] = useState('');
     const [scanActive, setScanActive] = useState(false);
+    const [selectedPayment, setSelectedPayment] = useState('gpay');
     
     const { login, register: registerUser } = useAuth();
     
@@ -307,19 +308,41 @@ const StaffAuthPage = () => {
             <button onClick={() => setStep(2)} disabled={scanActive} className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-6 inline-flex items-center gap-1 self-start mr-auto block">
                 &larr; Back
             </button>
-            <h2 className="text-2xl font-black text-gray-900 mb-2">Activate Subscription</h2>
-            <p className="text-sm text-gray-500 mb-8 font-medium">Scan to link your account and process payment.</p>
+            <h2 className="text-2xl font-black text-gray-900 mb-2">Choose Payment Method</h2>
+            <p className="text-sm text-gray-500 mb-6 font-medium">Scan the QR code with your preferred UPI app to activate subscription.</p>
 
-            <div className="relative w-48 h-48 mx-auto mb-8 bg-white p-4 rounded-2xl shadow-xl border border-gray-100 flex items-center justify-center overflow-hidden">
-                <QrCode size={120} className={`text-gray-900 transition-all duration-1000 ${scanActive ? 'scale-110 opacity-50 blur-sm' : ''}`} strokeWidth={1} />
+            <div className="flex justify-center gap-3 mb-8">
+                <button type="button" onClick={() => setSelectedPayment('gpay')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'gpay' ? 'border-blue-500 bg-blue-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-4 object-contain" />
+                </button>
+                <button type="button" onClick={() => setSelectedPayment('phonepe')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'phonepe' ? 'border-purple-500 bg-purple-50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-5 object-contain" />
+                </button>
+                <button type="button" onClick={() => setSelectedPayment('paytm')} className={`flex items-center justify-center w-16 h-12 rounded-xl border-2 transition-all ${selectedPayment === 'paytm' ? 'border-blue-400 bg-blue-50/50' : 'border-gray-100 hover:border-gray-200 bg-white'}`}>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" className="h-3 object-contain" />
+                </button>
+            </div>
+
+            <div className="relative w-56 h-56 mx-auto mb-8 bg-white p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex items-center justify-center overflow-hidden group">
+                {/* QR Code Graphic */}
+                <div className={`transition-all duration-1000 flex flex-col items-center justify-center ${scanActive ? 'scale-110 opacity-30 blur-sm' : ''}`}>
+                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=DummySubscriptionPayment&bgcolor=ffffff&color=${selectedPayment === 'gpay' ? '1a73e8' : selectedPayment === 'phonepe' ? '5f259f' : '00baf2'}`} alt="QR Code" className="w-40 h-40" />
+                    <div className="mt-4 flex items-center gap-1.5">
+                        <ShieldCheck size={14} className={selectedPayment === 'gpay' ? 'text-blue-600' : selectedPayment === 'phonepe' ? 'text-purple-600' : 'text-blue-500'} />
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Secure UPI Payment</span>
+                    </div>
+                </div>
                 
                 {/* Scanner line animation */}
                 {scanActive && (
                     <div className="absolute top-0 left-0 w-full h-full">
-                        <div className="w-full h-1 bg-green-500 shadow-[0_0_15px_#22c55e] animate-scan-line"></div>
-                        <div className="absolute inset-0 bg-green-500/10 animate-pulse"></div>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <Loader2 className="animate-spin text-green-600" size={32} />
+                        <div className="w-full h-1 bg-green-500 shadow-[0_0_20px_#22c55e] animate-[scan_2s_ease-in-out_infinite]"></div>
+                        <div className="absolute inset-0 bg-green-500/5 animate-pulse"></div>
+                        <div className="absolute inset-0 flex items-center justify-center flex-col gap-3">
+                            <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center">
+                                <Loader2 className="animate-spin text-green-600" size={24} />
+                            </div>
+                            <span className="text-xs font-bold text-gray-800 bg-white/80 px-3 py-1 rounded-full backdrop-blur-sm">Awaiting Payment...</span>
                         </div>
                     </div>
                 )}
@@ -329,9 +352,9 @@ const StaffAuthPage = () => {
                 type="button"
                 onClick={startDummyScan}
                 disabled={scanActive}
-                className="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-xl transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
-                {scanActive ? 'Processing Secure Connection...' : 'Simulate Scan & Activate Subscription'}
+                {scanActive ? 'Processing Payment...' : 'I have completed the payment'}
             </button>
         </div>
     );
