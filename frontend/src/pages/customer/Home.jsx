@@ -81,9 +81,12 @@ const Home = () => {
                         <a href="#pricing" className="hover:text-red-500 transition-colors">Pricing</a>
                     </nav>
 
-                    <div className="flex items-center gap-4 text-sm font-bold">
-                        <Link to="/staff/login" className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
-                        <Link to="/staff/register" className="bg-gray-900 text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-900/20 transition-all active:scale-95">Get Started Free</Link>
+                    <div className="flex items-center gap-3 md:gap-4 text-sm font-bold">
+                        <Link to="/staff/login" className="text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
+                        <Link to="/staff/register" className="bg-gray-900 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-xl hover:bg-gray-800 shadow-lg shadow-gray-900/20 transition-all active:scale-95">
+                            <span className="md:hidden">Sign Up</span>
+                            <span className="hidden md:inline">Get Started Free</span>
+                        </Link>
                     </div>
                 </div>
             </header>
