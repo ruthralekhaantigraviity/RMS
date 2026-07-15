@@ -390,60 +390,6 @@ const StaffAuthPage = () => {
                 </div>
             )}
 
-            {/* UPI Simulator Modal */}
-            {showUpiModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
-                        <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
-                            <h3 className="text-lg font-black text-gray-900 mb-1">
-                                {selectedPayment === 'gpay' ? 'Google Pay' : selectedPayment === 'phonepe' ? 'PhonePe' : 'Paytm'} Simulator
-                            </h3>
-                            <p className="text-sm text-gray-500 font-medium">Paying {getValues('restaurantName')} Subscription</p>
-                        </div>
-                        
-                        <div className="p-8 flex flex-col items-center justify-center min-h-[200px]">
-                            {paymentStatus === 'idle' && (
-                                <>
-                                    <div className="text-3xl font-black text-gray-900 mb-6">
-                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '$39.00' : '$49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '$79.00' : '$99.00') : '$199.00'}
-                                    </div>
-                                    <div className="flex w-full gap-3">
-                                        <button onClick={() => handleUpiPayment(false)} className="flex-1 py-3 rounded-xl font-bold text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
-                                            Fail
-                                        </button>
-                                        <button onClick={() => handleUpiPayment(true)} className="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-green-500 hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30">
-                                            Pay Now
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                            
-                            {paymentStatus === 'processing' && (
-                                <div className="flex flex-col items-center gap-4">
-                                    <Loader2 className="animate-spin text-green-500" size={40} />
-                                    <p className="font-bold text-gray-600 text-sm">Processing Payment...</p>
-                                </div>
-                            )}
-
-                            {paymentStatus === 'success' && (
-                                <div className="flex flex-col items-center gap-4 text-green-500">
-                                    <CheckCircle2 size={48} className="animate-in zoom-in" />
-                                    <p className="font-bold text-green-600 text-lg">Payment Successful</p>
-                                </div>
-                            )}
-
-                            {paymentStatus === 'failed' && (
-                                <div className="flex flex-col items-center gap-4 text-red-500">
-                                    <AlertCircle size={48} className="animate-in zoom-in" />
-                                    <p className="font-bold text-red-600 text-lg">Payment Failed</p>
-                                    <button onClick={() => setShowUpiModal(false)} className="mt-2 text-sm font-bold text-gray-500 hover:text-gray-900">Close</button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Removed the manual completion button to automate activation on QR click */}
         </div>
     );
@@ -522,6 +468,60 @@ const StaffAuthPage = () => {
                     {mode === 'register' && step === 4 && renderRegisterStep4()}
                 </div>
             </div>
+            
+            {/* UPI Simulator Modal (Moved outside overflow-hidden) */}
+            {showUpiModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in">
+                    <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
+                        <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
+                            <h3 className="text-lg font-black text-gray-900 mb-1">
+                                {selectedPayment === 'gpay' ? 'Google Pay' : selectedPayment === 'phonepe' ? 'PhonePe' : 'Paytm'} Simulator
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium">Paying {getValues('restaurantName')} Subscription</p>
+                        </div>
+                        
+                        <div className="p-8 flex flex-col items-center justify-center min-h-[200px]">
+                            {paymentStatus === 'idle' && (
+                                <>
+                                    <div className="text-3xl font-black text-gray-900 mb-6">
+                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '$39.00' : '$49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '$79.00' : '$99.00') : '$199.00'}
+                                    </div>
+                                    <div className="flex w-full gap-3">
+                                        <button onClick={() => handleUpiPayment(false)} className="flex-1 py-3 rounded-xl font-bold text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors">
+                                            Fail
+                                        </button>
+                                        <button onClick={() => handleUpiPayment(true)} className="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-green-500 hover:bg-green-600 transition-colors shadow-lg shadow-green-500/30">
+                                            Pay Now
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                            
+                            {paymentStatus === 'processing' && (
+                                <div className="flex flex-col items-center gap-4">
+                                    <Loader2 className="animate-spin text-green-500" size={40} />
+                                    <p className="font-bold text-gray-600 text-sm">Processing Payment...</p>
+                                </div>
+                            )}
+
+                            {paymentStatus === 'success' && (
+                                <div className="flex flex-col items-center gap-4 text-green-500">
+                                    <CheckCircle2 size={48} className="animate-in zoom-in" />
+                                    <p className="font-bold text-green-600 text-lg">Payment Successful</p>
+                                </div>
+                            )}
+
+                            {paymentStatus === 'failed' && (
+                                <div className="flex flex-col items-center gap-4 text-red-500">
+                                    <AlertCircle size={48} className="animate-in zoom-in" />
+                                    <p className="font-bold text-red-600 text-lg">Payment Failed</p>
+                                    <button onClick={() => setShowUpiModal(false)} className="mt-2 text-sm font-bold text-gray-500 hover:text-gray-900">Close</button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <style dangerouslySetInnerHTML={{__html: `
                 @keyframes scan-line {
