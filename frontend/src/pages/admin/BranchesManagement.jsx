@@ -191,7 +191,7 @@ const BranchesManagement = () => {
                             <div className="bg-gray-50/50 p-5 flex justify-between items-center">
                                 <div>
                                     <p className="text-xs text-gray-400 font-medium mb-1">Manager</p>
-                                    <p className="text-sm font-semibold text-gray-800">Unassigned</p>
+                                    <p className="text-sm font-semibold text-gray-800">{branch.manager?.name || 'Unassigned'}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs text-gray-400 font-medium mb-1">Monthly Rev</p>
