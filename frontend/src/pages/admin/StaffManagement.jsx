@@ -87,11 +87,11 @@ const StaffManagement = () => {
     const handleEditProfile = (staff) => {
         setFormData({
             name: staff.name,
-            email: staff.email, // email is usually readonly but we'll put it here, backend might ignore it for update
+            email: staff.email, 
             phone: staff.phoneNumber || '',
-            password: '', // blank password unless changing
+            password: '', 
             role: staff.role,
-            branchId: staff.branchId?._id || staff.branchId || ''
+            branchId: staff.branchId?._id || ''
         });
         setEditingStaffId(staff._id);
         setIsModalOpen(true);
@@ -148,7 +148,7 @@ const StaffManagement = () => {
                     <button 
                         onClick={() => {
                             setEditingStaffId(null);
-                            setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: branches[0]?._id || '' });
+                            setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: '' });
                             setIsModalOpen(true);
                         }}
                         className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md shadow-green-900/10" 
@@ -345,7 +345,7 @@ const StaffManagement = () => {
                                         onChange={(e) => setFormData({...formData, branchId: e.target.value})}
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                                     >
-                                        {branches.length === 0 && <option value="">No Branches</option>}
+                                        <option value="">Select Branch</option>
                                         {branches.map(b => (
                                             <option key={b._id} value={b._id}>{b.name}</option>
                                         ))}

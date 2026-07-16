@@ -28,7 +28,9 @@ export const updateStaff = async (req, res) => {
             staff.phoneNumber = phone;
         }
         staff.role = role || staff.role;
-        staff.branchId = branchId || staff.branchId;
+        if (branchId !== undefined) {
+            staff.branchId = branchId === '' ? null : branchId;
+        }
         
         if (password) {
             staff.password = password;
@@ -96,7 +98,7 @@ export const createStaff = async (req, res) => {
             password: password || 'password123',
             role,
             restaurantId: req.user.restaurantId,
-            branchId: branchId || null
+            branchId: branchId === '' ? null : branchId
         });
 
         // Sync manager to Branch
