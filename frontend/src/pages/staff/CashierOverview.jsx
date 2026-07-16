@@ -65,7 +65,7 @@ const CashierOverview = () => {
                     </div>
                     <div>
                         <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-1">Today's Revenue</p>
-                        <h3 className="text-3xl font-black text-gray-900">${stats.totalRevenue.toFixed(2)}</h3>
+                        <h3 className="text-3xl font-black text-gray-900">₹{stats.totalRevenue.toFixed(2)}</h3>
                     </div>
                 </div>
                 
@@ -151,7 +151,7 @@ const CashierOverview = () => {
                                             </p>
                                         </div>
                                     </div>
-                                    <span className="font-bold text-gray-900">${order.totalPrice.toFixed(2)}</span>
+                                    <span className="font-bold text-gray-900">₹{order.totalPrice.toFixed(2)}</span>
                                 </div>
                             ))}
                         </div>

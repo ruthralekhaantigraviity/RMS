@@ -161,7 +161,7 @@ const ManagerOrderMonitoring = () => {
                                         </p>
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-gray-900 text-lg">${(order.totalPrice || 0).toFixed(2)}</h3>
+                                <h3 className="font-bold text-gray-900 text-lg">₹{(order.totalPrice || 0).toFixed(2)}</h3>
                             </div>
 
                             <div className="flex items-center justify-between mb-4 bg-white/60 rounded-xl p-3 border border-white/40">

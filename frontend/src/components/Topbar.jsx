@@ -1,9 +1,27 @@
+import { useState, useEffect } from 'react';
 import { Bell, Search, User, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const Topbar = () => {
-    const { user } = useAuth();
+    const { user, api } = useAuth();
+    const [hasUnread, setHasUnread] = useState(false);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const res = await api.get('/notifications');
+                setHasUnread(res.data.some(n => !n.read));
+            } catch (error) {
+                console.error('Failed to fetch notifications for topbar', error);
+            }
+        };
+        fetchNotifications();
+        
+        // Optional: Set up a simple interval to check for new notifications every minute
+        const intervalId = setInterval(fetchNotifications, 60000);
+        return () => clearInterval(intervalId);
+    }, []);
     
     return (
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
@@ -28,7 +46,9 @@ const Topbar = () => {
                     className="relative p-2 text-gray-500 hover:text-green-500 transition-colors"
                 >
                     <Bell size={22} />
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white"></span>
+                    {hasUnread && (
+                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white"></span>
+                    )}
                 </Link>
                 
                 <div className="flex items-center gap-3 pl-6 border-l border-gray-200 cursor-pointer">

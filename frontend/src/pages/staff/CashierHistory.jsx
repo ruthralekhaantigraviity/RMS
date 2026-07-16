@@ -125,7 +125,7 @@ const CashierHistory = () => {
                                 <td className="p-4 text-gray-500 font-medium text-sm truncate max-w-[100px]">{txn._id}</td>
                                 <td className="p-4">
                                     <span className="bg-gray-100 text-gray-800 font-bold px-3 py-1 rounded-lg text-xs">
-                                        {txn.orderType === 'Dine In' ? `T-${txn.tableNumber || 'Any'}` : txn.orderType}
+                                        {txn.orderType === 'Dine In' ? `T-₹{txn.tableNumber || 'Any'}` : txn.orderType}
                                     </span>
                                 </td>
                                 <td className="p-4">
@@ -138,7 +138,7 @@ const CashierHistory = () => {
                                         {txn.paymentMethod}
                                     </span>
                                 </td>
-                                <td className="p-4 font-bold text-gray-900">${txn.totalPrice.toFixed(2)}</td>
+                                <td className="p-4 font-bold text-gray-900">₹{txn.totalPrice.toFixed(2)}</td>
                                 <td className="p-4 text-sm font-medium text-gray-500">
                                     {formatTime(txn.paidAt || txn.createdAt)}
                                 </td>
@@ -182,7 +182,7 @@ const CashierHistory = () => {
                                     {activeReceipt.orderItems.map((item, idx) => (
                                         <div key={idx} className="flex justify-between text-sm">
                                             <span className="text-gray-700">{item.qty}x {item.name}</span>
-                                            <span className="font-medium text-gray-900">${(item.price * item.qty).toFixed(2)}</span>
+                                            <span className="font-medium text-gray-900">₹{(item.price * item.qty).toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -190,15 +190,15 @@ const CashierHistory = () => {
                                 <div className="space-y-2 pt-2">
                                     <div className="flex justify-between text-sm text-gray-500">
                                         <span>Subtotal</span>
-                                        <span>${(activeReceipt.totalPrice - activeReceipt.taxPrice).toFixed(2)}</span>
+                                        <span>₹{(activeReceipt.totalPrice - activeReceipt.taxPrice).toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-gray-500">
                                         <span>Tax</span>
-                                        <span>${activeReceipt.taxPrice.toFixed(2)}</span>
+                                        <span>₹{activeReceipt.taxPrice.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-100">
                                         <span>Total</span>
-                                        <span>${activeReceipt.totalPrice.toFixed(2)}</span>
+                                        <span>₹{activeReceipt.totalPrice.toFixed(2)}</span>
                                     </div>
                                 </div>
                                 

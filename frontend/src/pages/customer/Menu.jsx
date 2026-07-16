@@ -129,7 +129,7 @@ const Menu = () => {
                                             alt={item.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent transition-opacity"></div>
                                         
                                         {/* Tags */}
                                         <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -168,7 +168,7 @@ const Menu = () => {
                                                 </div>
                                             </div>
                                             <span className="text-xl font-bold text-orange-600 shrink-0 bg-orange-50 px-3 py-1 rounded-xl">
-                                                ${item.price.toFixed(2)}
+                                                ₹{item.price.toFixed(2)}
                                             </span>
                                         </div>
                                         

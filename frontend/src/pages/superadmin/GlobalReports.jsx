@@ -43,7 +43,7 @@ const GlobalReports = () => {
                     </div>
                     <div>
                         <p className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-1">Total Platform Revenue</p>
-                        <h3 className="text-2xl font-black text-gray-900">${(stats?.totalRevenue || 0).toFixed(2)}</h3>
+                        <h3 className="text-2xl font-black text-gray-900">₹{(stats?.totalRevenue || 0).toFixed(2)}</h3>
                     </div>
                 </div>
                 <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex items-center gap-5">

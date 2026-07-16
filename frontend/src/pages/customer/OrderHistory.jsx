@@ -63,7 +63,7 @@ const OrderHistory = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between md:flex-col md:items-end gap-2">
-                                    <span className="text-2xl font-bold text-gray-900">${order.totalPrice.toFixed(2)}</span>
+                                    <span className="text-2xl font-bold text-gray-900">₹{order.totalPrice.toFixed(2)}</span>
                                     <Link to={`/track/${order._id}`} className="text-sm font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1">
                                         View Receipt <ExternalLink size={14} />
                                     </Link>

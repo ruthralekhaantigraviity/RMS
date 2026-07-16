@@ -50,7 +50,7 @@ const ManagerStaff = () => {
                 <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-4 rounded-xl shadow-sm text-white flex items-center justify-between">
                     <div>
                         <p className="text-xs text-gray-400 font-bold uppercase">Labor Cost (Today)</p>
-                        <h3 className="text-xl font-bold mt-1">$485.00</h3>
+                        <h3 className="text-xl font-bold mt-1">₹485.00</h3>
                     </div>
                     <div className="text-right">
                         <p className="text-xs text-green-400 font-bold">Optimal</p>

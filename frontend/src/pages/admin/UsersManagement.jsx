@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Mail, Shield, MoreVertical, X, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const roleColors = {
@@ -25,6 +27,14 @@ const UsersManagement = () => {
         email: '',
         role: 'RestaurantAdmin',
         branchId: ''
+    });
+
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
     });
 
     const fetchData = async () => {
@@ -53,27 +63,35 @@ const UsersManagement = () => {
             fetchData();
             setIsModalOpen(false);
             setFormData({ name: '', email: '', role: 'RestaurantAdmin', branchId: '' });
+            toast.success('User invited successfully');
         } catch (error) {
             console.error('Failed to invite user', error);
-            alert(error.response?.data?.message || 'Error inviting user');
+            toast.error(error.response?.data?.message || 'Error inviting user');
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = (id) => {
         if (id === currentUser.id) {
-            alert("You cannot delete your own account.");
+            toast.error("You cannot delete your own account.");
             return;
         }
 
-        if (window.confirm('Are you sure you want to completely remove this user?')) {
-            try {
-                await api.delete(`/users/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete user', error);
-                alert(error.response?.data?.message || 'Failed to delete user');
-            }
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: 'Remove User',
+            message: 'Are you sure you want to completely remove this user?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/users/${id}`);
+                    fetchData();
+                    toast.success('User removed successfully');
+                } catch (error) {
+                    console.error('Failed to delete user', error);
+                    toast.error(error.response?.data?.message || 'Failed to delete user');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const filteredUsers = users.filter(u => {
@@ -86,6 +104,10 @@ const UsersManagement = () => {
 
     return (
         <div className="space-y-6 relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -143,7 +165,7 @@ const UsersManagement = () => {
                         <div key={u._id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative group">
                             <button 
                                 onClick={() => handleDelete(u._id)}
-                                className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-opacity"
                                 title="Delete User"
                             >
                                 <Trash2 size={20} />
@@ -156,7 +178,7 @@ const UsersManagement = () => {
                                 <div>
                                     <h3 className="font-bold text-gray-900 text-lg leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>{u.name}</h3>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mt-1 inline-block ${roleColors[u.role] || 'bg-gray-100 text-gray-700'}`}>
-                                        {u.role.replace(/([A-Z])/g, ' $1').trim()}
+                                        {u.role.replace(/([A-Z])/g, ' ₹1').trim()}
                                     </span>
                                 </div>
                             </div>

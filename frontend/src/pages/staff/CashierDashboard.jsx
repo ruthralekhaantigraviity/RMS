@@ -141,7 +141,7 @@ const CashierDashboard = () => {
                                     <div>
                                         <p className="font-bold text-gray-900 font-sans text-lg">{bill.orderType === 'Dine In' ? `Table ${bill.tableNumber || 'Any'}` : bill.orderType}</p>
                                         <p className="text-xs font-medium text-gray-500 flex items-center gap-1 mt-0.5">
-                                            {bill.paymentMethod} • ${bill.totalPrice.toFixed(2)}
+                                            {bill.paymentMethod} • ₹{bill.totalPrice.toFixed(2)}
                                         </p>
                                     </div>
                                     <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-green-100 text-green-700 flex items-center gap-1">
@@ -201,8 +201,8 @@ const CashierDashboard = () => {
                                             <tr key={idx} className="text-gray-900">
                                                 <td className="py-3 font-medium">{item.name}</td>
                                                 <td className="py-3 text-center">{item.qty}</td>
-                                                <td className="py-3 text-right text-gray-500">${item.price.toFixed(2)}</td>
-                                                <td className="py-3 text-right font-bold">${(item.price * item.qty).toFixed(2)}</td>
+                                                <td className="py-3 text-right text-gray-500">₹{item.price.toFixed(2)}</td>
+                                                <td className="py-3 text-right font-bold">₹{(item.price * item.qty).toFixed(2)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -213,7 +213,7 @@ const CashierDashboard = () => {
                             <div className="space-y-3 shrink-0">
                                 <div className="flex justify-between items-center text-sm font-medium text-gray-500">
                                     <span>Subtotal</span>
-                                    <span>${subtotal.toFixed(2)}</span>
+                                    <span>₹{subtotal.toFixed(2)}</span>
                                 </div>
                                 
                                 <div className="flex justify-between items-center text-sm font-medium text-gray-500">
@@ -231,18 +231,18 @@ const CashierDashboard = () => {
                                         </div>
                                     </div>
                                     <span className={discount > 0 ? 'text-red-500' : ''}>
-                                        -{discount > 0 ? '$' : ''}{discountAmount.toFixed(2)}
+                                        -{discount > 0 ? '₹' : ''}{discountAmount.toFixed(2)}
                                     </span>
                                 </div>
 
                                 <div className="flex justify-between items-center text-sm font-medium text-gray-500 border-b border-gray-100 pb-4">
                                     <span>Tax (5%)</span>
-                                    <span>${taxAmount.toFixed(2)}</span>
+                                    <span>₹{taxAmount.toFixed(2)}</span>
                                 </div>
 
                                 <div className="flex justify-between items-end pt-2">
                                     <span className="text-lg font-bold text-gray-900">Grand Total</span>
-                                    <span className="text-4xl font-bold text-purple-700 tracking-tight">${total.toFixed(2)}</span>
+                                    <span className="text-4xl font-bold text-purple-700 tracking-tight">₹{total.toFixed(2)}</span>
                                 </div>
                             </div>
                         </div>
@@ -286,7 +286,7 @@ const CashierDashboard = () => {
                                     <div>
                                         <label className="text-xs font-bold text-gray-500 uppercase flex justify-between mb-2">
                                             <span>Cash Amount</span>
-                                            <span className="text-gray-900">${splitCash.toFixed(2)}</span>
+                                            <span className="text-gray-900">₹{splitCash.toFixed(2)}</span>
                                         </label>
                                         <input 
                                             type="range" min="0" max={total} step="0.01"
@@ -297,7 +297,7 @@ const CashierDashboard = () => {
                                     </div>
                                     <div className="pt-2 border-t border-gray-200 flex justify-between items-center text-sm font-bold">
                                         <span className="text-gray-500 uppercase text-xs">Card Amount</span>
-                                        <span className="text-gray-900">${(total - splitCash).toFixed(2)}</span>
+                                        <span className="text-gray-900">₹{(total - splitCash).toFixed(2)}</span>
                                     </div>
                                 </div>
                             )}

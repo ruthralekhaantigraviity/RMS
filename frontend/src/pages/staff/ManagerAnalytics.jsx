@@ -26,7 +26,7 @@ const ManagerAnalytics = () => {
                         </span>
                     </div>
                     <p className="text-sm font-medium text-gray-500 mb-1">Total Revenue</p>
-                    <h3 className="text-2xl font-extrabold text-gray-900">$34,250</h3>
+                    <h3 className="text-2xl font-extrabold text-gray-900">₹34,250</h3>
                 </div>
                 
                 <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden group">
@@ -74,10 +74,10 @@ const ManagerAnalytics = () => {
                     <div className="p-5">
                         <div className="space-y-4">
                             {[
-                                { name: 'Classic Burger', qty: 245, rev: '$3,675' },
-                                { name: 'Truffle Fries', qty: 180, rev: '$1,260' },
-                                { name: 'Caesar Salad', qty: 156, rev: '$1,872' },
-                                { name: 'Craft IPA', qty: 142, rev: '$1,136' },
+                                { name: 'Classic Burger', qty: 245, rev: '₹3,675' },
+                                { name: 'Truffle Fries', qty: 180, rev: '₹1,260' },
+                                { name: 'Caesar Salad', qty: 156, rev: '₹1,872' },
+                                { name: 'Craft IPA', qty: 142, rev: '₹1,136' },
                             ].map((item, i) => (
                                 <div key={i} className="flex justify-between items-center">
                                     <div className="flex items-center gap-3">

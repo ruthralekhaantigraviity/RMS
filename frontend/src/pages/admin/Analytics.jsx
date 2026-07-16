@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Download, ArrowUpRight, ArrowDownRight, TrendingUp } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { useAuth } from '../../context/AuthContext';
 
@@ -36,12 +37,12 @@ const Analytics = () => {
         fetchAnalytics();
     }, [timeframe]);
 
-    const formatCurrency = (val) => `$${Number(val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    const formatCurrency = (val) => `₹${Number(val).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     const formatNumber = (val) => Number(val).toLocaleString();
 
     const handleExport = () => {
         if (!data.revenueTrend || data.revenueTrend.length === 0) {
-            alert('No data to export for this timeframe.');
+            toast.error('No data to export for this timeframe.');
             return;
         }
 
@@ -138,11 +139,11 @@ const Analytics = () => {
                                                 </linearGradient>
                                             </defs>
                                             <XAxis dataKey="_id" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
-                                            <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
+                                            <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}`} />
                                             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
                                             <Tooltip 
                                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                                formatter={(value) => [`$${value}`, 'Revenue']}
+                                                formatter={(value) => [`₹${value}`, 'Revenue']}
                                                 labelFormatter={(label) => `Date: ${label}`}
                                             />
                                             <Area type="monotone" dataKey="revenue" stroke="#16A34A" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
@@ -169,7 +170,7 @@ const Analytics = () => {
                                                 dataKey="value"
                                             >
                                                 {data.categoryData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    <Cell key={`cell-₹{index}`} fill={COLORS[index % COLORS.length]} />
                                                 ))}
                                             </Pie>
                                             <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />

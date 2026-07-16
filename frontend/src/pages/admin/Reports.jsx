@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Download, Calendar, Filter, FileText, FileSpreadsheet, PieChart, Activity, X, Printer } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const reportTypes = [
@@ -130,9 +131,10 @@ const Reports = () => {
                     title: reportName
                 });
             }
+            toast.success('Report generated successfully');
         } catch (error) {
             console.error('Failed to generate report', error);
-            alert('Failed to generate report');
+            toast.error('Failed to generate report');
         } finally {
             setLoading(false);
         }
@@ -160,8 +162,8 @@ const Reports = () => {
                             <tr key={i} className="border-b border-gray-200">
                                 <td className="py-2">{row._id}</td>
                                 <td className="py-2">{row.orderCount}</td>
-                                <td className="py-2 text-right">${row.totalTax.toFixed(2)}</td>
-                                <td className="py-2 text-right">${row.totalRevenue.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.totalTax.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.totalRevenue.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -182,7 +184,7 @@ const Reports = () => {
                             <tr key={i} className="border-b border-gray-200">
                                 <td className="py-2">{row.name}</td>
                                 <td className="py-2 text-right">{row.quantitySold}</td>
-                                <td className="py-2 text-right">${row.totalRevenue.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.totalRevenue.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -203,7 +205,7 @@ const Reports = () => {
                             <tr key={i} className="border-b border-gray-200">
                                 <td className="py-2">{row.staffName}</td>
                                 <td className="py-2 text-right">{row.ordersHandled}</td>
-                                <td className="py-2 text-right">${row.totalRevenue.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.totalRevenue.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -223,8 +225,8 @@ const Reports = () => {
                         {data.map((row, i) => (
                             <tr key={i} className="border-b border-gray-200">
                                 <td className="py-2">{row._id}</td>
-                                <td className="py-2 text-right">${row.taxableSales.toFixed(2)}</td>
-                                <td className="py-2 text-right">${row.taxCollected.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.taxableSales.toFixed(2)}</td>
+                                <td className="py-2 text-right">₹{row.taxCollected.toFixed(2)}</td>
                             </tr>
                         ))}
                     </tbody>

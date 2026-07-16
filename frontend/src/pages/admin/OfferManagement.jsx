@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Tag, Copy, Trash2, X, Calendar, Percent, DollarSign, Truck } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const OfferManagement = () => {
@@ -19,6 +21,14 @@ const OfferManagement = () => {
         isActive: true
     });
 
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
     const fetchData = async () => {
         try {
             const res = await api.get('/offers');
@@ -34,16 +44,23 @@ const OfferManagement = () => {
         fetchData();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this offer?')) {
-            try {
-                await api.delete(`/offers/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete offer', error);
-                alert('Failed to delete offer');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Offer',
+            message: 'Are you sure you want to delete this offer?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/offers/${id}`);
+                    fetchData();
+                    toast.success('Offer deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete offer', error);
+                    toast.error('Failed to delete offer');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleAddClick = () => {
@@ -71,15 +88,16 @@ const OfferManagement = () => {
             await api.post('/offers', payload);
             fetchData();
             setIsModalOpen(false);
+            toast.success('Offer created successfully');
         } catch (error) {
             console.error('Failed to create offer', error);
-            alert(error.response?.data?.message || 'Failed to create offer');
+            toast.error(error.response?.data?.message || 'Failed to create offer');
         }
     };
 
     const copyToClipboard = (code) => {
         navigator.clipboard.writeText(code);
-        // Optional: show a small toast here
+        toast.success('Code copied to clipboard');
     };
 
     // Calculate status of an offer
@@ -96,6 +114,10 @@ const OfferManagement = () => {
 
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -158,7 +180,7 @@ const OfferManagement = () => {
                                         </div>
                                         <p className="text-green-600 font-bold text-sm mt-0.5">
                                             {offer.type === 'Percentage' ? `${offer.discountValue}% OFF` : 
-                                             offer.type === 'Fixed Amount' ? `$${offer.discountValue.toFixed(2)} OFF` : 
+                                             offer.type === 'Fixed Amount' ? `₹${offer.discountValue.toFixed(2)} OFF` : 
                                              'FREE SHIPPING'}
                                         </p>
                                     </div>
@@ -176,7 +198,7 @@ const OfferManagement = () => {
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-gray-400 font-medium text-xs uppercase tracking-wide">Min. Spend</span>
-                                        <span className="font-bold text-gray-700">${offer.minSpend.toFixed(2)}</span>
+                                        <span className="font-bold text-gray-700">₹{offer.minSpend.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="text-gray-400 font-medium text-xs uppercase tracking-wide">Expires</span>
@@ -205,7 +227,7 @@ const OfferManagement = () => {
                                 </div>
                                 
                                 {/* Hover Actions */}
-                                <div className="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="absolute top-4 left-4 transition-opacity">
                                     <button 
                                         onClick={() => handleDelete(offer._id)}
                                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors bg-white shadow-sm"

@@ -143,7 +143,7 @@ const PlanManagement = () => {
                         )}
                         <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
                         <div className="mt-4 flex items-baseline gap-1">
-                            <span className="text-3xl font-black text-gray-900">${plan.price}</span>
+                            <span className="text-3xl font-black text-gray-900">₹{plan.price}</span>
                             <span className="text-gray-500 font-medium">/{plan.billingCycle.toLowerCase()}</span>
                         </div>
                         <ul className="mt-6 space-y-3 flex-1">
@@ -210,7 +210,7 @@ const PlanManagement = () => {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Price ($)</label>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹)</label>
                                         <input 
                                             type="number" 
                                             name="price"

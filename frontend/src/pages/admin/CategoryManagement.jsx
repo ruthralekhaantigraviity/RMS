@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Trash2, Folder, Tag, GripVertical, ChevronDown, ChevronRight, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const CategoryManagement = () => {
@@ -17,6 +19,15 @@ const CategoryManagement = () => {
         branch: '',
         isActive: true
     });
+
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
 
     const fetchData = async () => {
         try {
@@ -41,16 +52,23 @@ const CategoryManagement = () => {
         fetchData();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this category?')) {
-            try {
-                await api.delete(`/categories/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete category', error);
-                alert('Failed to delete category');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Category',
+            message: 'Are you sure you want to delete this category?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/categories/${id}`);
+                    fetchData();
+                    toast.success('Category deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete category', error);
+                    toast.error('Failed to delete category');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleAddClick = () => {
@@ -69,9 +87,10 @@ const CategoryManagement = () => {
             await api.post('/categories', formData);
             fetchData();
             setIsModalOpen(false);
+            toast.success('Category created successfully');
         } catch (error) {
             console.error('Failed to create category', error);
-            alert('Failed to create category');
+            toast.error(error.response?.data?.message || 'Failed to create category');
         }
     };
 
@@ -93,6 +112,10 @@ const CategoryManagement = () => {
 
     return (
         <div className="space-y-6 relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -165,7 +188,7 @@ const CategoryManagement = () => {
                                     {branchCategories.map((cat, idx) => (
                                         <div key={cat._id} className="grid grid-cols-12 gap-4 px-6 py-3 items-center group hover:bg-gray-50/50 transition-colors pl-14">
                                             <div className="col-span-6 flex items-center gap-3">
-                                                <GripVertical size={16} className="text-gray-300 opacity-0 group-hover:opacity-100 cursor-grab transition-opacity" />
+                                                <GripVertical size={16} className="text-gray-300 cursor-grab transition-opacity" />
                                                 <Tag size={16} className="text-gray-400" />
                                                 <span className="font-medium text-gray-700">{cat.name}</span>
                                                 {cat.description && (
@@ -178,7 +201,7 @@ const CategoryManagement = () => {
                                                 </span>
                                             </div>
                                             <div className="col-span-3 text-right">
-                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="flex items-center justify-end gap-2 transition-opacity">
                                                     <button 
                                                         onClick={() => handleDelete(cat._id)}
                                                         className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"

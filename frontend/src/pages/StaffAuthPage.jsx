@@ -325,8 +325,8 @@ const StaffAuthPage = () => {
                         <div className="flex justify-between items-center mb-1">
                             <span className="font-bold text-gray-900">{plan}</span>
                             <span className="font-bold text-green-600">
-                                {plan === 'Basic' && (isYearly ? '$39/mo' : '$49/mo')}
-                                {plan === 'Pro' && (isYearly ? '$79/mo' : '$99/mo')}
+                                {plan === 'Basic' && (isYearly ? '₹39/mo' : '₹49/mo')}
+                                {plan === 'Pro' && (isYearly ? '₹79/mo' : '₹99/mo')}
                                 {plan === 'Enterprise' && 'Custom'}
                             </span>
                         </div>
@@ -512,7 +512,7 @@ const StaffAuthPage = () => {
                             {paymentStatus === 'idle' && (
                                 <>
                                     <div className="text-3xl font-black text-gray-900 mb-6">
-                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '$39.00' : '$49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '$79.00' : '$99.00') : '$199.00'}
+                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '₹39.00' : '₹49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '₹79.00' : '₹99.00') : '₹199.00'}
                                     </div>
                                     <p className="text-sm font-bold text-gray-500 mb-4">Select UPI App:</p>
                                     <div className="flex flex-col w-full gap-3">

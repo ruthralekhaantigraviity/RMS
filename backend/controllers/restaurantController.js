@@ -1,5 +1,6 @@
 import Restaurant from '../models/Restaurant.js';
 import Branch from '../models/Branch.js';
+import Notification from '../models/Notification.js';
 
 // @desc    Get all restaurants (SuperAdmin only)
 // @route   GET /api/restaurants
@@ -75,6 +76,30 @@ export const getMyRestaurant = async (req, res) => {
             return res.status(404).json({ message: 'No restaurant associated with this user' });
         }
         const restaurant = await Restaurant.findById(req.user.restaurantId);
+        
+        if (restaurant && restaurant.subscription?.expiryDate) {
+            const expiry = new Date(restaurant.subscription.expiryDate);
+            const now = new Date();
+            
+            // If subscription is expired, check if we've already notified them
+            if (expiry < now && restaurant.subscription.status !== 'Cancelled') {
+                const existingNotif = await Notification.findOne({
+                    restaurantId: restaurant._id,
+                    title: 'Subscription Expired',
+                    read: false
+                });
+                
+                if (!existingNotif) {
+                    await Notification.create({
+                        title: 'Subscription Expired',
+                        desc: 'Your subscription has expired. Please renew to continue using all features.',
+                        type: 'System',
+                        restaurantId: restaurant._id
+                    });
+                }
+            }
+        }
+        
         res.json(restaurant);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -90,12 +115,14 @@ export const updateMyRestaurant = async (req, res) => {
             return res.status(404).json({ message: 'No restaurant associated with this user' });
         }
         
-        const { name, contactEmail, currency, timezone, features } = req.body;
+        const { name, contactEmail, phone, address, currency, timezone, features } = req.body;
         
         const restaurant = await Restaurant.findById(req.user.restaurantId);
         if (restaurant) {
             restaurant.name = name || restaurant.name;
             restaurant.contactEmail = contactEmail !== undefined ? contactEmail : restaurant.contactEmail;
+            restaurant.phone = phone !== undefined ? phone : restaurant.phone;
+            restaurant.address = address !== undefined ? address : restaurant.address;
             restaurant.currency = currency || restaurant.currency;
             restaurant.timezone = timezone || restaurant.timezone;
             if (features) {

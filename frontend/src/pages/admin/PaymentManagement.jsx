@@ -1,11 +1,11 @@
 import { Search, Filter, Download, ArrowUpRight, ArrowDownRight, RefreshCcw, Eye } from 'lucide-react';
 
 const mockTransactions = [
-    { id: 'TXN-98231', orderId: '#ORD-092', date: 'Oct 24, 2026 - 14:30', method: 'Credit Card', amount: '$45.00', status: 'Completed', customer: 'Walk-in' },
-    { id: 'TXN-98232', orderId: '#ORD-093', date: 'Oct 24, 2026 - 14:45', method: 'PayPal', amount: '$32.50', status: 'Completed', customer: 'John Doe' },
-    { id: 'TXN-98233', orderId: '#ORD-094', date: 'Oct 24, 2026 - 15:10', method: 'Cash', amount: '$14.99', status: 'Completed', customer: 'Sarah Smith' },
-    { id: 'TXN-98234', orderId: '#ORD-081', date: 'Oct 24, 2026 - 11:20', method: 'Credit Card', amount: '$120.00', status: 'Refunded', customer: 'Alice Johnson' },
-    { id: 'TXN-98235', orderId: '#ORD-096', date: 'Oct 24, 2026 - 15:45', method: 'Apple Pay', amount: '$65.00', status: 'Pending', customer: 'Mike Johnson' },
+    { id: 'TXN-98231', orderId: '#ORD-092', date: 'Oct 24, 2026 - 14:30', method: 'Credit Card', amount: '₹45.00', status: 'Completed', customer: 'Walk-in' },
+    { id: 'TXN-98232', orderId: '#ORD-093', date: 'Oct 24, 2026 - 14:45', method: 'PayPal', amount: '₹32.50', status: 'Completed', customer: 'John Doe' },
+    { id: 'TXN-98233', orderId: '#ORD-094', date: 'Oct 24, 2026 - 15:10', method: 'Cash', amount: '₹14.99', status: 'Completed', customer: 'Sarah Smith' },
+    { id: 'TXN-98234', orderId: '#ORD-081', date: 'Oct 24, 2026 - 11:20', method: 'Credit Card', amount: '₹120.00', status: 'Refunded', customer: 'Alice Johnson' },
+    { id: 'TXN-98235', orderId: '#ORD-096', date: 'Oct 24, 2026 - 15:45', method: 'Apple Pay', amount: '₹65.00', status: 'Pending', customer: 'Mike Johnson' },
 ];
 
 const getStatusStyle = (status) => {
@@ -43,7 +43,7 @@ const PaymentManagement = () => {
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <p className="text-sm font-medium text-gray-500 mb-1">Total Revenue (Today)</p>
                     <div className="flex items-end gap-2">
-                        <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,250.00</h3>
+                        <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250.00</h3>
                         <span className="flex items-center text-xs font-bold text-green-600 mb-1"><ArrowUpRight size={14} /> 12%</span>
                     </div>
                 </div>
@@ -54,13 +54,13 @@ const PaymentManagement = () => {
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <p className="text-sm font-medium text-gray-500 mb-1">Refunds Processed</p>
                     <div className="flex items-end gap-2">
-                        <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>$120.00</h3>
+                        <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹120.00</h3>
                         <span className="flex items-center text-xs font-bold text-red-600 mb-1"><ArrowDownRight size={14} /> 2%</span>
                     </div>
                 </div>
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
                     <p className="text-sm font-medium text-gray-500 mb-1">Pending Settlements</p>
-                    <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>$850.00</h3>
+                    <h3 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹850.00</h3>
                 </div>
             </div>
             
@@ -117,7 +117,7 @@ const PaymentManagement = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center justify-end gap-2 transition-opacity">
                                             {txn.status === 'Completed' && (
                                                 <button className="p-1.5 text-orange-500 hover:bg-orange-50 rounded transition-colors" title="Process Refund">
                                                     <RefreshCcw size={16} />
