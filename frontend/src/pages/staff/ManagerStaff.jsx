@@ -45,7 +45,6 @@ const ManagerStaff = () => {
         fetchStaff();
     }, []);
 
-    // Format staff data for display with mock shift status info
     const displayStaff = staffList.map((staff, index) => ({
         ...staff,
         status: index % 3 === 0 ? 'Active' : index % 3 === 1 ? 'Break' : 'Active',
@@ -53,7 +52,9 @@ const ManagerStaff = () => {
         hours: '8h 00m',
         alert: false
     })).filter(s => 
-        !searchQuery || s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.role.toLowerCase().includes(searchQuery.toLowerCase())
+        !searchQuery || 
+        (s.name && s.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
+        (s.role && s.role.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     return (
