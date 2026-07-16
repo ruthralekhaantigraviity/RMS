@@ -57,6 +57,104 @@ const ManagerStaff = () => {
         (s.role && s.role.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
+    const exportPDF = () => {
+        // Load jsPDF from CDN dynamically
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            // Title
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(22);
+            doc.setTextColor(22, 163, 74); // green-600
+            doc.text('RestoSys - Weekly Staff Schedule', 20, 20);
+
+            // Subtitle
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 28);
+
+            // Separator Line
+            doc.setDrawColor(230, 230, 230);
+            doc.line(20, 32, 277, 32);
+
+            // Days columns
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const colWidth = 35;
+            const startX = 20;
+            const startY = 45;
+
+            // Draw headers
+            doc.setFont('Helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            days.forEach((day, index) => {
+                const x = startX + (index * colWidth);
+                doc.text(day, x, startY);
+                doc.line(x, startY + 2, x + 30, startY + 2);
+            });
+
+            // Draw schedule grid
+            doc.setFont('Helvetica', 'normal');
+            doc.setFontSize(8);
+            
+            for (let i = 0; i < 7; i++) {
+                const x = startX + (i * colWidth);
+                let currentY = startY + 8;
+
+                // Marcus W. Shift
+                doc.setFillColor(245, 245, 245);
+                doc.rect(x, currentY, 32, 12, 'F');
+                doc.setTextColor(30, 30, 30);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Marcus W.', x + 2, currentY + 4);
+                doc.setFont('Helvetica', 'normal');
+                doc.setTextColor(120, 120, 120);
+                doc.text('08:00 - 16:00', x + 2, currentY + 9);
+
+                currentY += 15;
+
+                // Elena R. Shift
+                doc.setFillColor(245, 245, 245);
+                doc.rect(x, currentY, 32, 12, 'F');
+                doc.setTextColor(30, 30, 30);
+                doc.setFont('Helvetica', 'bold');
+                doc.text('Elena R.', x + 2, currentY + 4);
+                doc.setFont('Helvetica', 'normal');
+                doc.setTextColor(120, 120, 120);
+                doc.text('09:00 - 17:00', x + 2, currentY + 9);
+
+                currentY += 15;
+
+                // Open Shift for Friday/Saturday (indices 4 and 5)
+                if (i === 4 || i === 5) {
+                    doc.setFillColor(254, 243, 199); // orange-50
+                    doc.rect(x, currentY, 32, 12, 'F');
+                    doc.setTextColor(146, 64, 14); // orange-800
+                    doc.setFont('Helvetica', 'bold');
+                    doc.text('Open Shift', x + 2, currentY + 4);
+                    doc.setFont('Helvetica', 'normal');
+                    doc.setTextColor(217, 119, 6); // orange-600
+                    doc.text('18:00 - 00:00', x + 2, currentY + 9);
+                }
+            }
+
+            // Save PDF
+            doc.save(`Weekly_Schedule_${new Date().toISOString().split('T')[0]}.pdf`);
+        };
+        script.onerror = () => {
+            toast.error('Failed to load PDF export library.');
+        };
+        document.body.appendChild(script);
+    };
+
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans">
             <div className="flex justify-between items-end mb-6">
@@ -218,7 +316,7 @@ const ManagerStaff = () => {
                         </div>
                         <div className="p-5 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
                             <button onClick={() => setShowScheduleModal(false)} className="px-5 py-2 text-sm font-bold text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50">Close</button>
-                            <button onClick={() => { setShowScheduleModal(false); toast.success('Schedule exported'); }} className="px-5 py-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700">Export PDF</button>
+                            <button onClick={exportPDF} className="px-5 py-2 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700">Export PDF</button>
                         </div>
                     </div>
                 </div>
