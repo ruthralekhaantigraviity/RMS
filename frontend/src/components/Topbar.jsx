@@ -14,14 +14,6 @@ const Topbar = () => {
                 >
                     <Menu size={24} />
                 </button>
-                <div className="flex items-center bg-gray-100 px-4 py-2 rounded-full w-full md:w-96 focus-within:ring-2 focus-within:ring-green-500/20 transition-all">
-                    <Search size={18} className="text-gray-400 shrink-0" />
-                <input 
-                    type="text" 
-                    placeholder="Search anything..." 
-                    className="bg-transparent border-none outline-none w-full ml-3 text-sm text-gray-700 placeholder-gray-400"
-                />
-            </div>
             </div>
             
 
