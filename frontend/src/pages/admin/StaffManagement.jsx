@@ -77,7 +77,7 @@ const StaffManagement = () => {
         setFormData({
             name: staff.name,
             email: staff.email, // email is usually readonly but we'll put it here, backend might ignore it for update
-            phone: staff.phone || '',
+            phone: staff.phoneNumber || '',
             password: '', // blank password unless changing
             role: staff.role,
             branchId: staff.branchId?._id || ''
@@ -222,7 +222,7 @@ const StaffManagement = () => {
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-600">
                                     <Phone size={16} className="text-gray-400 shrink-0" />
-                                    <span>{staff.phone || 'N/A'}</span>
+                                    <span>{staff.phoneNumber || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-600">
                                     <Mail size={16} className="text-gray-400 shrink-0" />
