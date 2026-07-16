@@ -124,17 +124,13 @@ const StaffAuthPage = () => {
         }
     };
 
-    // Simulate an automatic webhook arriving from a payment gateway if they scan with a real phone
+    // Force cache bust: v2
     useEffect(() => {
         let timeout;
         if (mode === 'register' && step === 3 && paymentStatus === 'idle') {
             timeout = setTimeout(() => {
                 // If they haven't manually clicked anything after 15 seconds, assume they paid on their phone
-                setPaymentStatus('success');
-                setTimeout(() => {
-                    setStep(4);
-                    submitRegistration();
-                }, 2000);
+                handleUpiPayment(true);
             }, 15000);
         }
         return () => clearTimeout(timeout);
