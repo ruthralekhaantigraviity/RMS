@@ -14,6 +14,11 @@ const ManagerInventory = () => {
     const [showReorderModal, setShowReorderModal] = useState(false);
     const [selectedItemForAction, setSelectedItemForAction] = useState(null);
     const [actionType, setActionType] = useState(''); // 'reorder' or 'adjust'
+    const [categoryFilter, setCategoryFilter] = useState('All Categories');
+
+    const filteredInventory = mockInventory.filter(item => 
+        categoryFilter === 'All Categories' || item.category === categoryFilter
+    );
 
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans">
@@ -58,11 +63,17 @@ const ManagerInventory = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
                     <h3 className="font-bold text-gray-900 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>Stock Alerts & Status</h3>
-                    <select className="bg-white border border-gray-200 text-sm font-medium rounded-lg px-3 py-1.5 focus:outline-none focus:border-green-500">
-                        <option>All Categories</option>
-                        <option>Meat</option>
-                        <option>Produce</option>
-                        <option>Dairy</option>
+                    <select 
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="bg-white border border-gray-200 text-sm font-medium rounded-lg px-3 py-1.5 focus:outline-none focus:border-green-500"
+                    >
+                        <option value="All Categories">All Categories</option>
+                        <option value="Meat">Meat</option>
+                        <option value="Produce">Produce</option>
+                        <option value="Bakery">Bakery</option>
+                        <option value="Dairy">Dairy</option>
+                        <option value="Pantry">Pantry</option>
                     </select>
                 </div>
                 <div className="overflow-x-auto">
@@ -78,7 +89,7 @@ const ManagerInventory = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {mockInventory.map((item, i) => (
+                            {filteredInventory.map((item, i) => (
                                 <tr key={i} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 font-bold text-gray-900 text-sm">{item.item}</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{item.category}</td>
