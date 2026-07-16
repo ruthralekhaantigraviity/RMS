@@ -1,5 +1,5 @@
 import express from 'express';
-import { getRolesSummary } from '../controllers/roleController.js';
+import { getRolesSummary, createRole, updateRole, deleteRole } from '../controllers/roleController.js';
 import { protect, authorize, checkSubscription } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -9,6 +9,11 @@ router.use(authorize('RestaurantAdmin'));
 router.use(checkSubscription);
 
 router.route('/')
-    .get(getRolesSummary);
+    .get(getRolesSummary)
+    .post(createRole);
+
+router.route('/:id')
+    .put(updateRole)
+    .delete(deleteRole);
 
 export default router;
