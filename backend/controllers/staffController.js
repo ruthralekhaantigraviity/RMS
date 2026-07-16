@@ -1,4 +1,5 @@
 import User from '../models/User.js';
+import Branch from '../models/Branch.js';
 
 // @desc    Update a staff member
 // @route   PUT /api/staff/:id
@@ -23,7 +24,9 @@ export const updateStaff = async (req, res) => {
         }
 
         staff.name = name || staff.name;
-        staff.phone = phone || staff.phone;
+        if (phone !== undefined) {
+            staff.phoneNumber = phone;
+        }
         staff.role = role || staff.role;
         staff.branchId = branchId || staff.branchId;
         
@@ -32,6 +35,17 @@ export const updateStaff = async (req, res) => {
         }
 
         await staff.save();
+
+        // Sync manager to Branch
+        if (staff.role === 'BranchManager' && staff.branchId) {
+            // Clear this user from being manager of any other branch
+            await Branch.updateMany({ manager: staff._id, _id: { $ne: staff.branchId } }, { $unset: { manager: 1 } });
+            // Set this user as manager of the new branch
+            await Branch.findByIdAndUpdate(staff.branchId, { manager: staff._id });
+        } else {
+            // If they are no longer BranchManager, clear them from all branches
+            await Branch.updateMany({ manager: staff._id }, { $unset: { manager: 1 } });
+        }
         
         const updatedStaff = await User.findById(staff._id).populate('branchId', 'name').select('-password');
         res.json(updatedStaff);
@@ -78,12 +92,18 @@ export const createStaff = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            phone, // User model doesn't strictly have phone, but it will ignore it or save if strict is false
+            phoneNumber: phone,
             password: password || 'password123',
             role,
             restaurantId: req.user.restaurantId,
             branchId: branchId || null
         });
+
+        // Sync manager to Branch
+        if (user.role === 'BranchManager' && user.branchId) {
+            await Branch.updateMany({ manager: user._id, _id: { $ne: user.branchId } }, { $unset: { manager: 1 } });
+            await Branch.findByIdAndUpdate(user.branchId, { manager: user._id });
+        }
 
         // Fetch populated
         const populatedUser = await User.findById(user._id).populate('branchId', 'name').select('-password');
@@ -104,6 +124,9 @@ export const deleteStaff = async (req, res) => {
             if (staff.restaurantId?.toString() !== req.user.restaurantId.toString()) {
                 return res.status(403).json({ message: 'Not authorized to delete this staff' });
             }
+
+            // Remove from manager fields of branches
+            await Branch.updateMany({ manager: staff._id }, { $unset: { manager: 1 } });
 
             await staff.deleteOne();
             res.json({ message: 'Staff member removed' });

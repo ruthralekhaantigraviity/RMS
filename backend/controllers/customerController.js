@@ -10,7 +10,7 @@ export const getCustomers = async (req, res) => {
         const { restaurantId } = req.user;
 
         // Fetch all users with role 'Customer'
-        const customers = await User.find({ role: 'Customer' }).select('name email phone createdAt');
+        const customers = await User.find({ role: 'Customer' }).select('name email phoneNumber createdAt');
 
         // Aggregate order stats per customer for this restaurant
         const orderStats = await Order.aggregate([
@@ -43,7 +43,7 @@ export const getCustomers = async (req, res) => {
                 id: customer._id,
                 name: customer.name,
                 email: customer.email,
-                phone: customer.phone || 'N/A', // Phone might not exist on User model currently, but fallback to N/A
+                phone: customer.phoneNumber || 'N/A', // Using phoneNumber from User model
                 visits: stats.visits,
                 totalSpend: stats.totalSpend,
                 lastVisit: stats.lastVisit,
@@ -69,13 +69,12 @@ export const createCustomer = async (req, res) => {
             return res.status(400).json({ message: 'A user with this email already exists' });
         }
 
-        // We could extend User model with phone, but for now we just create a User
         const user = await User.create({
             name,
             email,
             password: 'password123',
             role: 'Customer',
-            // phone could be added to User schema later if needed
+            phoneNumber: phone
         });
 
         res.status(201).json({

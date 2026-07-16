@@ -229,7 +229,7 @@ const StaffManagement = () => {
                                         <span className={`absolute bottom-0 right-1 w-4 h-4 rounded-full border-2 border-white bg-green-500`}></span>
                                     </div>
                                     <h3 className="font-bold text-gray-900 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>{staff.name}</h3>
-                                    <p className="text-sm font-medium text-green-600 mt-0.5">{staff.role.replace(/([A-Z])/g, ' ₹1').trim()}</p>
+                                    <p className="text-sm font-medium text-green-600 mt-0.5">{staff.role.replace(/([A-Z])/g, ' $1').trim()}</p>
                                     <p className="text-xs text-gray-400 mt-1">EMP-{staff._id.substring(staff._id.length - 4).toUpperCase()}</p>
                                 </div>
                             </div>
@@ -384,7 +384,7 @@ const StaffManagement = () => {
                                     <ShieldCheck size={24} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{permsModalData.replace(/([A-Z])/g, ' ₹1').trim()} Permissions</h3>
+                                    <h3 className="font-bold text-gray-900">{permsModalData.replace(/([A-Z])/g, ' $1').trim()} Permissions</h3>
                                     <p className="text-xs text-gray-500">Role Capabilities</p>
                                 </div>
                             </div>

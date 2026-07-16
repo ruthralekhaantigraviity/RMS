@@ -178,7 +178,7 @@ const UsersManagement = () => {
                                 <div>
                                     <h3 className="font-bold text-gray-900 text-lg leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>{u.name}</h3>
                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mt-1 inline-block ${roleColors[u.role] || 'bg-gray-100 text-gray-700'}`}>
-                                        {u.role.replace(/([A-Z])/g, ' ₹1').trim()}
+                                        {u.role.replace(/([A-Z])/g, ' $1').trim()}
                                     </span>
                                 </div>
                             </div>

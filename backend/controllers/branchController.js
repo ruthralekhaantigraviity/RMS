@@ -5,7 +5,7 @@ import Branch from '../models/Branch.js';
 // @access  Private
 export const getBranches = async (req, res) => {
     try {
-        const branches = await Branch.find({ restaurantId: req.user.restaurantId });
+        const branches = await Branch.find({ restaurantId: req.user.restaurantId }).populate('manager', 'name email');
         res.json(branches);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -54,7 +54,8 @@ export const updateBranch = async (req, res) => {
             if (isActive !== undefined) branch.isActive = isActive;
 
             const updatedBranch = await branch.save();
-            res.json(updatedBranch);
+            const populatedBranch = await Branch.findById(updatedBranch._id).populate('manager', 'name email');
+            res.json(populatedBranch);
         } else {
             res.status(404).json({ message: 'Branch not found' });
         }
