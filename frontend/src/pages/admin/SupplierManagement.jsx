@@ -7,6 +7,7 @@ const SupplierManagement = () => {
     const [suppliers, setSuppliers] = useState([]);
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingSupplier, setEditingSupplier] = useState(null);
@@ -102,6 +103,12 @@ const SupplierManagement = () => {
         }
     };
 
+    const filteredSuppliers = suppliers.filter(supplier => 
+        supplier.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (supplier.category && supplier.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (supplier.contactPerson && supplier.contactPerson.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans relative">
             {/* Header */}
@@ -122,7 +129,7 @@ const SupplierManagement = () => {
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-center">
                 <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search suppliers by name or category..." className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all font-medium" />
+                    <input type="text" placeholder="Search suppliers by name or category..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all font-medium" />
                 </div>
             </div>
 
@@ -131,13 +138,13 @@ const SupplierManagement = () => {
                 <div className="flex justify-center py-20">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
                 </div>
-            ) : suppliers.length === 0 ? (
+            ) : filteredSuppliers.length === 0 ? (
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center text-gray-500">
                     No suppliers found. Click "+ Add Supplier" to get started.
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {suppliers.map(supplier => (
+                    {filteredSuppliers.map(supplier => (
                         <div key={supplier._id} className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow relative group">
                             {/* Status Badge */}
                             <div className="absolute top-0 right-0 m-4 flex items-center gap-2">

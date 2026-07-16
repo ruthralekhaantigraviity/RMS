@@ -21,6 +21,12 @@ const getStatusColor = (status) => {
 
 const OrderManagement = () => {
     const [view, setView] = useState('kanban'); // 'kanban' or 'list'
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredOrders = activeOrders.filter(order => 
+        order.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        order.customer.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6">
@@ -42,7 +48,7 @@ const OrderManagement = () => {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex gap-4 items-center">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search order ID or customer..." className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
+                    <input type="text" placeholder="Search order ID or customer..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
                 </div>
                 <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                     <Filter size={16} /> Filters
@@ -58,7 +64,7 @@ const OrderManagement = () => {
                             New Orders <span className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">1</span>
                         </h3>
                         <div className="space-y-4">
-                            {activeOrders.filter(o => o.status === 'New').map(order => (
+                            {filteredOrders.filter(o => o.status === 'New').map(order => (
                                 <OrderCard key={order.id} order={order} />
                             ))}
                         </div>
@@ -70,7 +76,7 @@ const OrderManagement = () => {
                             Preparing <span className="bg-orange-200 text-orange-800 px-2 py-0.5 rounded-full">2</span>
                         </h3>
                         <div className="space-y-4">
-                            {activeOrders.filter(o => o.status === 'Preparing').map(order => (
+                            {filteredOrders.filter(o => o.status === 'Preparing').map(order => (
                                 <OrderCard key={order.id} order={order} />
                             ))}
                         </div>
@@ -82,7 +88,7 @@ const OrderManagement = () => {
                             Ready <span className="bg-green-200 text-green-800 px-2 py-0.5 rounded-full">1</span>
                         </h3>
                         <div className="space-y-4">
-                            {activeOrders.filter(o => o.status === 'Ready').map(order => (
+                            {filteredOrders.filter(o => o.status === 'Ready').map(order => (
                                 <OrderCard key={order.id} order={order} />
                             ))}
                         </div>
@@ -94,7 +100,7 @@ const OrderManagement = () => {
                             Out for Delivery <span className="bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full">1</span>
                         </h3>
                         <div className="space-y-4">
-                            {activeOrders.filter(o => o.status === 'On the way').map(order => (
+                            {filteredOrders.filter(o => o.status === 'On the way').map(order => (
                                 <OrderCard key={order.id} order={order} />
                             ))}
                         </div>

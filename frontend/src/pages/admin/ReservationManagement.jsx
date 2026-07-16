@@ -20,6 +20,7 @@ const ReservationManagement = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const [formData, setFormData] = useState({
         guestName: '',
@@ -86,8 +87,13 @@ const ReservationManagement = () => {
         }
     };
 
-    // Filter reservations by selected date (simple string match for now)
-    const filteredReservations = reservations.filter(r => r.date.startsWith(date));
+    // Filter reservations by selected date and search query
+    const filteredReservations = reservations.filter(r => {
+        const matchesDate = r.date.startsWith(date);
+        const matchesSearch = r.guestName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              r.guestPhone.includes(searchQuery);
+        return matchesDate && matchesSearch;
+    });
 
     // Calculate dynamic stats for the selected date
     const totalGuests = filteredReservations.reduce((sum, r) => sum + r.guestCount, 0);
@@ -126,7 +132,7 @@ const ReservationManagement = () => {
                 
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search name or phone..." className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
+                    <input type="text" placeholder="Search name or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
                 </div>
             </div>
 

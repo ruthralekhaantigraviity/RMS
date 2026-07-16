@@ -7,6 +7,7 @@ const CategoryManagement = () => {
     const [categories, setCategories] = useState([]);
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
     
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,8 +75,14 @@ const CategoryManagement = () => {
         }
     };
 
+    // Filter categories based on search
+    const filteredCategories = categories.filter(cat => 
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (cat.description && cat.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     // Group categories by branch
-    const categoriesByBranch = categories.reduce((acc, cat) => {
+    const categoriesByBranch = filteredCategories.reduce((acc, cat) => {
         const branchName = cat.branch ? cat.branch.name : 'Unknown Branch';
         if (!acc[branchName]) {
             acc[branchName] = [];
@@ -107,6 +114,8 @@ const CategoryManagement = () => {
                     <input 
                         type="text" 
                         placeholder="Search categories..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                     />
                 </div>

@@ -8,6 +8,7 @@ const RoleManagement = () => {
     const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedRoleIndex, setSelectedRoleIndex] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Editing State
     const [currentPermissions, setCurrentPermissions] = useState(null);
@@ -40,6 +41,11 @@ const RoleManagement = () => {
     }, []);
 
     const selectedRole = roles[selectedRoleIndex] || null;
+
+    const filteredRoles = roles.filter(role => 
+        role.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (role.desc && role.desc.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
     // When selected role changes, reset current permissions to that role's permissions
     useEffect(() => {
@@ -125,7 +131,7 @@ const RoleManagement = () => {
                 <div className="lg:col-span-1 space-y-4">
                     <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center mb-2">
                         <Search className="text-gray-400 ml-2 mr-3" size={18} />
-                        <input type="text" placeholder="Search roles..." className="w-full bg-transparent text-sm focus:outline-none" />
+                        <input type="text" placeholder="Search roles..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-transparent text-sm focus:outline-none" />
                     </div>
 
                     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50 min-h-[400px]">
@@ -134,7 +140,7 @@ const RoleManagement = () => {
                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
                              </div>
                         ) : (
-                            roles.map((role, idx) => (
+                            filteredRoles.map((role, idx) => (
                                 <div 
                                     key={role.id} 
                                     onClick={() => setSelectedRoleIndex(idx)}

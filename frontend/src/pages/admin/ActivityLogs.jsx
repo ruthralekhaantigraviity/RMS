@@ -30,8 +30,16 @@ const getLogColor = (type) => {
         default: return 'bg-gray-100 text-gray-600';
     }
 };
+import { useState } from 'react';
 
 const ActivityLogs = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredLogs = mockLogs.filter(log => 
+        log.user.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        log.action.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        log.module.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-end mb-4">
@@ -47,7 +55,7 @@ const ActivityLogs = () => {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 justify-between items-center">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search by user, action, or module..." className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
+                    <input type="text" placeholder="Search by user, action, or module..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
                 </div>
                 <div className="flex gap-2">
                     <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
@@ -80,7 +88,7 @@ const ActivityLogs = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {mockLogs.map((log) => (
+                            {filteredLogs.map((log) => (
                                 <tr key={log.id} className="hover:bg-gray-50/50 transition-colors group">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

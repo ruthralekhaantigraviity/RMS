@@ -16,7 +16,8 @@ const InventoryManagement = () => {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const [filterCategory, setFilterCategory] = useState('All Categories');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterCategory, setCategoryFilter] = useState('All Categories');
     const [filterStatus, setFilterStatus] = useState('All');
     
     const [formData, setFormData] = useState({
@@ -118,6 +119,8 @@ const InventoryManagement = () => {
 
     // Apply Filters
     const filteredInventory = inventory.filter(item => {
+        const matchesSearch = item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              (item._id && item._id.toLowerCase().includes(searchQuery.toLowerCase()));
         const matchesCategory = filterCategory === 'All Categories' || item.category === filterCategory;
         let matchesStatus = true;
         if (filterStatus === 'Critical') {
@@ -125,7 +128,7 @@ const InventoryManagement = () => {
         } else if (filterStatus === 'Low') {
             matchesStatus = item.quantity > (item.minStockLevel * 0.5) && item.quantity <= item.minStockLevel;
         }
-        return matchesCategory && matchesStatus;
+        return matchesSearch && matchesCategory && matchesStatus;
     });
 
     return (
@@ -204,12 +207,12 @@ const InventoryManagement = () => {
             <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-wrap gap-4 justify-between items-center">
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search inventory items..." className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all font-medium" />
+                    <input type="text" placeholder="Search inventory items..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all font-medium" />
                 </div>
                 <div className="flex gap-3">
                     <select 
                         value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value)}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
                         className="bg-white border border-gray-200 text-gray-700 text-sm rounded-xl px-4 py-2.5 font-bold focus:outline-none focus:border-green-500"
                     >
                         <option value="All Categories">All Categories</option>
@@ -222,7 +225,7 @@ const InventoryManagement = () => {
                         <option value="Beverages">Beverages</option>
                     </select>
                     <button 
-                        onClick={() => { setFilterCategory('All Categories'); setFilterStatus('All'); }}
+                        onClick={() => { setCategoryFilter('All Categories'); setFilterStatus('All'); setSearchQuery(''); }}
                         className="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm shadow-sm"
                     >
                         <Filter size={18} /> Clear Filters
