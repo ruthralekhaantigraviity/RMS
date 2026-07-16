@@ -103,10 +103,11 @@ const StaffManagement = () => {
     };
 
     const filteredStaff = staffList.filter(staff => {
-        const matchesSearch = !searchQuery || 
-                              staff.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              staff.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                              staff.role?.toLowerCase().includes(searchQuery.toLowerCase());
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = !query || 
+                              (staff.name && String(staff.name).toLowerCase().includes(query)) || 
+                              (staff.email && String(staff.email).toLowerCase().includes(query)) ||
+                              (staff.role && String(staff.role).toLowerCase().includes(query));
         const matchesRole = roleFilter === 'All Roles' || staff.role === roleFilter;
         const matchesBranch = branchFilter === 'All Branches' || staff.branchId?._id === branchFilter;
         return matchesSearch && matchesRole && matchesBranch;
