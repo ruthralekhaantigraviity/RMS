@@ -36,7 +36,6 @@ const Sidebar = () => {
             title: 'People',
             items: [
                 { name: 'Staff', path: '/admin/staff', icon: UserCheck },
-                { name: 'Roles', path: '/admin/roles', icon: Key },
             ]
         },
         {
