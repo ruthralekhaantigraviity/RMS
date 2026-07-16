@@ -15,7 +15,12 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const user = JSON.parse(localStorage.getItem('restosys_staff_user'));
+    let user = null;
+    try {
+        user = JSON.parse(localStorage.getItem('restosys_staff_user'));
+    } catch (e) {
+        localStorage.removeItem('restosys_staff_user');
+    }
     if (user && user.token) {
         if (config.headers && typeof config.headers.set === 'function') {
             config.headers.set('Authorization', `Bearer ${user.token}`);
@@ -47,7 +52,11 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const storedUser = localStorage.getItem('restosys_staff_user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                localStorage.removeItem('restosys_staff_user');
+            }
         }
         setLoading(false);
     }, []);
