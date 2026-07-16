@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, MapPin, Phone, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
+import { Plus, Search, MapPin, Phone, Edit2, Trash2, X, AlertTriangle } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const BranchesManagement = () => {
@@ -7,9 +8,14 @@ const BranchesManagement = () => {
     const [branches, setBranches] = useState([]);
     const [loading, setLoading] = useState(true);
     
+    // Filter State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All Statuses');
+    
     // Modal State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBranch, setEditingBranch] = useState(null);
+    const [branchToDelete, setBranchToDelete] = useState(null);
     
     // Form State
     const [formData, setFormData] = useState({
@@ -68,28 +74,44 @@ const BranchesManagement = () => {
         try {
             if (editingBranch) {
                 await api.put(`/branches/${editingBranch._id}`, payload);
+                toast.success('Branch updated successfully');
             } else {
                 await api.post('/branches', payload);
+                toast.success('Branch created successfully');
             }
             fetchBranches();
             handleCloseModal();
         } catch (error) {
             console.error('Failed to save branch', error);
-            alert('Error saving branch');
+            toast.error('Error saving branch');
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this branch?')) {
-            try {
-                await api.delete(`/branches/${id}`);
-                fetchBranches();
-            } catch (error) {
-                console.error('Failed to delete branch', error);
-                alert('Error deleting branch');
-            }
+    const handleDeleteClick = (branch) => {
+        setBranchToDelete(branch);
+    };
+
+    const confirmDelete = async () => {
+        if (!branchToDelete) return;
+        try {
+            await api.delete(`/branches/${branchToDelete._id}`);
+            toast.success('Branch deleted successfully');
+            fetchBranches();
+        } catch (error) {
+            console.error('Failed to delete branch', error);
+            toast.error('Error deleting branch');
+        } finally {
+            setBranchToDelete(null);
         }
     };
+
+    const filteredBranches = branches.filter(branch => {
+        const matchesSearch = !searchQuery || branch.name?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = statusFilter === 'All Statuses' || 
+                              (statusFilter === 'Active' && branch.isActive) || 
+                              (statusFilter === 'Inactive' && !branch.isActive);
+        return matchesSearch && matchesStatus;
+    });
 
     return (
         <div className="space-y-6 relative">
@@ -114,14 +136,20 @@ const BranchesManagement = () => {
                     <input 
                         type="text" 
                         placeholder="Search branches..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                     />
                 </div>
                 <div className="flex gap-2">
-                    <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
-                        <option>All Statuses</option>
-                        <option>Active</option>
-                        <option>Inactive</option>
+                    <select 
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500"
+                    >
+                        <option value="All Statuses">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
                     </select>
                 </div>
             </div>
@@ -131,13 +159,13 @@ const BranchesManagement = () => {
                 <div className="flex justify-center p-10">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
                 </div>
-            ) : branches.length === 0 ? (
+            ) : filteredBranches.length === 0 ? (
                 <div className="text-center py-10 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                    <p className="text-gray-500">No branches found. Add your first branch!</p>
+                    <p className="text-gray-500">No branches found matching your criteria.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {branches.map(branch => (
+                    {filteredBranches.map(branch => (
                         <div key={branch._id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group">
                             <div className="p-5 border-b border-gray-50">
                                 <div className="flex justify-between items-start mb-3">
@@ -151,9 +179,6 @@ const BranchesManagement = () => {
                                                 {branch.isActive ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
-                                    </div>
-                                    <div className="relative cursor-pointer">
-                                        <MoreVertical size={18} className="text-gray-400 hover:text-gray-600" />
                                     </div>
                                 </div>
                                 
@@ -175,7 +200,7 @@ const BranchesManagement = () => {
                             </div>
 
                             {/* Actions */}
-                            <div className="bg-white px-5 py-3 border-t border-gray-100 flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="bg-white px-5 py-3 border-t border-gray-100 flex justify-end gap-3 opacity-100">
                                 <button 
                                     onClick={() => handleOpenModal(branch)}
                                     className="text-sm flex items-center gap-1.5 text-gray-500 hover:text-blue-600 transition-colors font-medium"
@@ -183,7 +208,7 @@ const BranchesManagement = () => {
                                     <Edit2 size={14} /> Edit
                                 </button>
                                 <button 
-                                    onClick={() => handleDelete(branch._id)}
+                                    onClick={() => handleDeleteClick(branch)}
                                     className="text-sm flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors font-medium"
                                 >
                                     <Trash2 size={14} /> Delete
@@ -266,6 +291,37 @@ const BranchesManagement = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* Delete Confirmation Modal */}
+            {branchToDelete && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setBranchToDelete(null)}></div>
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-6 text-center">
+                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <AlertTriangle size={32} />
+                            </div>
+                            <h3 className="font-bold text-gray-900 text-xl mb-2">Delete Branch?</h3>
+                            <p className="text-gray-500 text-sm mb-6">
+                                Are you sure you want to delete <strong>{branchToDelete.name}</strong>? This action cannot be undone.
+                            </p>
+                            <div className="flex gap-3">
+                                <button 
+                                    onClick={() => setBranchToDelete(null)}
+                                    className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors text-sm"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    onClick={confirmDelete}
+                                    className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-sm shadow-red-600/20 transition-colors text-sm"
+                                >
+                                    Yes, Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
