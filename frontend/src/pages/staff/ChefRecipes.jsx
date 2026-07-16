@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Search, Book, Clock, Users, ChefHat } from 'lucide-react';
 
 const mockRecipes = [
@@ -8,6 +9,14 @@ const mockRecipes = [
 ];
 
 const ChefRecipes = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredRecipes = mockRecipes.filter(recipe => 
+        !searchQuery || 
+        recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        recipe.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <div className="w-full max-w-[1600px] mx-auto font-sans space-y-6">
             <div className="flex justify-between items-end mb-6">
@@ -17,12 +26,18 @@ const ChefRecipes = () => {
                 </div>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                    <input type="text" placeholder="Search recipe..." className="bg-[#1e2330] border border-[#2a3040] text-gray-200 pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-orange-500 min-w-[300px]" />
+                    <input 
+                        type="text" 
+                        placeholder="Search recipe..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-[#1e2330] border border-[#2a3040] text-gray-200 pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-orange-500 min-w-[300px]" 
+                    />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {mockRecipes.map((recipe, i) => (
+                {filteredRecipes.map((recipe, i) => (
                     <div key={i} className="bg-[#1e2330] rounded-2xl border border-[#2a3040] p-5 hover:border-orange-500/50 hover:shadow-lg transition-all cursor-pointer group">
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-3 bg-[#151923] text-orange-400 rounded-xl group-hover:bg-orange-500/10 transition-colors">
