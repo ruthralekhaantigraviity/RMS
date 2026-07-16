@@ -36,7 +36,7 @@ const ManagerReports = () => {
                             </div>
                             <div className="flex justify-between items-center text-sm border-b border-gray-700 pb-2">
                                 <span className="text-gray-400">Cash Expected</span>
-                                <span className="text-white font-bold">$1,245.00</span>
+                                <span className="text-white font-bold">₹1,245.00</span>
                             </div>
                             <button onClick={() => setActionModal({ show: true, type: 'eod', report: { name: 'End of Day (EOD)' } })} className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition-colors shadow-md mt-4 flex items-center justify-center gap-2">
                                 <FileText size={18} /> Generate Report
@@ -105,7 +105,7 @@ const ManagerReports = () => {
                                     <div className="grid grid-cols-2 gap-4 pt-2">
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Expected Drawer Cash</label>
-                                            <input type="text" readOnly value="$1,245.00" className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-50 text-gray-500 focus:outline-none" />
+                                            <input type="text" readOnly value="₹1,245.00" className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-gray-50 text-gray-500 focus:outline-none" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Actual Cash Counted</label>

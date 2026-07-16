@@ -81,7 +81,7 @@ const CustomerDashboard = () => {
                             <div className="border border-gray-100 bg-gray-50 rounded-2xl p-4 flex justify-between items-center border-dashed">
                                 <div>
                                     <p className="font-bold text-gray-900">FREE DESSERT</p>
-                                    <p className="text-xs text-gray-500 mt-1">On orders over $50</p>
+                                    <p className="text-xs text-gray-500 mt-1">On orders over ₹50</p>
                                 </div>
                                 <button className="text-xs font-bold bg-white text-gray-600 px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
                                     Copy
@@ -105,8 +105,8 @@ const CustomerDashboard = () => {
 
                         <div className="space-y-4">
                             {[
-                                { id: '#ORD-8821', date: 'Yesterday', items: 'Ribeye Steak, Craft IPA', total: '$42.00', status: 'Delivered' },
-                                { id: '#ORD-8805', date: 'Oct 12, 2026', items: 'Paneer Tikka, Green Wrap', total: '$28.50', status: 'Delivered' }
+                                { id: '#ORD-8821', date: 'Yesterday', items: 'Ribeye Steak, Craft IPA', total: '₹42.00', status: 'Delivered' },
+                                { id: '#ORD-8805', date: 'Oct 12, 2026', items: 'Paneer Tikka, Green Wrap', total: '₹28.50', status: 'Delivered' }
                             ].map((order, idx) => (
                                 <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-gray-100 hover:border-orange-200 transition-colors gap-4">
                                     <div className="flex items-center gap-4">
@@ -159,8 +159,8 @@ const CustomerDashboard = () => {
                             </div>
                             <div className="space-y-3">
                                 {[
-                                    { name: 'Avocado Bowl', price: '$15.00' },
-                                    { name: 'Crispy Calamari', price: '$12.00' }
+                                    { name: 'Avocado Bowl', price: '₹15.00' },
+                                    { name: 'Crispy Calamari', price: '₹12.00' }
                                 ].map((fav, i) => (
                                     <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                                         <div className="flex items-center gap-3">

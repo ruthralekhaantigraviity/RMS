@@ -49,7 +49,7 @@ const WaiterDashboard = () => {
         }
         return { id: String(t.tableNumber), status: displayStatus, seats: t.capacity || t.seats || 4, orders: order, dbId: t._id };
     }) : [1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
-        const id = `T-${num}`;
+        const id = `T-₹{num}`;
         const order = activeOrders.find(o => o.tableNumber === id || o.tableNumber === String(num));
         if (order) {
             let status = 'Occupied';
@@ -323,7 +323,7 @@ const WaiterDashboard = () => {
                                             className="p-3 text-left border border-gray-200 rounded-xl hover:border-green-500 hover:shadow-md hover:bg-green-50/50 transition-all group"
                                         >
                                             <p className="font-bold text-gray-900 text-sm truncate">{item.name}</p>
-                                            <p className="text-green-600 font-bold text-xs mt-1">${item.price}</p>
+                                            <p className="text-green-600 font-bold text-xs mt-1">₹{item.price}</p>
                                         </button>
                                     ))}
                                 </div>
@@ -340,7 +340,7 @@ const WaiterDashboard = () => {
                                             <div key={item._id} className="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
                                                 <div className="flex-1">
                                                     <p className="font-bold text-gray-900 text-sm">{item.name}</p>
-                                                    <p className="text-xs text-gray-500 font-medium">${item.price} each</p>
+                                                    <p className="text-xs text-gray-500 font-medium">₹{item.price} each</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <button onClick={() => removeFromCart(item._id)} className="w-7 h-7 bg-red-50 text-red-600 rounded-lg flex items-center justify-center hover:bg-red-100"><Minus size={14} /></button>

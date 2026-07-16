@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Filter, AlertTriangle, ArrowRight, ClipboardList, Edit2, Trash2, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const getStatusBadge = (quantity, minStock) => {
@@ -29,6 +31,14 @@ const InventoryManagement = () => {
         branch: ''
     });
 
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
     const fetchData = async () => {
         try {
             const [invRes, branchesRes] = await Promise.all([
@@ -52,16 +62,23 @@ const InventoryManagement = () => {
         fetchData();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this inventory item?')) {
-            try {
-                await api.delete(`/inventory/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete item', error);
-                alert('Failed to delete item');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Inventory Item',
+            message: 'Are you sure you want to delete this inventory item?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/inventory/${id}`);
+                    fetchData();
+                    toast.success('Inventory item deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete item', error);
+                    toast.error('Failed to delete item');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleEditClick = (item) => {
@@ -72,7 +89,7 @@ const InventoryManagement = () => {
             quantity: item.quantity,
             unit: item.unit,
             minStockLevel: item.minStockLevel,
-            branch: item.branch?._id || ''
+            branch: item.branch?._id || item.branch || ''
         });
         setIsModalOpen(true);
     };
@@ -107,9 +124,10 @@ const InventoryManagement = () => {
             }
             fetchData();
             setIsModalOpen(false);
+            toast.success(editingItem ? 'Inventory item updated' : 'Inventory item added');
         } catch (error) {
             console.error('Failed to save item', error);
-            alert('Failed to save item');
+            toast.error(error.response?.data?.message || 'Failed to save item');
         }
     };
 
@@ -133,6 +151,10 @@ const InventoryManagement = () => {
 
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -140,9 +162,7 @@ const InventoryManagement = () => {
                     <p className="text-gray-500 text-sm mt-1">Track stock levels, wastage, and ingredient usage.</p>
                 </div>
                 <div className="flex gap-3">
-                    <button className="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm shadow-sm">
-                        <ClipboardList size={18} /> Stock Count
-                    </button>
+
                     <button 
                         onClick={handleAddClick}
                         className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md shadow-green-900/10"
@@ -224,12 +244,6 @@ const InventoryManagement = () => {
                         <option value="Dry Goods">Dry Goods</option>
                         <option value="Beverages">Beverages</option>
                     </select>
-                    <button 
-                        onClick={() => { setCategoryFilter('All Categories'); setFilterStatus('All'); setSearchQuery(''); }}
-                        className="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm shadow-sm"
-                    >
-                        <Filter size={18} /> Clear Filters
-                    </button>
                 </div>
             </div>
 
@@ -286,7 +300,7 @@ const InventoryManagement = () => {
                                         {getStatusBadge(item.quantity, item.minStockLevel)}
                                     </td>
                                     <td className="px-6 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center justify-end gap-3 transition-opacity">
                                             <button 
                                                 onClick={() => handleEditClick(item)}
                                                 className="text-gray-400 hover:text-blue-600 transition-colors p-2 hover:bg-blue-50 rounded-lg" 

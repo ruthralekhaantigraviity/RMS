@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Filter, Download, Star, Mail, Phone, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const getTierStyle = (tier) => {
@@ -48,9 +49,10 @@ const CustomerManagement = () => {
             fetchCustomers();
             setIsModalOpen(false);
             setFormData({ name: '', email: '', phone: '' });
+            toast.success('Customer added successfully');
         } catch (error) {
             console.error('Failed to create customer', error);
-            alert(error.response?.data?.message || 'Error creating customer');
+            toast.error(error.response?.data?.message || 'Error creating customer');
         }
     };
 
@@ -153,7 +155,7 @@ const CustomerManagement = () => {
                                             {customer.visits}
                                         </td>
                                         <td className="px-6 py-4 text-right font-bold text-green-600" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                                            ${customer.totalSpend.toFixed(2)}
+                                            ₹{customer.totalSpend.toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wide border ${getTierStyle(customer.tier)}`}>

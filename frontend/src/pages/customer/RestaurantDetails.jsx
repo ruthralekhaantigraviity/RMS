@@ -125,7 +125,7 @@ const RestaurantDetails = () => {
                             <h3 className="font-bold text-gray-900 mb-4 px-2">Menu</h3>
                             <div className="space-y-1">
                                 {categories.map(cat => (
-                                    <a href={`#category-${cat}`} key={cat} className="block px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-red-600 transition-colors">
+                                    <a href={`#category-₹{cat}`} key={cat} className="block px-4 py-2.5 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-red-600 transition-colors">
                                         {cat}
                                     </a>
                                 ))}
@@ -136,7 +136,7 @@ const RestaurantDetails = () => {
                     {/* Menu Items */}
                     <div className="flex-1 space-y-12">
                         {categories.map(category => (
-                            <div key={category} id={`category-${category}`} className="scroll-mt-24">
+                            <div key={category} id={`category-₹{category}`} className="scroll-mt-24">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-6">{category}</h2>
                                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
                                     {menu.filter(item => item.category === category).map(item => (

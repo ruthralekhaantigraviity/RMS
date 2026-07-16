@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, MapPin, Phone, Mail, ExternalLink, Edit2, Trash2, X, Star } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const SupplierManagement = () => {
@@ -21,6 +23,15 @@ const SupplierManagement = () => {
         branch: '',
         isActive: true
     });
+
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
 
     const fetchData = async () => {
         try {
@@ -45,16 +56,23 @@ const SupplierManagement = () => {
         fetchData();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to remove this supplier?')) {
-            try {
-                await api.delete(`/suppliers/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete supplier', error);
-                alert('Failed to delete supplier');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Remove Supplier',
+            message: 'Are you sure you want to remove this supplier?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/suppliers/${id}`);
+                    fetchData();
+                    toast.success('Supplier removed successfully');
+                } catch (error) {
+                    console.error('Failed to delete supplier', error);
+                    toast.error('Failed to delete supplier');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleEditClick = (supplier) => {
@@ -66,7 +84,7 @@ const SupplierManagement = () => {
             phone: supplier.phone,
             email: supplier.email || '',
             address: supplier.address || '',
-            branch: supplier.branch?._id || '',
+            branch: supplier.branch?._id || supplier.branch || '',
             isActive: supplier.isActive
         });
         setIsModalOpen(true);
@@ -97,9 +115,10 @@ const SupplierManagement = () => {
             }
             fetchData();
             setIsModalOpen(false);
+            toast.success(editingSupplier ? 'Supplier updated' : 'Supplier added');
         } catch (error) {
             console.error('Failed to save supplier', error);
-            alert('Failed to save supplier');
+            toast.error(error.response?.data?.message || 'Failed to save supplier');
         }
     };
 
@@ -111,6 +130,10 @@ const SupplierManagement = () => {
 
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -154,7 +177,7 @@ const SupplierManagement = () => {
                             </div>
                             
                             {/* Delete Button (Hover) */}
-                            <div className="absolute top-4 right-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute top-4 right-20 transition-opacity">
                                 <button 
                                     onClick={() => handleDelete(supplier._id)}
                                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -195,7 +218,10 @@ const SupplierManagement = () => {
                             </div>
 
                             <div className="flex gap-3">
-                                <button className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                                <button 
+                                    onClick={() => toast('Supplier order tracking is coming soon!', { icon: '🚧' })}
+                                    className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                                >
                                     <ExternalLink size={16} /> View Orders
                                 </button>
                                 <button 

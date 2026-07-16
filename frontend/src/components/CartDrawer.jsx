@@ -57,7 +57,7 @@ const CartDrawer = () => {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h3 className="font-bold text-gray-900 leading-tight">{item.name}</h3>
-                                            <p className="text-orange-600 font-bold text-sm mt-1">${item.price.toFixed(2)}</p>
+                                            <p className="text-orange-600 font-bold text-sm mt-1">₹{item.price.toFixed(2)}</p>
                                         </div>
                                         <button 
                                             onClick={() => removeFromCart(item.id)}
@@ -94,7 +94,7 @@ const CartDrawer = () => {
                     <div className="p-6 border-t border-gray-100 bg-gray-50/50 space-y-4">
                         <div className="flex justify-between items-center text-gray-500 font-medium">
                             <span>Subtotal</span>
-                            <span className="text-gray-900 font-bold">${cartTotal.toFixed(2)}</span>
+                            <span className="text-gray-900 font-bold">₹{cartTotal.toFixed(2)}</span>
                         </div>
                         <p className="text-xs text-gray-400 text-center">Taxes and discounts calculated at checkout.</p>
                         <button 

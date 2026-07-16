@@ -4,7 +4,7 @@ const mockLogs = [
     { id: 1, action: 'User Login', module: 'Auth', user: 'Admin User', role: 'Admin', time: '10:45 AM', date: 'Oct 24, 2026', ip: '192.168.1.1', desc: 'Successful login', type: 'info' },
     { id: 2, action: 'Deleted Menu Item', module: 'Catalog', user: 'Marcus Wong', role: 'Head Chef', time: '10:12 AM', date: 'Oct 24, 2026', ip: '192.168.1.5', desc: 'Deleted "Spicy Tacos" (ID: 104)', type: 'danger' },
     { id: 3, action: 'Updated Tax Rule', module: 'Settings', user: 'Admin User', role: 'Admin', time: '09:30 AM', date: 'Oct 24, 2026', ip: '192.168.1.1', desc: 'Changed GST rate from 4.5% to 5.0%', type: 'warning' },
-    { id: 4, action: 'Processed Refund', module: 'Finance', user: 'Sarah Jenkins', role: 'Manager', time: '08:15 AM', date: 'Oct 24, 2026', ip: '192.168.1.2', desc: 'Refunded $120.00 for Order #ORD-081', type: 'warning' },
+    { id: 4, action: 'Processed Refund', module: 'Finance', user: 'Sarah Jenkins', role: 'Manager', time: '08:15 AM', date: 'Oct 24, 2026', ip: '192.168.1.2', desc: 'Refunded ₹120.00 for Order #ORD-081', type: 'warning' },
     { id: 5, action: 'Created New Order', module: 'Orders', user: 'David Smith', role: 'Cashier', time: '08:05 AM', date: 'Oct 24, 2026', ip: '192.168.1.4', desc: 'Created Dine-in Order #ORD-092 for Table T-04', type: 'info' },
     { id: 6, action: 'Added Employee', module: 'Staff', user: 'Admin User', role: 'Admin', time: 'Yesterday', date: 'Oct 23, 2026', ip: '192.168.1.1', desc: 'Created profile for Jessica Lee (Line Cook)', type: 'success' },
 ];

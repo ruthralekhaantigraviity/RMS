@@ -30,7 +30,7 @@ const ManagerSales = () => {
                         <p className="text-green-50 font-medium">Gross Sales</p>
                         <DollarSign size={20} className="text-green-200" />
                     </div>
-                    <h3 className="text-3xl font-extrabold mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,850.00</h3>
+                    <h3 className="text-3xl font-extrabold mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,850.00</h3>
                     <p className="text-sm text-green-100 flex items-center gap-1 font-medium"><TrendingUp size={14} /> +15% vs Last Week</p>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -38,7 +38,7 @@ const ManagerSales = () => {
                         <p className="text-gray-500 font-medium">Net Sales</p>
                         <Wallet size={20} className="text-blue-500" />
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,250.00</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250.00</h3>
                     <p className="text-sm text-gray-400 font-medium">After discounts & refunds</p>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -46,7 +46,7 @@ const ManagerSales = () => {
                         <p className="text-gray-500 font-medium">Avg Ticket Size</p>
                         <CreditCard size={20} className="text-purple-500" />
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>$45.20</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>₹45.20</h3>
                     <p className="text-sm text-gray-400 font-medium">Based on 94 transactions</p>
                 </div>
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
@@ -54,7 +54,7 @@ const ManagerSales = () => {
                         <p className="text-gray-500 font-medium">Total Tax</p>
                         <DollarSign size={20} className="text-orange-500" />
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>$340.00</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 mb-1" style={{ fontFamily: 'Manrope, sans-serif' }}>₹340.00</h3>
                     <p className="text-sm text-gray-400 font-medium">8.0% Standard Rate</p>
                 </div>
             </div>
@@ -72,17 +72,17 @@ const ManagerSales = () => {
                             </div>
                         ))}
                     </div>
-                    <div className="mt-8 text-center text-sm text-gray-500 font-medium">Peak Hour: 5:00 PM - 6:00 PM ($1,200)</div>
+                    <div className="mt-8 text-center text-sm text-gray-500 font-medium">Peak Hour: 5:00 PM - 6:00 PM (₹1,200)</div>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2"><PieChart size={18} className="text-purple-500" /> Sales by Category</h3>
                     <div className="space-y-4">
                         {[
-                            { name: 'Main Course', value: '45%', amount: '$1,912.50', color: 'bg-green-500' },
-                            { name: 'Beverages', value: '25%', amount: '$1,062.50', color: 'bg-blue-500' },
-                            { name: 'Appetizers', value: '15%', amount: '$637.50', color: 'bg-orange-500' },
-                            { name: 'Desserts', value: '15%', amount: '$637.50', color: 'bg-purple-500' },
+                            { name: 'Main Course', value: '45%', amount: '₹1,912.50', color: 'bg-green-500' },
+                            { name: 'Beverages', value: '25%', amount: '₹1,062.50', color: 'bg-blue-500' },
+                            { name: 'Appetizers', value: '15%', amount: '₹637.50', color: 'bg-orange-500' },
+                            { name: 'Desserts', value: '15%', amount: '₹637.50', color: 'bg-purple-500' },
                         ].map((cat, i) => (
                             <div key={i}>
                                 <div className="flex justify-between text-sm mb-1">
@@ -159,12 +159,12 @@ const ManagerSales = () => {
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {[
-                                        { time: '17:42', id: '#ORD-112', type: 'Dine-In', amount: '$145.50', payment: 'Credit Card' },
-                                        { time: '17:35', id: '#ORD-111', type: 'Takeaway', amount: '$32.00', payment: 'Cash' },
-                                        { time: '17:15', id: '#ORD-110', type: 'Dine-In', amount: '$85.20', payment: 'Credit Card' },
-                                        { time: '16:50', id: '#ORD-109', type: 'Delivery', amount: '$55.00', payment: 'Online' },
-                                        { time: '16:30', id: '#ORD-108', type: 'Dine-In', amount: '$210.00', payment: 'Credit Card' },
-                                        { time: '16:10', id: '#ORD-107', type: 'Takeaway', amount: '$18.50', payment: 'Cash' },
+                                        { time: '17:42', id: '#ORD-112', type: 'Dine-In', amount: '₹145.50', payment: 'Credit Card' },
+                                        { time: '17:35', id: '#ORD-111', type: 'Takeaway', amount: '₹32.00', payment: 'Cash' },
+                                        { time: '17:15', id: '#ORD-110', type: 'Dine-In', amount: '₹85.20', payment: 'Credit Card' },
+                                        { time: '16:50', id: '#ORD-109', type: 'Delivery', amount: '₹55.00', payment: 'Online' },
+                                        { time: '16:30', id: '#ORD-108', type: 'Dine-In', amount: '₹210.00', payment: 'Credit Card' },
+                                        { time: '16:10', id: '#ORD-107', type: 'Takeaway', amount: '₹18.50', payment: 'Cash' },
                                     ].map((tx, i) => (
                                         <tr key={i} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4 text-sm font-medium text-gray-600">{tx.time}</td>

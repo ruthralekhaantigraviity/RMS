@@ -34,7 +34,7 @@ const ChefPrepList = () => {
                     {mockTasks.map((task, i) => (
                         <div key={i} className={`p-4 flex items-center justify-between hover:bg-[#252b3b] transition-colors ${task.completed ? 'opacity-50' : ''}`}>
                             <div className="flex items-center gap-4">
-                                <button className={`text-${task.completed ? 'green-500' : 'gray-500'} hover:text-green-400 transition-colors`}>
+                                <button className={`text-₹{task.completed ? 'green-500' : 'gray-500'} hover:text-green-400 transition-colors`}>
                                     {task.completed ? <CheckSquare size={24} /> : <Square size={24} />}
                                 </button>
                                 <div>

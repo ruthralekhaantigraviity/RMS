@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Filter, Mail, Phone, Calendar, Clock, MoreVertical, ShieldCheck, MapPin, X, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const getStatusColor = (status) => {
@@ -31,6 +33,14 @@ const StaffManagement = () => {
         password: '',
         role: 'Waiter',
         branchId: ''
+    });
+
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
     });
 
     const fetchData = async () => {
@@ -67,9 +77,10 @@ const StaffManagement = () => {
             setIsModalOpen(false);
             setEditingStaffId(null);
             setFormData({ name: '', email: '', phone: '', password: '', role: 'Waiter', branchId: branches[0]?._id || '' });
+            toast.success(editingStaffId ? 'Employee updated' : 'Employee added');
         } catch (error) {
             console.error('Failed to save employee', error);
-            alert(error.response?.data?.message || 'Error saving employee');
+            toast.error(error.response?.data?.message || 'Error saving employee');
         }
     };
 
@@ -80,7 +91,7 @@ const StaffManagement = () => {
             phone: staff.phoneNumber || '',
             password: '', // blank password unless changing
             role: staff.role,
-            branchId: staff.branchId?._id || ''
+            branchId: staff.branchId?._id || staff.branchId || ''
         });
         setEditingStaffId(staff._id);
         setIsModalOpen(true);
@@ -90,16 +101,23 @@ const StaffManagement = () => {
         setPermsModalData(role);
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to completely remove this employee?')) {
-            try {
-                await api.delete(`/staff/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete staff', error);
-                alert('Failed to delete staff');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Remove Employee',
+            message: 'Are you sure you want to completely remove this employee?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/staff/${id}`);
+                    fetchData();
+                    toast.success('Employee removed successfully');
+                } catch (error) {
+                    console.error('Failed to delete staff', error);
+                    toast.error('Failed to delete staff');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const filteredStaff = staffList.filter(staff => {
@@ -115,6 +133,10 @@ const StaffManagement = () => {
 
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6 relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 md:gap-0">
                 <div>
@@ -195,7 +217,7 @@ const StaffManagement = () => {
                             <div className="p-5 border-b border-gray-50 relative">
                                 <button 
                                     onClick={() => handleDelete(staff._id)}
-                                    className="absolute top-4 right-4 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-4 right-4 text-gray-300 hover:text-red-500 transition-opacity"
                                     title="Remove Staff"
                                 >
                                     <Trash2 size={18} />
@@ -207,7 +229,7 @@ const StaffManagement = () => {
                                         <span className={`absolute bottom-0 right-1 w-4 h-4 rounded-full border-2 border-white bg-green-500`}></span>
                                     </div>
                                     <h3 className="font-bold text-gray-900 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>{staff.name}</h3>
-                                    <p className="text-sm font-medium text-green-600 mt-0.5">{staff.role.replace(/([A-Z])/g, ' $1').trim()}</p>
+                                    <p className="text-sm font-medium text-green-600 mt-0.5">{staff.role.replace(/([A-Z])/g, ' ₹1').trim()}</p>
                                     <p className="text-xs text-gray-400 mt-1">EMP-{staff._id.substring(staff._id.length - 4).toUpperCase()}</p>
                                 </div>
                             </div>
@@ -362,7 +384,7 @@ const StaffManagement = () => {
                                     <ShieldCheck size={24} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{permsModalData.replace(/([A-Z])/g, ' $1').trim()} Permissions</h3>
+                                    <h3 className="font-bold text-gray-900">{permsModalData.replace(/([A-Z])/g, ' ₹1').trim()} Permissions</h3>
                                     <p className="text-xs text-gray-500">Role Capabilities</p>
                                 </div>
                             </div>

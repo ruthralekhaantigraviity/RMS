@@ -3,10 +3,10 @@ import { CheckSquare, Receipt } from 'lucide-react';
 const WaiterCompleted = () => {
     // Mock data for completed orders
     const completed = [
-        { id: '#1019', table: 'T-1', time: '45m ago', total: '$45.00', status: 'Paid' },
-        { id: '#1015', table: 'T-4', time: '1h 12m ago', total: '$112.50', status: 'Paid' },
-        { id: '#1012', table: 'T-7', time: '2h 5m ago', total: '$28.00', status: 'Paid' },
-        { id: '#1008', table: 'T-2', time: '3h ago', total: '$65.00', status: 'Paid' },
+        { id: '#1019', table: 'T-1', time: '45m ago', total: '₹45.00', status: 'Paid' },
+        { id: '#1015', table: 'T-4', time: '1h 12m ago', total: '₹112.50', status: 'Paid' },
+        { id: '#1012', table: 'T-7', time: '2h 5m ago', total: '₹28.00', status: 'Paid' },
+        { id: '#1008', table: 'T-2', time: '3h ago', total: '₹65.00', status: 'Paid' },
     ];
 
     return (

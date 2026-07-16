@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Tag, Image as ImageIcon, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const MenuManagement = () => {
@@ -24,6 +26,14 @@ const MenuManagement = () => {
         tags: ''
     });
 
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
     const fetchMenu = async () => {
         try {
             const [menuRes, catRes] = await Promise.all([
@@ -43,16 +53,23 @@ const MenuManagement = () => {
         fetchMenu();
     }, [api]);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to completely remove this menu item?')) {
-            try {
-                await api.delete(`/menu/${id}`);
-                fetchMenu();
-            } catch (error) {
-                console.error('Failed to delete item', error);
-                alert('Failed to delete item');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Menu Item',
+            message: 'Are you sure you want to completely remove this menu item?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/menu/${id}`);
+                    fetchMenu();
+                    toast.success('Menu item deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete item', error);
+                    toast.error('Failed to delete item');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleEditClick = (item) => {
@@ -75,7 +92,7 @@ const MenuManagement = () => {
             name: '',
             description: '',
             price: '',
-            category: categories.length > 0 ? categories[0].name : 'Meal',
+            category: 'Meal',
             isActive: true,
             image: '',
             tags: ''
@@ -85,6 +102,13 @@ const MenuManagement = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.name.trim()) {
+            return toast.error("Item name is required");
+        }
+        if (!formData.price || isNaN(Number(formData.price)) || Number(formData.price) < 0) {
+            return toast.error("Valid price is required");
+        }
         
         const payload = {
             ...formData,
@@ -100,9 +124,10 @@ const MenuManagement = () => {
             }
             fetchMenu();
             setIsModalOpen(false);
+            toast.success(editingItem ? 'Menu item updated' : 'Menu item created');
         } catch (error) {
             console.error('Failed to save menu item', error);
-            alert('Failed to save menu item');
+            toast.error(error.response?.data?.message || 'Failed to save menu item');
         }
     };
 
@@ -122,6 +147,10 @@ const MenuManagement = () => {
 
     return (
         <div className="space-y-6 relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -151,9 +180,11 @@ const MenuManagement = () => {
                 <div className="flex gap-3">
                     <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Categories</option>
-                        {categories.map(c => (
-                            <option key={c._id} value={c.name}>{c.name}</option>
-                        ))}
+                        <option value="Meal">Meal</option>
+                        <option value="Starter">Starter</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Burger">Burger</option>
+                        <option value="Dessert">Dessert</option>
                     </select>
                     <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Statuses</option>
@@ -213,7 +244,7 @@ const MenuManagement = () => {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-sm font-bold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
-                                        ${item.price.toFixed(2)}
+                                        ₹{item.price.toFixed(2)}
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${item.isActive ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
@@ -263,7 +294,6 @@ const MenuManagement = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Item Name</label>
                                     <input 
                                         type="text" 
-                                        required
                                         value={formData.name}
                                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                                         className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
@@ -284,12 +314,11 @@ const MenuManagement = () => {
                                 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
                                         <input 
                                             type="number" 
                                             step="0.01"
                                             min="0"
-                                            required
                                             value={formData.price}
                                             onChange={(e) => setFormData({...formData, price: e.target.value})}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
@@ -303,18 +332,11 @@ const MenuManagement = () => {
                                             onChange={(e) => setFormData({...formData, category: e.target.value})}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                                         >
-                                            {categories.length === 0 && (
-                                                <>
-                                                    <option value="Meal">Meal</option>
-                                                    <option value="Starters">Starters</option>
-                                                    <option value="Pizza">Pizza</option>
-                                                    <option value="Burger">Burger</option>
-                                                    <option value="Desserts">Desserts</option>
-                                                </>
-                                            )}
-                                            {categories.map(c => (
-                                                <option key={c._id} value={c.name}>{c.name}</option>
-                                            ))}
+                                            <option value="Meal">Meal</option>
+                                            <option value="Starter">Starter</option>
+                                            <option value="Pizza">Pizza</option>
+                                            <option value="Burger">Burger</option>
+                                            <option value="Dessert">Dessert</option>
                                         </select>
                                     </div>
                                 </div>

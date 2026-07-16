@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Search, Filter, Clock, CheckCircle2, ChefHat, Motorbike, Eye } from 'lucide-react';
 
 const activeOrders = [
-    { id: '#ORD-092', type: 'Dine-in', table: 'T-04', items: 3, total: '$45.00', status: 'New', time: '10 mins ago', customer: 'Walk-in' },
-    { id: '#ORD-093', type: 'Delivery', address: '123 Main St', items: 2, total: '$32.50', status: 'Preparing', time: '15 mins ago', customer: 'John Doe' },
-    { id: '#ORD-094', type: 'Takeaway', items: 1, total: '$14.99', status: 'Ready', time: '25 mins ago', customer: 'Sarah Smith' },
-    { id: '#ORD-095', type: 'Dine-in', table: 'T-12', items: 5, total: '$89.00', status: 'Preparing', time: '8 mins ago', customer: 'Walk-in' },
-    { id: '#ORD-096', type: 'Delivery', address: '456 Elm St', items: 4, total: '$65.00', status: 'On the way', time: '35 mins ago', customer: 'Mike Johnson' },
+    { id: '#ORD-092', type: 'Dine-in', table: 'T-04', items: 3, total: '₹45.00', status: 'New', time: '10 mins ago', customer: 'Walk-in' },
+    { id: '#ORD-093', type: 'Delivery', address: '123 Main St', items: 2, total: '₹32.50', status: 'Preparing', time: '15 mins ago', customer: 'John Doe' },
+    { id: '#ORD-094', type: 'Takeaway', items: 1, total: '₹14.99', status: 'Ready', time: '25 mins ago', customer: 'Sarah Smith' },
+    { id: '#ORD-095', type: 'Dine-in', table: 'T-12', items: 5, total: '₹89.00', status: 'Preparing', time: '8 mins ago', customer: 'Walk-in' },
+    { id: '#ORD-096', type: 'Delivery', address: '456 Elm St', items: 4, total: '₹65.00', status: 'On the way', time: '35 mins ago', customer: 'Mike Johnson' },
 ];
 
 const getStatusColor = (status) => {
@@ -140,7 +140,7 @@ const OrderCard = ({ order }) => (
         </div>
 
         {/* Hover action */}
-        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 border border-green-500">
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl transition-opacity flex items-center justify-center gap-3 border border-green-500">
              <button className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-gray-200 transition-colors" title="View Details"><Eye size={18} /></button>
              <button className="bg-green-600 p-2 rounded-full text-white hover:bg-green-700 transition-colors" title="Advance Status"><CheckCircle2 size={18} /></button>
         </div>

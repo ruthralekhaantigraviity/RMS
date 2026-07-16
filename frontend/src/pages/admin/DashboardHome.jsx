@@ -22,11 +22,11 @@ const topDishes = [
 ];
 
 const recentOrders = [
-    { id: '#1024', customer: 'Aarav Singh', table: 'T-4', amount: '$42.00', status: 'Served' },
-    { id: '#1023', customer: 'Priya Mehta', table: 'T-8', amount: '$28.50', status: 'In Kitchen' },
-    { id: '#1022', customer: 'Ravi Kumar', table: 'T-2', amount: '$65.00', status: 'Completed' },
-    { id: '#1021', customer: 'Sana Patel', table: 'T-6', amount: '$19.00', status: 'Served' },
-    { id: '#1020', customer: 'Dev Joshi', table: 'T-1', amount: '$55.00', status: 'Completed' },
+    { id: '#1024', customer: 'Aarav Singh', table: 'T-4', amount: '₹42.00', status: 'Served' },
+    { id: '#1023', customer: 'Priya Mehta', table: 'T-8', amount: '₹28.50', status: 'In Kitchen' },
+    { id: '#1022', customer: 'Ravi Kumar', table: 'T-2', amount: '₹65.00', status: 'Completed' },
+    { id: '#1021', customer: 'Sana Patel', table: 'T-6', amount: '₹19.00', status: 'Served' },
+    { id: '#1020', customer: 'Dev Joshi', table: 'T-1', amount: '₹55.00', status: 'Completed' },
 ];
 
 const statusStyle = {
@@ -47,7 +47,7 @@ const DashboardHome = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Total Revenue"
-                    value={<span style={{ fontFamily: 'Manrope, sans-serif' }}>$45,231</span>}
+                    value={<span style={{ fontFamily: 'Manrope, sans-serif' }}>₹45,231</span>}
                     icon={DollarSign}
                     trend={12.5}
                     trendUp={true}
@@ -94,11 +94,11 @@ const DashboardHome = () => {
                                     </linearGradient>
                                 </defs>
                                 <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `$${v}`} />
+                                <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${v}`} />
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 16px rgba(0,0,0,0.08)', fontFamily: 'Inter, sans-serif' }}
-                                    formatter={(val) => [`$${val}`, 'Revenue']}
+                                    formatter={(val) => [`₹${val}`, 'Revenue']}
                                 />
                                 <Area type="monotone" dataKey="revenue" stroke="#16A34A" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" dot={false} activeDot={{ r: 5, fill: '#16A34A' }} />
                             </AreaChart>

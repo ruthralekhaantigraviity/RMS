@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Bell, Megaphone, AlertCircle, Info, MailOpen, MoreHorizontal, X, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const getIcon = (type) => {
@@ -88,9 +89,10 @@ const NotificationCenter = () => {
             fetchNotifications();
             setIsModalOpen(false);
             setFormData({ title: '', desc: '' });
+            toast.success('Broadcast sent successfully');
         } catch (error) {
             console.error('Failed to create broadcast', error);
-            alert('Failed to send broadcast');
+            toast.error('Failed to send broadcast');
         } finally {
             setIsSubmitting(false);
         }
@@ -111,13 +113,7 @@ const NotificationCenter = () => {
                     <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>Notification Center</h2>
                     <p className="text-gray-500 text-sm mt-1">View system alerts, messages, and broadcast announcements.</p>
                 </div>
-                <button 
-                    onClick={() => setIsModalOpen(true)}
-                    className="bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl font-bold transition-colors flex items-center gap-2 text-sm shadow-md shadow-green-900/10" 
-                    style={{ fontFamily: 'Outfit, sans-serif' }}
-                >
-                    <Plus size={18} /> New Broadcast
-                </button>
+
             </div>
             
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 justify-between items-center">

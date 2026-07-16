@@ -77,7 +77,7 @@ const SubscriptionPortal = () => {
                             <h4 className="font-bold text-gray-900 text-lg mb-2">{plan}</h4>
                             <div className="mb-6">
                                 <span className="text-3xl font-black text-gray-900">
-                                    {plan === 'Starter' ? '$49' : plan === 'Professional' ? '$99' : '$199'}
+                                    {plan === 'Starter' ? '₹49' : plan === 'Professional' ? '₹99' : '₹199'}
                                 </span>
                                 <span className="text-gray-500">/mo</span>
                             </div>

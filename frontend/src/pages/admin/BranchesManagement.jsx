@@ -195,7 +195,7 @@ const BranchesManagement = () => {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs text-gray-400 font-medium mb-1">Monthly Rev</p>
-                                    <p className="text-sm font-bold text-green-600" style={{ fontFamily: 'Manrope, sans-serif' }}>$0</p>
+                                    <p className="text-sm font-bold text-green-600" style={{ fontFamily: 'Manrope, sans-serif' }}>₹0</p>
                                 </div>
                             </div>
 

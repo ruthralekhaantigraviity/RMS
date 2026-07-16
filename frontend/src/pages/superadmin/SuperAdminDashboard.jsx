@@ -52,7 +52,7 @@ const SuperAdminDashboard = () => {
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Total SaaS Revenue (MRR)', value: '$12,450', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
+                    { label: 'Total SaaS Revenue (MRR)', value: '₹12,450', icon: TrendingUp, color: 'text-green-600', bg: 'bg-green-50' },
                     { label: 'Active Restaurants', value: stats.activeRestaurants, icon: Store, color: 'text-blue-600', bg: 'bg-blue-50' },
                     { label: 'Frozen Accounts', value: stats.frozenRestaurants, icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50' },
                     { label: 'Total Platform Users', value: stats.totalUsers, icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },

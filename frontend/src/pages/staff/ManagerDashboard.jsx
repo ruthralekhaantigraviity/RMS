@@ -22,7 +22,7 @@ const ManagerDashboard = () => {
                                 <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><TrendingUp size={14}/> +12%</span>
                             </div>
                             <p className="text-gray-500 text-sm font-medium mb-1">Today's Revenue</p>
-                            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,250.00</h2>
+                            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250.00</h2>
                         </div>
                     </div>
                     
@@ -145,7 +145,7 @@ const ManagerDashboard = () => {
                         {/* Daily Goal Progress */}
                         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-md">
                             <h3 className="font-bold text-green-50 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Daily Revenue Goal</h3>
-                            <p className="text-3xl font-extrabold mb-6 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>$4,250 <span className="text-lg text-green-200 font-medium">/ $5,000</span></p>
+                            <p className="text-3xl font-extrabold mb-6 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250 <span className="text-lg text-green-200 font-medium">/ ₹5,000</span></p>
                             
                             <div className="w-full bg-green-700/50 rounded-full h-3 mb-2">
                                 <div className="bg-white rounded-full h-3 w-[85%] relative">
@@ -154,7 +154,7 @@ const ManagerDashboard = () => {
                             </div>
                             <div className="flex justify-between text-sm font-bold text-green-100">
                                 <span>85% Completed</span>
-                                <span>$750 to go</span>
+                                <span>₹750 to go</span>
                             </div>
                         </div>
 

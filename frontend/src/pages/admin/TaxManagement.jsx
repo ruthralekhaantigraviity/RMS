@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, ShieldAlert, Edit2, Trash2, X, Percent, DollarSign } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
 
 const TaxManagement = () => {
@@ -17,6 +19,15 @@ const TaxManagement = () => {
         isActive: true
     });
 
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
+
+
     const fetchData = async () => {
         try {
             const res = await api.get('/taxes');
@@ -32,16 +43,23 @@ const TaxManagement = () => {
         fetchData();
     }, []);
 
-    const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this tax rule?')) {
-            try {
-                await api.delete(`/taxes/${id}`);
-                fetchData();
-            } catch (error) {
-                console.error('Failed to delete tax', error);
-                alert('Failed to delete tax rule');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Tax Rule',
+            message: 'Are you sure you want to delete this tax rule?',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/taxes/${id}`);
+                    fetchData();
+                    toast.success('Tax rule deleted successfully');
+                } catch (error) {
+                    console.error('Failed to delete tax', error);
+                    toast.error('Failed to delete tax rule');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const handleToggleActive = async (tax) => {
@@ -89,14 +107,19 @@ const TaxManagement = () => {
             }
             fetchData();
             setIsModalOpen(false);
+            toast.success(editingTax ? 'Tax rule updated' : 'Tax rule created');
         } catch (error) {
             console.error('Failed to save tax', error);
-            alert(error.response?.data?.message || 'Failed to save tax rule');
+            toast.error(error.response?.data?.message || 'Failed to save tax rule');
         }
     };
 
     return (
         <div className="p-8 max-w-[1600px] mx-auto space-y-6 font-sans relative">
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
             {/* Header */}
             <div className="flex justify-between items-end mb-8">
                 <div>
@@ -156,7 +179,7 @@ const TaxManagement = () => {
                                     </td>
                                     <td className="px-6 py-5">
                                         <span className="font-bold text-gray-900 text-sm">
-                                            {tax.type === 'Percentage' ? `${tax.rate}%` : `$${tax.rate.toFixed(2)}`}
+                                            {tax.type === 'Percentage' ? `${tax.rate}%` : `₹${tax.rate.toFixed(2)}`}
                                         </span>
                                     </td>
                                     <td className="px-6 py-5">
@@ -179,7 +202,7 @@ const TaxManagement = () => {
                                         </button>
                                     </td>
                                     <td className="px-6 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="flex items-center justify-end gap-3 transition-opacity">
                                             <button 
                                                 onClick={() => handleEditClick(tax)}
                                                 className="text-gray-400 hover:text-blue-600 transition-colors p-1"

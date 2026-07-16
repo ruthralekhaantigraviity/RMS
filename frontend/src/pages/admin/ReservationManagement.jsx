@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Calendar as CalendarIcon, Users, Plus, Check, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 
 const getStatusStyle = (status) => {
@@ -72,9 +73,10 @@ const ReservationManagement = () => {
                 branch: branches[0]?._id || '',
                 table: ''
             });
+            toast.success('Booking created successfully');
         } catch (error) {
             console.error('Failed to create booking', error);
-            alert('Error creating booking');
+            toast.error(error.response?.data?.message || 'Error creating booking');
         }
     };
 
@@ -185,7 +187,7 @@ const ReservationManagement = () => {
                                                 
                                                 {/* Actions */}
                                                 {(res.status === 'Confirmed' || res.status === 'Pending') && (
-                                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <div className="flex gap-2 transition-opacity">
                                                         <button 
                                                             onClick={() => handleUpdateStatus(res._id, 'Seated')}
                                                             className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors" title="Seat Guest"

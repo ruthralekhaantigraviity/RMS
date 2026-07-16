@@ -276,7 +276,7 @@ const Home = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between h-48">
                             <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Total Revenue</h4>
-                            <div className="text-4xl font-black text-gray-900">$24,592</div>
+                            <div className="text-4xl font-black text-gray-900">₹24,592</div>
                             <div className="flex items-center gap-2 text-emerald-500 font-bold bg-emerald-50 w-fit px-3 py-1 rounded-lg"><LineChart size={16}/> +12% this week</div>
                         </div>
                         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between h-48">
@@ -362,7 +362,7 @@ const Home = () => {
                         <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
                             <h3 className="text-xl font-bold mb-2">Starter</h3>
                             <p className="text-gray-500 text-sm font-medium mb-6">Perfect for small cafes and food trucks.</p>
-                            <div className="text-4xl font-black mb-6">${isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
+                            <div className="text-4xl font-black mb-6">₹{isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
                             <Link to={`/staff/register?plan=Starter&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Start Free Trial</Link>
                             <div className="space-y-4">
                                 {['1 Outlet', 'Basic POS Billing', 'QR Ordering', 'Email Support'].map((f, i) => (
@@ -375,7 +375,7 @@ const Home = () => {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">Most Popular</div>
                             <h3 className="text-xl font-bold mb-2">Professional</h3>
                             <p className="text-gray-400 text-sm font-medium mb-6">For growing restaurants and multi-locations.</p>
-                            <div className="text-4xl font-black mb-6">${isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
+                            <div className="text-4xl font-black mb-6">₹{isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
                             <Link to={`/staff/register?plan=Professional&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10 flex justify-center items-center">Choose Plan</Link>
                             <div className="space-y-4">
                                 {['Up to 3 Outlets', 'Kitchen Display System', 'Online Ordering App', 'Advanced Analytics', 'Priority Support'].map((f, i) => (
