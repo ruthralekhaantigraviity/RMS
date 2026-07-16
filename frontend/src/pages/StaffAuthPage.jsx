@@ -19,8 +19,6 @@ const StaffAuthPage = () => {
     const [loading, setLoading] = useState(false);
     const [authError, setAuthError] = useState('');
     const [scanActive, setScanActive] = useState(false);
-    const [selectedPayment, setSelectedPayment] = useState('gpay');
-    const [showUpiModal, setShowUpiModal] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success', 'failed'
     
     const { login, register: registerUser } = useAuth();
@@ -70,31 +68,22 @@ const StaffAuthPage = () => {
     };
 
     const startDummyScan = () => {
-        if (paymentStatus === 'success') return;
+        if (paymentStatus === 'success' || paymentStatus === 'processing') return;
         setPaymentStatus('idle');
         setScanActive(true);
         setTimeout(() => {
             setScanActive(false);
-            setShowUpiModal(true);
-        }, 1500);
-    };
-
-    const handleUpiPayment = (success) => {
-        setPaymentStatus('processing');
-        setTimeout(() => {
-            if (success) {
+            setPaymentStatus('processing');
+            // Simulate processing delay
+            setTimeout(() => {
                 setPaymentStatus('success');
+                // Wait for success checkmark to be shown briefly before redirecting
                 setTimeout(() => {
-                    setShowUpiModal(false);
-                    setTimeout(() => {
-                        setStep(4);
-                        submitRegistration();
-                    }, 2000);
+                    setStep(4);
+                    submitRegistration();
                 }, 1500);
-            } else {
-                setPaymentStatus('failed');
-            }
-        }, 2000);
+            }, 1000);
+        }, 1500);
     };
 
     const submitRegistration = async () => {
@@ -124,13 +113,13 @@ const StaffAuthPage = () => {
         }
     };
 
-    // Force cache bust: v2
+    // Force cache bust: v3
     useEffect(() => {
         let timeout;
         if (mode === 'register' && step === 3 && paymentStatus === 'idle') {
             timeout = setTimeout(() => {
                 // If they haven't manually clicked anything after 15 seconds, assume they paid on their phone
-                handleUpiPayment(true);
+                startDummyScan();
             }, 15000);
         }
         return () => clearTimeout(timeout);
@@ -144,7 +133,6 @@ const StaffAuthPage = () => {
         setShowConfirm(false);
         setAuthError('');
         setPaymentStatus('idle');
-        setShowUpiModal(false);
         setScanActive(false);
     };
 
@@ -384,10 +372,10 @@ const StaffAuthPage = () => {
                 </div>
             )}
 
-            {paymentStatus === 'failed' && !showUpiModal && (
+            {paymentStatus === 'failed' && (
                 <div className="mt-6 flex flex-col items-center gap-3 animate-in fade-in">
                     <p className="text-sm font-bold text-red-500">Payment Failed. Subscription Inactive.</p>
-                    <button onClick={startDummyScan} className="bg-gray-900 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-black transition-colors shadow-lg">
+                    <button onClick={() => { setPaymentStatus('idle'); startDummyScan(); }} className="bg-gray-900 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-black transition-colors shadow-lg">
                         Retry Payment
                     </button>
                 </div>
@@ -489,67 +477,6 @@ const StaffAuthPage = () => {
                     {mode === 'register' && step === 5 && renderRegisterStep5()}
                 </div>
             </div>
-            
-            {/* UPI Simulator Modal (Moved outside overflow-hidden) */}
-            {showUpiModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
-                        <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
-                            <h3 className="text-lg font-black text-gray-900 mb-1">
-                                UPI Simulator
-                            </h3>
-                            <p className="text-sm text-gray-500 font-medium">Paying {getValues('restaurantName')} Subscription</p>
-                        </div>
-                        
-                        <div className="p-8 flex flex-col items-center justify-center min-h-[200px]">
-                            {paymentStatus === 'idle' && (
-                                <>
-                                    <div className="text-3xl font-black text-gray-900 mb-6">
-                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '$39.00' : '$49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '$79.00' : '$99.00') : '$199.00'}
-                                    </div>
-                                    <p className="text-sm font-bold text-gray-500 mb-4">Select an app to complete payment:</p>
-                                    <div className="flex flex-col w-full gap-3">
-                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all bg-white shadow-sm hover:shadow">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-5 object-contain" />
-                                        </button>
-                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all bg-white shadow-sm hover:shadow">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-6 object-contain" />
-                                        </button>
-                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50/50 transition-all bg-white shadow-sm hover:shadow">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" className="h-4 object-contain" />
-                                        </button>
-                                    </div>
-                                    <button onClick={() => handleUpiPayment(false)} className="mt-4 text-xs font-bold text-gray-400 hover:text-red-500 transition-colors">
-                                        Simulate Payment Failure
-                                    </button>
-                                </>
-                            )}
-                            
-                            {paymentStatus === 'processing' && (
-                                <div className="flex flex-col items-center gap-4">
-                                    <Loader2 className="animate-spin text-green-500" size={40} />
-                                    <p className="font-bold text-gray-600 text-sm">Processing Payment...</p>
-                                </div>
-                            )}
-
-                            {paymentStatus === 'success' && (
-                                <div className="flex flex-col items-center gap-4 text-green-500">
-                                    <CheckCircle2 size={48} className="animate-in zoom-in" />
-                                    <p className="font-bold text-green-600 text-lg">Payment Successful</p>
-                                </div>
-                            )}
-
-                            {paymentStatus === 'failed' && (
-                                <div className="flex flex-col items-center gap-4 text-red-500">
-                                    <AlertCircle size={48} className="animate-in zoom-in" />
-                                    <p className="font-bold text-red-600 text-lg">Payment Failed</p>
-                                    <button onClick={() => setShowUpiModal(false)} className="mt-2 text-sm font-bold text-gray-500 hover:text-gray-900">Close</button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
             
             <style dangerouslySetInnerHTML={{__html: `
                 @keyframes scan-line {
