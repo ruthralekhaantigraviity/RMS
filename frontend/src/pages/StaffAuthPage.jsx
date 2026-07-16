@@ -68,6 +68,14 @@ const StaffAuthPage = () => {
         }
     };
 
+    const getPlanAmount = () => {
+        const selectedPlan = watch('plan');
+        const isYearly = watch('billingCycle') === 'yearly';
+        if (selectedPlan === 'Basic') return isYearly ? '39.00' : '49.00';
+        if (selectedPlan === 'Pro') return isYearly ? '79.00' : '99.00';
+        return '199.00';
+    };
+
     const startDummyScan = () => {
         if (paymentStatus === 'success' || paymentStatus === 'processing') return;
         setPaymentStatus('idle');
