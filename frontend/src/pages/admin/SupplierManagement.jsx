@@ -219,14 +219,8 @@ const SupplierManagement = () => {
 
                             <div className="flex gap-3">
                                 <button 
-                                    onClick={() => toast('Supplier order tracking is coming soon!', { icon: '🚧' })}
-                                    className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
-                                >
-                                    <ExternalLink size={16} /> View Orders
-                                </button>
-                                <button 
                                     onClick={() => handleEditClick(supplier)}
-                                    className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                                    className="w-full py-2 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
                                 >
                                     Edit Details
                                 </button>
