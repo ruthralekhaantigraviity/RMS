@@ -13,8 +13,13 @@ export const CartProvider = ({ children }) => {
     useEffect(() => {
         const savedCart = localStorage.getItem('restosys_cart');
         const savedWishlist = localStorage.getItem('restosys_wishlist');
-        if (savedCart) setCartItems(JSON.parse(savedCart));
-        if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+        try {
+            if (savedCart) setCartItems(JSON.parse(savedCart));
+            if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+        } catch (e) {
+            localStorage.removeItem('restosys_cart');
+            localStorage.removeItem('restosys_wishlist');
+        }
     }, []);
 
     // Save to local storage
