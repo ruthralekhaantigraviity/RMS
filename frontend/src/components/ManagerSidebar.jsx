@@ -30,7 +30,6 @@ const ManagerSidebar = () => {
             items: [
                 { name: 'Today\'s Sales', path: '/manager/sales', icon: DollarSign },
                 { name: 'Branch Analytics', path: '/manager/analytics', icon: PieChart },
-                { name: 'Daily Reports', path: '/manager/reports', icon: FileText },
             ]
         },
         {

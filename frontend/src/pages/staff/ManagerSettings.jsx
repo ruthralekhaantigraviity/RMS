@@ -23,7 +23,6 @@ const ManagerSettings = () => {
                     {[
                         { name: 'My Profile', icon: User },
                         { name: 'Branch Details', icon: Store },
-                        { name: 'Notifications', icon: Bell },
                         { name: 'Security', icon: Lock },
                     ].map((item, i) => (
                         <button key={i} onClick={() => setActiveTab(item.name)} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-bold text-sm ${activeTab === item.name ? 'bg-green-50 text-green-700' : 'bg-white text-gray-600 hover:bg-gray-50 border border-transparent hover:border-gray-200'}`}>
@@ -107,29 +106,7 @@ const ManagerSettings = () => {
                         </div>
                     )}
 
-                    {activeTab === 'Notifications' && (
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <h3 className="font-bold text-gray-900 text-lg mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>Notification Preferences</h3>
-                            <div className="space-y-6">
-                                {[
-                                    { title: 'New Reservations', desc: 'Get alerted when a new table reservation is made.', enabled: true },
-                                    { title: 'Low Stock Alerts', desc: 'Receive notifications when inventory falls below threshold.', enabled: true },
-                                    { title: 'Customer Feedback', desc: 'Alerts for new 1-2 star reviews.', enabled: true },
-                                    { title: 'Shift Changes', desc: 'Updates when staff request shift swaps.', enabled: false },
-                                ].map((pref, i) => (
-                                    <div key={i} className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-bold text-gray-900">{pref.title}</p>
-                                            <p className="text-sm text-gray-500">{pref.desc}</p>
-                                        </div>
-                                        <div className={`w-11 h-6 rounded-full flex items-center px-1 cursor-pointer transition-colors ${pref.enabled ? 'bg-green-500' : 'bg-gray-300'}`}>
-                                            <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${pref.enabled ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+
 
                     {activeTab === 'Security' && (
                         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
