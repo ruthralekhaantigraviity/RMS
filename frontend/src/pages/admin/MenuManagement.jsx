@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 const MenuManagement = () => {
     const { api } = useAuth();
     const [menuItems, setMenuItems] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('All Categories');
@@ -25,8 +26,12 @@ const MenuManagement = () => {
 
     const fetchMenu = async () => {
         try {
-            const { data } = await api.get('/menu');
-            setMenuItems(data);
+            const [menuRes, catRes] = await Promise.all([
+                api.get('/menu'),
+                api.get('/categories')
+            ]);
+            setMenuItems(menuRes.data);
+            setCategories(catRes.data);
         } catch (error) {
             console.error('Failed to fetch menu items', error);
         } finally {
@@ -70,7 +75,7 @@ const MenuManagement = () => {
             name: '',
             description: '',
             price: '',
-            category: 'Main Course',
+            category: categories.length > 0 ? categories[0].name : 'Main Course',
             isActive: true,
             image: '',
             tags: ''
@@ -102,9 +107,11 @@ const MenuManagement = () => {
     };
 
     const filteredMenu = menuItems.filter(item => {
-        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                              (item.tags && item.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = !query || 
+                              (item.name && String(item.name).toLowerCase().includes(query)) || 
+                              (item.description && String(item.description).toLowerCase().includes(query)) ||
+                              (item.tags && Array.isArray(item.tags) && item.tags.some(t => String(t).toLowerCase().includes(query)));
         const matchesCategory = categoryFilter === 'All Categories' || item.category === categoryFilter;
         let matchesStatus = true;
         if (statusFilter === 'Available') matchesStatus = item.isActive;
@@ -144,10 +151,9 @@ const MenuManagement = () => {
                 <div className="flex gap-3">
                     <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Categories</option>
-                        <option>Starters</option>
-                        <option>Main Course</option>
-                        <option>Desserts</option>
-                        <option>Beverages</option>
+                        {categories.map(c => (
+                            <option key={c._id} value={c.name}>{c.name}</option>
+                        ))}
                     </select>
                     <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Statuses</option>
@@ -297,11 +303,9 @@ const MenuManagement = () => {
                                             onChange={(e) => setFormData({...formData, category: e.target.value})}
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                                         >
-                                            <option value="Starters">Starters</option>
-                                            <option value="Main Course">Main Course</option>
-                                            <option value="Pizza">Pizza</option>
-                                            <option value="Desserts">Desserts</option>
-                                            <option value="Beverages">Beverages</option>
+                                            {categories.map(c => (
+                                                <option key={c._id} value={c.name}>{c.name}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
