@@ -25,9 +25,14 @@ const ManagerStaff = () => {
         try {
             const res = await api.get('/staff');
             // Filter by manager's branch
-            const filtered = res.data.filter(s => 
-                s.branchId?._id === user.branchId || s.branchId === user.branchId
-            );
+            const filtered = res.data.filter(s => {
+                if (user.role === 'RestaurantAdmin' || user.role === 'SuperAdmin' || !user.branchId) {
+                    return true;
+                }
+                const staffBranchId = s.branchId?._id || s.branchId;
+                const managerBranchId = user.branchId?._id || user.branchId;
+                return staffBranchId && managerBranchId && staffBranchId.toString() === managerBranchId.toString();
+            });
             setStaffList(filtered);
         } catch (error) {
             console.error('Failed to fetch staff for manager dashboard', error);
