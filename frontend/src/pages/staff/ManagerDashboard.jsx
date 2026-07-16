@@ -13,7 +13,7 @@ const ManagerDashboard = () => {
         <div className="w-full max-w-[1600px] mx-auto space-y-6">
                 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
                         <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-110 transition-transform"></div>
                         <div className="relative">
@@ -35,18 +35,6 @@ const ManagerDashboard = () => {
                             </div>
                             <p className="text-gray-500 text-sm font-medium mb-1">Active Orders</p>
                             <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>48</h2>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-110 transition-transform"></div>
-                        <div className="relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-purple-100 text-purple-600 rounded-xl"><Calendar size={24}/></div>
-                                <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-md">Next: 19:00</span>
-                            </div>
-                            <p className="text-gray-500 text-sm font-medium mb-1">Reservations (Today)</p>
-                            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>24</h2>
                         </div>
                     </div>
 
