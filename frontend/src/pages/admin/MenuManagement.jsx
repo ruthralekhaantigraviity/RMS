@@ -6,6 +6,9 @@ const MenuManagement = () => {
     const { api } = useAuth();
     const [menuItems, setMenuItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [categoryFilter, setCategoryFilter] = useState('All Categories');
+    const [statusFilter, setStatusFilter] = useState('All Statuses');
     
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,6 +101,18 @@ const MenuManagement = () => {
         }
     };
 
+    const filteredMenu = menuItems.filter(item => {
+        const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              (item.description && item.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                              (item.tags && item.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())));
+        const matchesCategory = categoryFilter === 'All Categories' || item.category === categoryFilter;
+        let matchesStatus = true;
+        if (statusFilter === 'Available') matchesStatus = item.isActive;
+        if (statusFilter === 'Unavailable') matchesStatus = !item.isActive;
+        
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
+
     return (
         <div className="space-y-6 relative">
             {/* Header */}
@@ -121,18 +136,20 @@ const MenuManagement = () => {
                     <input 
                         type="text" 
                         placeholder="Search menu items..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
                     />
                 </div>
                 <div className="flex gap-3">
-                    <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
+                    <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Categories</option>
                         <option>Starters</option>
                         <option>Main Course</option>
                         <option>Desserts</option>
                         <option>Beverages</option>
                     </select>
-                    <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Statuses</option>
                         <option>Available</option>
                         <option>Unavailable</option>
@@ -162,11 +179,11 @@ const MenuManagement = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : menuItems.length === 0 ? (
+                            ) : filteredMenu.length === 0 ? (
                                 <tr>
                                     <td colSpan="5" className="text-center py-10 text-gray-500">No menu items found.</td>
                                 </tr>
-                            ) : menuItems.map(item => (
+                            ) : filteredMenu.map(item => (
                                 <tr key={item._id} className="hover:bg-gray-50/50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">

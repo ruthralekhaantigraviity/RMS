@@ -17,8 +17,15 @@ const getStatusStyle = (status) => {
         default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
 };
+import { useState } from 'react';
 
 const PaymentManagement = () => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredTransactions = mockTransactions.filter(txn => 
+        txn.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        txn.orderId.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-end">
@@ -60,7 +67,7 @@ const PaymentManagement = () => {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 justify-between items-center">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search transaction ID or order..." className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
+                    <input type="text" placeholder="Search transaction ID or order..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
                 </div>
                 <div className="flex gap-2">
                     <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
@@ -94,7 +101,7 @@ const PaymentManagement = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {mockTransactions.map((txn, idx) => (
+                            {filteredTransactions.map((txn, idx) => (
                                 <tr key={idx} className="hover:bg-gray-50/50 transition-colors group">
                                     <td className="px-6 py-4 font-medium text-gray-900">{txn.id}</td>
                                     <td className="px-6 py-4 text-sm text-gray-500">{txn.date}</td>

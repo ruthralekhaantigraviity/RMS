@@ -22,6 +22,9 @@ const CustomerManagement = () => {
         email: '',
         phone: ''
     });
+    
+    const [searchQuery, setSearchQuery] = useState('');
+    const [tierFilter, setTierFilter] = useState('All Tiers');
 
     const fetchCustomers = async () => {
         try {
@@ -57,6 +60,14 @@ const CustomerManagement = () => {
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     };
 
+    const filteredCustomers = customers.filter(c => {
+        const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              (c.phone && c.phone.includes(searchQuery));
+        const matchesTier = tierFilter === 'All Tiers' || c.tier === tierFilter;
+        return matchesSearch && matchesTier;
+    });
+
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-6 relative">
             <div className="flex justify-between items-end">
@@ -81,10 +92,10 @@ const CustomerManagement = () => {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 justify-between items-center">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input type="text" placeholder="Search by name, email, or phone..." className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
+                    <input type="text" placeholder="Search by name, email, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all" />
                 </div>
                 <div className="flex gap-2">
-                    <select className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
+                    <select value={tierFilter} onChange={(e) => setTierFilter(e.target.value)} className="bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-green-500">
                         <option>All Tiers</option>
                         <option>Platinum</option>
                         <option>Gold</option>
@@ -117,7 +128,7 @@ const CustomerManagement = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {customers.map((customer) => (
+                                {filteredCustomers.map((customer) => (
                                     <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors cursor-pointer group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
