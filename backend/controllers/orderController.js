@@ -62,6 +62,21 @@ export const addOrderItems = async (req, res) => {
         });
 
         const createdOrder = await order.save();
+
+        // Create a notification for the chef
+        try {
+            const Notification = (await import('../models/Notification.js')).default;
+            await Notification.create({
+                title: `New Dine-In Order: Table ${tableNumber || 'Any'}`,
+                desc: `${orderItems.map(i => `${i.qty}x ${i.name}`).join(', ')}`,
+                type: 'Order',
+                restaurantId: finalRestaurantId,
+                read: false
+            });
+        } catch (notifErr) {
+            console.error('Failed to create order notification', notifErr);
+        }
+
         res.status(201).json(createdOrder);
     }
 };
@@ -94,6 +109,21 @@ export const appendOrderItems = async (req, res) => {
             order.status = 'Preparing';
             
             const updatedOrder = await order.save();
+
+            // Create a notification for the chef
+            try {
+                const Notification = (await import('../models/Notification.js')).default;
+                await Notification.create({
+                    title: `Items Added: Table ${order.tableNumber || 'Any'}`,
+                    desc: `${orderItems.map(i => `${i.qty}x ${i.name}`).join(', ')}`,
+                    type: 'Order',
+                    restaurantId: order.restaurantId,
+                    read: false
+                });
+            } catch (notifErr) {
+                console.error('Failed to create order append notification', notifErr);
+            }
+
             res.json(updatedOrder);
         } else {
             res.status(404).json({ message: 'Order not found' });
