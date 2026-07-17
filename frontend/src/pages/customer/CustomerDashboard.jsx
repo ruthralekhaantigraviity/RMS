@@ -1,9 +1,20 @@
+import { useState, useEffect } from 'react';
 import { Gift, Clock, Star, MapPin, ChevronRight, ShoppingBag, Heart } from 'lucide-react';
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 import { Link } from 'react-router-dom';
 
 const CustomerDashboard = () => {
     const { user, logout } = useCustomerAuth();
+    const [reservations, setReservations] = useState([]);
+
+    useEffect(() => {
+        const localRes = JSON.parse(localStorage.getItem('customerReservations') || '[]');
+        const defaultReservations = [
+            { date: 'Oct 10, 2026', time: '8:00 PM', guests: 4, type: 'Outdoor', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' },
+            { date: 'Sep 24, 2026', time: '1:00 PM', guests: 2, type: 'Bar', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' }
+        ];
+        setReservations([...localRes, ...defaultReservations]);
+    }, []);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -136,21 +147,23 @@ const CustomerDashboard = () => {
                                 <h3 className="font-bold text-gray-900">Reservation History</h3>
                             </div>
                             <div className="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-1">
-                                {[
-                                    { date: 'Tomorrow', time: '7:30 PM', guests: 2, type: 'Indoor', status: 'Confirmed', statusColor: 'bg-green-50 text-green-700 border-green-100' },
-                                    { date: 'Oct 10, 2026', time: '8:00 PM', guests: 4, type: 'Outdoor', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' },
-                                    { date: 'Sep 24, 2026', time: '1:00 PM', guests: 2, type: 'Bar', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' }
-                                ].map((res, i) => (
-                                    <div key={i} className="p-3 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between text-xs sm:text-sm">
-                                        <div>
-                                            <p className="font-bold text-gray-900">{res.date} • {res.time}</p>
-                                            <p className="text-xs text-gray-500 mt-0.5">Table for {res.guests} ({res.type})</p>
-                                        </div>
-                                        <span className={`px-2 py-0.5 text-xs font-bold border rounded-lg ${res.statusColor}`}>
-                                            {res.status}
-                                        </span>
+                                {reservations.length === 0 ? (
+                                    <div className="text-center py-8 text-sm text-gray-400 font-medium bg-gray-50 rounded-2xl">
+                                        No reservations made yet.
                                     </div>
-                                ))}
+                                ) : (
+                                    reservations.map((res, i) => (
+                                        <div key={i} className="p-3 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between text-xs sm:text-sm">
+                                            <div>
+                                                <p className="font-bold text-gray-900">{res.date} • {res.time}</p>
+                                                <p className="text-xs text-gray-500 mt-0.5">Table for {res.guests} ({res.type})</p>
+                                            </div>
+                                            <span className={`px-2 py-0.5 text-xs font-bold border rounded-lg ${res.statusColor}`}>
+                                                {res.status}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
                             </div>
                         </div>
 

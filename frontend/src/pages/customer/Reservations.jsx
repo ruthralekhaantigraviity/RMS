@@ -19,6 +19,38 @@ const Reservations = () => {
         // Mock API delay
         setTimeout(() => {
             setIsSubmitting(false);
+            
+            // Format time nicely
+            let formattedTime = time;
+            if (time === '17:00') formattedTime = '5:00 PM';
+            else if (time === '17:30') formattedTime = '5:30 PM';
+            else if (time === '18:00') formattedTime = '6:00 PM';
+            else if (time === '18:30') formattedTime = '6:30 PM';
+            else if (time === '19:00') formattedTime = '7:00 PM';
+            else if (time === '19:30') formattedTime = '7:30 PM';
+            else if (time === '20:00') formattedTime = '8:00 PM';
+            else if (time === '20:30') formattedTime = '8:30 PM';
+            else if (time === '21:00') formattedTime = '9:00 PM';
+
+            // Format date nicely (e.g. YYYY-MM-DD to Month DD, YYYY)
+            let formattedDate = date;
+            try {
+                const d = new Date(date);
+                formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } catch (err) {}
+
+            const newRes = {
+                date: formattedDate,
+                time: formattedTime,
+                guests: parseInt(guests) || 2,
+                type: seating === 'indoor' ? 'Indoor' : seating === 'outdoor' ? 'Outdoor' : 'Bar',
+                status: 'Confirmed',
+                statusColor: 'bg-green-50 text-green-700 border-green-100'
+            };
+
+            const existing = JSON.parse(localStorage.getItem('customerReservations') || '[]');
+            localStorage.setItem('customerReservations', JSON.stringify([newRes, ...existing]));
+
             setStep(2);
         }, 1500);
     };
