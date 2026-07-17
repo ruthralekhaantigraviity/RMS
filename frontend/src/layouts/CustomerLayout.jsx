@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { ShoppingCart, User, UtensilsCrossed, Heart } from 'lucide-react';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
@@ -5,8 +6,9 @@ import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
 
 const CustomerLayout = () => {
-    const { user } = useCustomerAuth();
+    const { user, logout } = useCustomerAuth();
     const { cartCount, setIsCartOpen } = useCart();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans relative">
@@ -46,10 +48,47 @@ const CustomerLayout = () => {
                         </button>
                         
                         {user ? (
-                            <Link to="/profile" className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-full font-bold transition-colors">
-                                <User size={16} />
-                                {user.name}
-                            </Link>
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)} 
+                                    className="flex items-center gap-2 bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-full font-bold transition-colors"
+                                >
+                                    <User size={16} />
+                                    {user.name}
+                                </button>
+                                
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
+                                        <Link 
+                                            to="/profile" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-bold transition-colors"
+                                        >
+                                            Profile
+                                        </Link>
+                                        <Link 
+                                            to="/profile/orders" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-bold transition-colors"
+                                        >
+                                            Orders
+                                        </Link>
+                                        <Link 
+                                            to="/reservations" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-bold transition-colors"
+                                        >
+                                            Reservations
+                                        </Link>
+                                        <button 
+                                            onClick={() => { setIsProfileOpen(false); logout(); }}
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold transition-colors border-t border-gray-100 mt-1 pt-3"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <>
                                 <Link to="/register" className="text-sm font-bold text-gray-600 hover:text-orange-600 transition-colors">
