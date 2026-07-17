@@ -51,7 +51,8 @@ const ChefTopbar = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const unreadCount = notifications.filter(n => !n.read).length || 0; // Or fetch count on load
+    const chefNotifications = notifications.filter(n => n.type === 'Order');
+    const unreadCount = chefNotifications.filter(n => !n.read).length || 0;
 
     return (
         <header className="h-16 bg-[#1e2330] border-b border-[#2a3040] flex items-center justify-between px-8 sticky top-0 z-10">
@@ -69,17 +70,17 @@ const ChefTopbar = () => {
                         <Bell size={20} />
                         {unreadCount > 0 && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1e2330]"></span>}
                     </button>
-
+ 
                     {showNotifs && (
                         <div className="absolute right-0 mt-2 w-80 bg-[#1e2330] rounded-xl shadow-xl border border-[#2a3040] overflow-hidden z-50">
                             <div className="p-3 border-b border-[#2a3040] bg-[#1a1e2a]">
-                                <h3 className="font-bold text-gray-200">Notifications</h3>
+                                <h3 className="font-bold text-gray-200">New Orders</h3>
                             </div>
                             <div className="max-h-80 overflow-y-auto custom-scrollbar">
-                                {notifications.length === 0 ? (
-                                    <div className="p-4 text-center text-gray-500 text-sm">No new notifications</div>
+                                {chefNotifications.length === 0 ? (
+                                    <div className="p-4 text-center text-gray-500 text-sm">No new order alerts</div>
                                 ) : (
-                                    notifications.slice(0, 5).map(note => (
+                                    chefNotifications.slice(0, 10).map(note => (
                                         <div key={note._id} className={`p-4 border-b border-[#2a3040] last:border-0 ${!note.read ? 'bg-[#252b3b]' : ''}`}>
                                             <p className="font-bold text-gray-200 text-sm">{note.title}</p>
                                             <p className="text-xs text-gray-400 mt-1">{note.desc}</p>
