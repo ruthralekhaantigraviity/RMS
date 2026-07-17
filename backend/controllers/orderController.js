@@ -203,6 +203,7 @@ export const updateOrderToPaid = async (req, res) => {
     if (order) {
         order.isPaid = true;
         order.paidAt = Date.now();
+        order.status = 'Delivered';
         
         if (paymentMethod) order.paymentMethod = paymentMethod;
         if (taxPrice !== undefined) order.taxPrice = taxPrice;
@@ -215,6 +216,27 @@ export const updateOrderToPaid = async (req, res) => {
             update_time: Date.now(),
             email_address: 'mock@example.com'
         };
+
+        // Also update table status if it's a Dine In order
+        if (order.orderType === 'Dine In') {
+            try {
+                const mongoose = await import('mongoose');
+                const Table = mongoose.model('Table');
+                const table = await Table.findOne({ 
+                    tableNumber: order.tableNumber, 
+                    restaurantId: order.restaurantId,
+                    branchId: order.branchId
+                });
+                if (table) {
+                    table.status = 'Available';
+                    table.customers = 0;
+                    table.activeOrder = null;
+                    await table.save();
+                }
+            } catch (tableErr) {
+                console.error('Failed to reset table status on pay', tableErr);
+            }
+        }
 
         const updatedOrder = await order.save();
         res.json(updatedOrder);
