@@ -6,12 +6,13 @@ import toast from 'react-hot-toast';
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const Explore = () => {
-    const { user } = useCustomerAuth();
+    const { user, logout } = useCustomerAuth();
     const [restaurants, setRestaurants] = useState([]);
     const [search, setSearch] = useState('');
     const [location, setLocation] = useState(localStorage.getItem('userLocation') || 'San Francisco, CA');
     const [isLocationOpen, setIsLocationOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const availableLocations = ['San Francisco, CA', 'New York, NY', 'Austin, TX', 'London, UK', 'Mumbai, IN'];
 
@@ -169,12 +170,49 @@ const Explore = () => {
                         </div>
 
                         {user ? (
-                            <Link to="/profile" className="hidden md:flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-xl transition-colors font-medium text-gray-700">
-                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-                                    <User size={18} />
-                                </div>
-                                {user.name}
-                            </Link>
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsProfileOpen(!isProfileOpen)} 
+                                    className="hidden md:flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-xl transition-colors font-bold text-gray-700"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                                        <User size={18} />
+                                    </div>
+                                    {user.name}
+                                </button>
+                                
+                                {isProfileOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
+                                        <Link 
+                                            to="/profile" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 font-bold transition-colors text-left"
+                                        >
+                                            Profile
+                                        </Link>
+                                        <Link 
+                                            to="/profile/orders" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 font-bold transition-colors text-left"
+                                        >
+                                            Orders
+                                        </Link>
+                                        <Link 
+                                            to="/reservations" 
+                                            onClick={() => setIsProfileOpen(false)}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 font-bold transition-colors text-left"
+                                        >
+                                            Reservations
+                                        </Link>
+                                        <button 
+                                            onClick={() => { setIsProfileOpen(false); logout(); }}
+                                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-bold transition-colors border-t border-gray-100 mt-1 pt-3"
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <div className="hidden md:flex items-center gap-3">
                                 <Link to="/login?type=customer" className="text-gray-600 hover:text-red-500 font-medium px-4 py-2 rounded-xl hover:bg-red-50 transition-colors">
