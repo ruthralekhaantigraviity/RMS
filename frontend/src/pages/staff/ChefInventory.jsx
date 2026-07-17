@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Trash2, Send, Plus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const ChefInventory = () => {
     const { api } = useAuth();
@@ -25,11 +26,11 @@ const ChefInventory = () => {
         setIsSubmittingWastage(true);
         try {
             await api.post('/inventory/wastage', wastageForm);
-            alert('Wastage logged successfully!');
+            toast.success('Wastage logged successfully!');
             setWastageForm({ ingredientName: '', quantity: '', unit: 'lbs', reason: '' });
         } catch (error) {
             console.error('Failed to log wastage', error);
-            alert('Failed to log wastage');
+            toast.error('Failed to log wastage. Please try again.');
         } finally {
             setIsSubmittingWastage(false);
         }
@@ -40,11 +41,11 @@ const ChefInventory = () => {
         setIsSubmittingRestock(true);
         try {
             await api.post('/notifications/restock', restockForm);
-            alert('Restock request sent to management!');
+            toast.success('Restock request sent to management!');
             setRestockForm({ ingredientNeeded: '', urgency: 'Urgent', notes: '' });
         } catch (error) {
             console.error('Failed to request restock', error);
-            alert('Failed to send restock request');
+            toast.error('Failed to send restock request. Please try again.');
         } finally {
             setIsSubmittingRestock(false);
         }
