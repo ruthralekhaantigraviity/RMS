@@ -20,13 +20,11 @@ const ChefSidebar = () => {
             title: 'Kitchen Ops',
             items: [
                 { name: 'Active KDS', path: '/chef', icon: MonitorDot },
-                { name: 'Prep List', path: '/chef/prep', icon: ClipboardList },
             ]
         },
         {
             title: 'Resources',
             items: [
-                { name: 'Recipes', path: '/chef/recipes', icon: BookOpen },
                 { name: 'Wastage & Restock', path: '/chef/inventory', icon: AlertTriangle },
             ]
         }
