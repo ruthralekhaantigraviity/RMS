@@ -125,7 +125,7 @@ const CashierHistory = () => {
                                 <td className="p-4 text-gray-500 font-medium text-sm truncate max-w-[100px]">{txn._id}</td>
                                 <td className="p-4">
                                     <span className="bg-gray-100 text-gray-800 font-bold px-3 py-1 rounded-lg text-xs">
-                                        {txn.orderType === 'Dine In' ? `T-₹{txn.tableNumber || 'Any'}` : txn.orderType}
+                                        {txn.orderType === 'Dine In' ? `T-${txn.tableNumber || 'Any'}` : txn.orderType}
                                     </span>
                                 </td>
                                 <td className="p-4">
