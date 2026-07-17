@@ -128,6 +128,95 @@ const Home = () => {
                     </div>
                 </section>
 
+                {/* About the Platform (Abstract) & Why Choose Us */}
+                <div className="space-y-24 mb-24">
+                    {/* About the Platform (Abstract) */}
+                    <section id="about" className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-gradient-to-br from-red-50 to-orange-50/20 rounded-[3rem] p-8 md:p-16 border border-red-100/50 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3"></div>
+                        
+                        <div className="space-y-6 relative z-10">
+                            <div className="inline-block px-3 py-1 bg-red-100 text-red-600 rounded-full font-bold text-xs uppercase tracking-wider">
+                                About the Platform
+                            </div>
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight">
+                                One Unified Operating Ecosystem
+                            </h2>
+                            <p className="text-gray-600 font-medium text-lg leading-relaxed">
+                                RestaurantHub functions as a centralized, high-performance SaaS infrastructure engineered to unify front-of-house hospitality and back-of-house kitchen workflows. 
+                            </p>
+                            <p className="text-gray-500 font-medium text-sm leading-relaxed">
+                                By replacing fragmented systems with a real-time synchronized cloud database, our platform streamlines order routing, automates stock replenishment cycles, schedules customer table arrangements, and provides comprehensive revenue analytics. It's built to help you reduce overhead, eliminate coordination errors, and scale your restaurant branches seamlessly.
+                            </p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4 relative z-10">
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100/10 flex flex-col justify-between h-36">
+                                <span className="text-3xl font-black text-red-500">99.9%</span>
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Real-time Uptime</span>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100/10 flex flex-col justify-between h-36">
+                                <span className="text-3xl font-black text-orange-500">30%</span>
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Faster Prep Times</span>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100/10 flex flex-col justify-between h-36">
+                                <span className="text-3xl font-black text-red-500">Zero</span>
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Hardware Lock-ins</span>
+                            </div>
+                            <div className="bg-white p-6 rounded-2xl shadow-sm border border-red-100/10 flex flex-col justify-between h-36">
+                                <span className="text-3xl font-black text-orange-500">2x</span>
+                                <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Order Accuracy</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Why Choose Us */}
+                    <section id="why-choose-us" className="text-center space-y-12">
+                        <div className="space-y-4 max-w-3xl mx-auto">
+                            <div className="inline-block px-3 py-1 bg-orange-100 text-orange-600 rounded-full font-bold text-xs uppercase tracking-wider">
+                                Why Choose Us
+                            </div>
+                            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+                                Built to Scale Your Hospitality Business
+                            </h2>
+                            <p className="text-gray-500 font-medium max-w-2xl mx-auto">
+                                Legacy systems slow you down and bleed profit. Here is why modern operators choose RestaurantHub.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow text-left space-y-4">
+                                <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center font-bold text-xl">
+                                    1
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Zero Setup Barriers</h3>
+                                <p className="text-gray-500 text-sm font-medium leading-relaxed">
+                                    Run the entire app ecosystem on standard iOS, Android, or desktop devices you already own. Completely avoid buying proprietary hardware terminals.
+                                </p>
+                            </div>
+
+                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow text-left space-y-4">
+                                <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center font-bold text-xl">
+                                    2
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">Real-Time Sync</h3>
+                                <p className="text-gray-500 text-sm font-medium leading-relaxed">
+                                    Orders sent from waiter tablets propagate instantly to the kitchen display screen (KDS) and POS billing, preventing order drops or billing disputes.
+                                </p>
+                            </div>
+
+                            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow text-left space-y-4">
+                                <div className="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center font-bold text-xl">
+                                    3
+                                </div>
+                                <h3 className="text-xl font-bold text-gray-900">White-Labeled Ordering</h3>
+                                <p className="text-gray-500 text-sm font-medium leading-relaxed">
+                                    Provide customers with direct table reservation, takeaway scheduling, and digital payment web experiences, bypassing high third-party commissions.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
                 {/* Optional: Demo Customer View (Grid) */}
                 <section id="demo" className="mb-24">
                     <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-8">See how your restaurant will look to customers</h2>
