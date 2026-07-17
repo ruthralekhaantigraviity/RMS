@@ -49,7 +49,7 @@ const WaiterDashboard = () => {
         }
         return { id: String(t.tableNumber), status: displayStatus, seats: t.capacity || t.seats || 4, orders: order, dbId: t._id };
     }) : [1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
-        const id = `T-₹{num}`;
+        const id = `T-${num}`;
         const order = activeOrders.find(o => o.tableNumber === id || o.tableNumber === String(num));
         if (order) {
             let status = 'Occupied';
