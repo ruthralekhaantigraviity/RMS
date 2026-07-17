@@ -29,7 +29,6 @@ const WaiterCompleted = () => {
                             <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Table</th>
                             <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Total Amount</th>
                             <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Time Completed</th>
-                            <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -41,11 +40,6 @@ const WaiterCompleted = () => {
                                 </td>
                                 <td className="p-4 font-bold text-gray-900">{order.total}</td>
                                 <td className="p-4 text-sm font-medium text-gray-500">{order.time}</td>
-                                <td className="p-4">
-                                    <span className="flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-50 px-3 py-1 rounded-full w-max border border-green-100">
-                                        <CheckSquare size={14} /> {order.status}
-                                    </span>
-                                </td>
                             </tr>
                         ))}
                     </tbody>
