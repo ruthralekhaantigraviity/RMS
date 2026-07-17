@@ -7,6 +7,47 @@ import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const categories = ['All', 'Starters', 'Salads', 'Mains', 'Desserts', 'Beverages'];
 
+const getItemImage = (item) => {
+    if (item.image && (item.image.startsWith('http://') || item.image.startsWith('https://'))) {
+        return item.image;
+    }
+    
+    const testString = `${item.image || ''} ${item.name || ''}`.toLowerCase();
+    
+    if (testString.includes('pizza')) {
+        return 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('burger') || testString.includes('burgur')) {
+        return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('dosa') || testString.includes('dhosa') || testString.includes('dhos')) {
+        return 'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('biryani')) {
+        return 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('paneer')) {
+        return 'https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('chicken')) {
+        return 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('noodle') || testString.includes('pasta')) {
+        return 'https://images.unsplash.com/photo-1585032226651-759b368d7246?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('salad')) {
+        return 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('dessert') || testString.includes('cake') || testString.includes('sweet')) {
+        return 'https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    if (testString.includes('drink') || testString.includes('beverage') || testString.includes('soda') || testString.includes('juice')) {
+        return 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80';
+    }
+    
+    return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop';
+};
+
 const Menu = () => {
     const { addToCart, wishlist, toggleWishlist } = useCart();
     const { api } = useCustomerAuth();
@@ -125,7 +166,7 @@ const Menu = () => {
                                 <div key={item._id || item.id} className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 transition-all duration-300 group flex flex-col">
                                     <div className="relative h-56 overflow-hidden">
                                         <img 
-                                            src={item.image} 
+                                            src={getItemImage(item)} 
                                             alt={item.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
