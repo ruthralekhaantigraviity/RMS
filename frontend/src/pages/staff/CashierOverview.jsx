@@ -97,7 +97,7 @@ const CashierOverview = () => {
                         <TrendingUp size={18} className="text-purple-600"/> Quick Actions
                     </h3>
                     <div className="space-y-4">
-                        <Link to="/cashier" className="block w-full p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 transition-colors group">
+                        <Link to="/cashier/billing" className="block w-full p-4 rounded-xl border border-purple-100 bg-purple-50 hover:bg-purple-100 transition-colors group">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h4 className="font-bold text-purple-900 text-lg">Process Payment</h4>
