@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Star, ChevronDown, User, ShoppingBag, Percent, Navigation } from 'lucide-react';
+import { Search, MapPin, Star, ChevronDown, User, ShoppingBag, Percent, Navigation, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -231,6 +231,33 @@ const Explore = () => {
             {/* Main Content */}
             <main className="max-w-[1200px] mx-auto w-full px-4 py-8">
                 
+                {/* Promo Banner with Abstract Graphics & Intro Summary */}
+                <div className="relative rounded-[2rem] overflow-hidden bg-gradient-to-r from-red-500 to-orange-500 text-white p-8 md:p-12 mb-10 shadow-lg shadow-red-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    {/* Abstract Decorative Circles */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3"></div>
+                    <div className="absolute -bottom-10 left-10 w-48 h-48 bg-black/10 rounded-full blur-xl"></div>
+                    
+                    <div className="relative z-10 space-y-3 max-w-xl">
+                        <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            Special Offer
+                        </span>
+                        <h2 className="text-3xl md:text-4xl font-black font-sans tracking-tight">
+                            Delicious food, delivered right to your table!
+                        </h2>
+                        <p className="text-white/80 text-sm font-medium leading-relaxed">
+                            Order online for contactless table service, schedule a quick pickup, or reserve your favorite table in advance. Get 50% discount on your first order.
+                        </p>
+                    </div>
+                    <div className="relative z-10 shrink-0">
+                        <Link 
+                            to="/menu" 
+                            className="bg-white text-red-600 font-bold px-6 py-3.5 rounded-xl shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                        >
+                            Explore Menu <ArrowRight size={18} />
+                        </Link>
+                    </div>
+                </div>
+
                 {/* Food Items Section: "Inspiration for your first order" */}
                 <section className="mb-14">
                     <div className="flex items-center justify-between mb-6">
