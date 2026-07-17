@@ -248,7 +248,7 @@ const CashierDashboard = () => {
                         </div>
 
                         {/* Payment Processing */}
-                        <div className="w-[300px] flex flex-col shrink-0">
+                        <div className="w-[300px] flex flex-col shrink-0 overflow-y-auto custom-scrollbar max-h-full pr-2">
                             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Payment Method</h3>
                             
                             <div className="space-y-3 mb-6">
