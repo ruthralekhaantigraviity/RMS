@@ -83,16 +83,40 @@ const ChefInventory = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-sm font-bold text-gray-400 block mb-1.5">Quantity *</label>
-                                <input 
-                                    required
-                                    value={wastageForm.quantity}
-                                    onChange={(e) => setWastageForm({...wastageForm, quantity: e.target.value})}
-                                    type="number" 
-                                    min="0"
-                                    step="0.01"
-                                    placeholder="0" 
-                                    className="w-full bg-[#151923] border border-[#2a3040] rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500 transition-colors" 
-                                />
+                                <div className="flex items-center bg-[#151923] border border-[#2a3040] rounded-xl overflow-hidden focus-within:border-red-500 transition-colors">
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            const step = wastageForm.unit === 'units' ? 1 : 0.1;
+                                            const val = Math.max(0, parseFloat(wastageForm.quantity || 0) - step);
+                                            setWastageForm({...wastageForm, quantity: String(parseFloat(val.toFixed(2)))});
+                                        }}
+                                        className="px-4 py-3 bg-[#1e2330] hover:bg-[#252b3b] text-gray-400 hover:text-white font-bold transition-colors text-lg border-r border-[#2a3040]"
+                                    >
+                                        -
+                                    </button>
+                                    <input 
+                                        required
+                                        value={wastageForm.quantity}
+                                        onChange={(e) => setWastageForm({...wastageForm, quantity: e.target.value})}
+                                        type="number" 
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="0" 
+                                        className="w-full bg-transparent text-center py-3 text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" 
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            const step = wastageForm.unit === 'units' ? 1 : 0.1;
+                                            const val = parseFloat(wastageForm.quantity || 0) + step;
+                                            setWastageForm({...wastageForm, quantity: String(parseFloat(val.toFixed(2)))});
+                                        }}
+                                        className="px-4 py-3 bg-[#1e2330] hover:bg-[#252b3b] text-gray-400 hover:text-white font-bold transition-colors text-lg border-l border-[#2a3040]"
+                                    >
+                                        +
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label className="text-sm font-bold text-gray-400 block mb-1.5">Unit *</label>
