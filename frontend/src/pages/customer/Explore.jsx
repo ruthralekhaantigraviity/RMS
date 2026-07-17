@@ -28,7 +28,6 @@ const Explore = () => {
     const foodItems = [
         { name: 'Pizza', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
         { name: 'Burger', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
-        { name: 'Rolls', img: 'https://images.unsplash.com/photo-1626700051175-6518c4793f4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
         { name: 'Biryani', img: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
         { name: 'Chicken', img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
         { name: 'Paneer', img: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80' },
