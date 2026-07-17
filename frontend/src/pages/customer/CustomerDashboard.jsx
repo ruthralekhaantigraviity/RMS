@@ -130,24 +130,27 @@ const CustomerDashboard = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Upcoming Reservations */}
-                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-bold text-gray-900">Upcoming Reservation</h3>
+                        {/* Reservation History */}
+                        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-gray-900">Reservation History</h3>
                             </div>
-                            <div className="bg-orange-50 rounded-2xl p-5 border border-orange-100">
-                                <div className="flex items-start gap-4 mb-4">
-                                    <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-orange-500 shrink-0 shadow-sm">
-                                        <Clock size={18} />
+                            <div className="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-1">
+                                {[
+                                    { date: 'Tomorrow', time: '7:30 PM', guests: 2, type: 'Indoor', status: 'Confirmed', statusColor: 'bg-green-50 text-green-700 border-green-100' },
+                                    { date: 'Oct 10, 2026', time: '8:00 PM', guests: 4, type: 'Outdoor', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' },
+                                    { date: 'Sep 24, 2026', time: '1:00 PM', guests: 2, type: 'Bar', status: 'Completed', statusColor: 'bg-gray-100 text-gray-600 border-gray-200' }
+                                ].map((res, i) => (
+                                    <div key={i} className="p-3 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between text-xs sm:text-sm">
+                                        <div>
+                                            <p className="font-bold text-gray-900">{res.date} • {res.time}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">Table for {res.guests} ({res.type})</p>
+                                        </div>
+                                        <span className={`px-2 py-0.5 text-xs font-bold border rounded-lg ${res.statusColor}`}>
+                                            {res.status}
+                                        </span>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-gray-900">Tomorrow at 7:30 PM</p>
-                                        <p className="text-sm text-gray-600 mt-1">Table for 2 • Indoor Seating</p>
-                                    </div>
-                                </div>
-                                <button className="w-full py-2.5 bg-white rounded-xl text-sm font-bold text-gray-700 hover:text-orange-600 transition-colors shadow-sm">
-                                    Modify Booking
-                                </button>
+                                ))}
                             </div>
                         </div>
 

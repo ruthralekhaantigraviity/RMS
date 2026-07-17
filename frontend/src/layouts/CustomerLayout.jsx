@@ -28,7 +28,6 @@ const CustomerLayout = () => {
                     <nav className="hidden md:flex gap-8">
                         <Link to="/explore" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Home</Link>
                         <Link to="/menu" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Menu</Link>
-                        <Link to="/reservations" className="text-gray-600 hover:text-orange-600 font-medium transition-colors">Reservations</Link>
                     </nav>
 
                     <div className="flex items-center gap-6">
@@ -72,13 +71,6 @@ const CustomerLayout = () => {
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-bold transition-colors"
                                         >
                                             Orders
-                                        </Link>
-                                        <Link 
-                                            to="/reservations" 
-                                            onClick={() => setIsProfileOpen(false)}
-                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 font-bold transition-colors"
-                                        >
-                                            Reservations
                                         </Link>
                                         <button 
                                             onClick={() => { setIsProfileOpen(false); logout(); }}
