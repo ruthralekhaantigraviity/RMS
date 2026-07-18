@@ -505,7 +505,7 @@ const Home = () => {
             {/* 13. Footer */}
             <footer className="bg-slate-900 pt-16 pb-8 border-t border-slate-800">
                 <div className="max-w-[1200px] mx-auto px-4 w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                         <div className="lg:col-span-2">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center text-white"><Utensils size={18} /></div>
@@ -532,19 +532,10 @@ const Home = () => {
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-bold text-white mb-4">Resources</h4>
-                            <ul className="space-y-3 text-sm text-slate-400">
-                                <li><a href="#faq" className="hover:text-red-400 transition-colors">Help Center</a></li>
-                                <li><button onClick={() => toast.success("Blog portal coming soon!")} className="hover:text-red-400 transition-colors text-left">Blog</button></li>
-                                <li><button onClick={() => toast.success("Developer API keys will be available in your settings panel soon!")} className="hover:text-red-400 transition-colors text-left">API</button></li>
-                            </ul>
-                        </div>
-                        <div>
                             <h4 className="font-bold text-white mb-4">Company</h4>
                             <ul className="space-y-3 text-sm text-slate-400">
                                 <li><a href="#about" className="hover:text-red-400 transition-colors">About Us</a></li>
                                 <li><a href="#pricing" onClick={() => setShowContact(true)} className="hover:text-red-400 transition-colors">Contact</a></li>
-                                <li><button onClick={() => toast.success("Privacy Policy & Terms of Service are available in platform documentation.")} className="hover:text-red-400 transition-colors text-left">Privacy</button></li>
                             </ul>
                         </div>
                     </div>
