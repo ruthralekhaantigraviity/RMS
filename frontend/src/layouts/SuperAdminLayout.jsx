@@ -13,7 +13,6 @@ const SuperAdminLayout = () => {
         { name: 'Overview', href: '/super-admin', icon: LayoutDashboard },
         { name: 'Restaurants', href: '/super-admin/restaurants', icon: Store },
         { name: 'Plans', href: '/super-admin/plans', icon: CreditCard },
-        { name: 'Support Tickets', href: '/super-admin/tickets', icon: Users },
         { name: 'Global Reports', href: '/super-admin/reports', icon: Settings },
     ];
 
