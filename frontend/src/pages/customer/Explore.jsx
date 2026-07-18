@@ -14,7 +14,7 @@ const Explore = () => {
     const [loading, setLoading] = useState(true);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-    const availableLocations = ['San Francisco, CA', 'New York, NY', 'Austin, TX', 'London, UK', 'Mumbai, IN'];
+    const availableLocations = [];
 
     // Dummy data for the landing page grid
     const dummyRestaurants = [
@@ -132,7 +132,7 @@ const Explore = () => {
                                 <div className="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50">
                                     <div 
                                         onClick={fetchLocation}
-                                        className="px-4 py-2 text-sm cursor-pointer hover:bg-red-50 text-red-600 transition-colors font-bold flex items-center gap-2 border-b border-gray-100 pb-3 mb-1"
+                                        className="px-4 py-2 text-sm cursor-pointer hover:bg-red-50 text-red-600 transition-colors font-bold flex items-center gap-2"
                                     >
                                         <Navigation size={16} /> Detect Current Location
                                     </div>
