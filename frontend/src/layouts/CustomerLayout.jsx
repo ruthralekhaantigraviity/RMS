@@ -115,9 +115,13 @@ const CustomerLayout = () => {
             <footer className="bg-gray-900 text-gray-300 py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>
-                        <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                        <Link 
+                            to="/explore" 
+                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                            className="text-2xl font-bold text-white mb-4 flex items-center gap-2 hover:text-green-400 transition-colors inline-flex cursor-pointer"
+                        >
                             <UtensilsCrossed className="text-green-500" /> RestoSys
-                        </h3>
+                        </Link>
                         <p className="text-gray-400">The premium dining experience delivered directly to your table or doorstep.</p>
                     </div>
                     <div>
