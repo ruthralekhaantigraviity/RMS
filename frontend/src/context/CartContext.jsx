@@ -29,23 +29,25 @@ export const CartProvider = ({ children }) => {
     }, [cartItems, wishlist]);
 
     const addToCart = (item, quantity = 1) => {
+        const itemId = item.id || item._id;
         setCartItems(prev => {
-            const existing = prev.find(i => i.id === item.id);
+            const existing = prev.find(i => (i.id || i._id) === itemId);
             if (existing) {
-                return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i);
+                return prev.map(i => (i.id || i._id) === itemId ? { ...i, quantity: i.quantity + quantity } : i);
             }
-            return [...prev, { ...item, quantity }];
+            return [...prev, { ...item, id: itemId, _id: itemId, quantity }];
         });
         setIsCartOpen(true); // Auto open cart when adding
     };
 
     const removeFromCart = (id) => {
-        setCartItems(prev => prev.filter(i => i.id !== id));
+        setCartItems(prev => prev.filter(i => (i.id || i._id) !== id));
     };
 
     const updateQuantity = (id, delta) => {
         setCartItems(prev => prev.map(item => {
-            if (item.id === id) {
+            const itemId = item.id || item._id;
+            if (itemId === id) {
                 const newQty = item.quantity + delta;
                 return newQty > 0 ? { ...item, quantity: newQty } : item;
             }

@@ -7,7 +7,7 @@ import { useCart } from '../../context/CartContext';
 const RestaurantDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { cartItems, addToCart, removeFromCart, getCartTotal } = useCart();
+    const { cartItems, addToCart, removeFromCart, cartTotal, cartCount } = useCart();
     
     const [restaurant, setRestaurant] = useState(null);
     const [branches, setBranches] = useState([]);
@@ -48,8 +48,8 @@ const RestaurantDetails = () => {
     }, [id]);
 
     const getItemQuantity = (itemId) => {
-        const item = cartItems.find((i) => i._id === itemId);
-        return item ? item.qty : 0;
+        const item = cartItems.find((i) => (i.id || i._id) === itemId);
+        return item ? (item.quantity || item.qty || 0) : 0;
     };
 
     const handleCheckout = () => {
@@ -195,12 +195,12 @@ const RestaurantDetails = () => {
                             <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-red-600 relative">
                                 <ShoppingBag size={24} />
                                 <span className="absolute -top-2 -right-2 w-6 h-6 bg-gray-900 text-white rounded-full text-xs font-bold flex items-center justify-center shadow-sm">
-                                    {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                                    {cartCount}
                                 </span>
                             </div>
                             <div>
                                 <p className="text-sm text-gray-500 font-medium">Subtotal</p>
-                                <p className="font-bold text-xl text-gray-900">₹{getCartTotal()}</p>
+                                <p className="font-bold text-xl text-gray-900">₹{cartTotal.toFixed(2)}</p>
                             </div>
                         </div>
                         <button 
