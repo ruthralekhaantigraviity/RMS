@@ -507,7 +507,11 @@ const Home = () => {
                 <div className="max-w-[1200px] mx-auto px-4 w-full">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12 text-center md:text-left">
                         <div className="md:col-span-2 lg:col-span-2 flex flex-col items-center md:items-start">
-                            <div className="flex items-center gap-2 mb-4">
+                            <div 
+                                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                className="flex items-center gap-2 mb-4 cursor-pointer hover:opacity-85 transition-opacity"
+                                title="Scroll to top"
+                            >
                                 <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center text-white"><Utensils size={18} /></div>
                                 <h2 className="text-2xl font-black text-white tracking-tight">RestaurantHub</h2>
                             </div>
