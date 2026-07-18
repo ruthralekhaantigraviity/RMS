@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { CreditCard, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { CreditCard, CheckCircle, AlertTriangle, ShieldCheck, QrCode, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const SubscriptionPortal = () => {
     const { user, api } = useAuth();
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submittingPlan, setSubmittingPlan] = useState(null);
+    const [showUpiModal, setShowUpiModal] = useState(false);
+    const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success', 'failed'
+    const [selectedPlanToBuy, setSelectedPlanToBuy] = useState(null);
 
     const fetchRestaurantInfo = async () => {
         try {
@@ -23,22 +26,45 @@ const SubscriptionPortal = () => {
         fetchRestaurantInfo();
     }, [api]);
 
-    const handleSubscribe = async (planName, billingCycle = 'monthly') => {
-        setSubmittingPlan(planName);
-        try {
-            const { data } = await api.put('/restaurants/subscribe', {
-                plan: planName,
-                billingCycle: billingCycle
-            });
-            setRestaurant(data);
-            alert(`Successfully subscribed to ${planName} Plan!`);
-            window.location.href = '/admin';
-        } catch (error) {
-            console.error("Failed to subscribe", error);
-            alert(error.response?.data?.message || "Failed to update subscription");
-        } finally {
-            setSubmittingPlan(null);
-        }
+    const getPlanAmount = (planName) => {
+        if (planName === 'Starter') return '49.00';
+        if (planName === 'Professional') return '99.00';
+        return '199.00';
+    };
+
+    const triggerPaymentFlow = (planName) => {
+        setSelectedPlanToBuy(planName);
+        setPaymentStatus('idle');
+        setShowUpiModal(true);
+    };
+
+    const handleUpiPayment = (success) => {
+        setPaymentStatus('processing');
+        setTimeout(() => {
+            if (success) {
+                setPaymentStatus('success');
+                setTimeout(async () => {
+                    setShowUpiModal(false);
+                    setSubmittingPlan(selectedPlanToBuy);
+                    try {
+                        const { data } = await api.put('/restaurants/subscribe', {
+                            plan: selectedPlanToBuy,
+                            billingCycle: 'monthly'
+                        });
+                        setRestaurant(data);
+                        alert(`Successfully subscribed to ${selectedPlanToBuy} Plan!`);
+                        window.location.href = '/admin';
+                    } catch (error) {
+                        console.error("Failed to subscribe", error);
+                        alert(error.response?.data?.message || "Failed to update subscription");
+                    } finally {
+                        setSubmittingPlan(null);
+                    }
+                }, 1500);
+            } else {
+                setPaymentStatus('failed');
+            }
+        }, 1500);
     };
 
     if (loading) return <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
@@ -46,7 +72,6 @@ const SubscriptionPortal = () => {
     if (!restaurant) return <div className="p-8 text-center text-gray-500">Restaurant data not found.</div>;
 
     const sub = restaurant.subscription || {};
-    // Calculate if expired based on expiryDate
     const isExpired = sub.expiryDate && new Date(sub.expiryDate) < new Date();
     const isFrozen = sub.status === 'Frozen' || isExpired;
     
@@ -64,7 +89,7 @@ const SubscriptionPortal = () => {
                         <h3 className="text-red-800 font-bold text-lg">Account Frozen / Free Trial Expired</h3>
                         <p className="text-red-700 mt-1">Your 1-day free trial or subscription has expired. Your staff dashboards are currently locked and cannot accept new orders. Please subscribe to a plan to restore full access.</p>
                         <button 
-                            onClick={() => handleSubscribe(sub.plan || 'Starter', sub.billingCycle || 'monthly')}
+                            onClick={() => triggerPaymentFlow(sub.plan || 'Starter')}
                             disabled={submittingPlan !== null}
                             className="mt-4 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50"
                         >
@@ -123,7 +148,7 @@ const SubscriptionPortal = () => {
                             </ul>
                             
                             <button 
-                                onClick={() => handleSubscribe(plan, 'monthly')}
+                                onClick={() => triggerPaymentFlow(plan)}
                                 disabled={submittingPlan !== null}
                                 className={`w-full py-2.5 rounded-xl font-bold transition-colors ${
                                     sub.plan === plan && !isFrozen
@@ -152,6 +177,83 @@ const SubscriptionPortal = () => {
                     Update Card
                 </button>
             </div>
+
+            {/* UPI Simulator Modal */}
+            {showUpiModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in">
+                    <div className="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
+                        <div className="bg-gray-50 p-6 text-center border-b border-gray-100">
+                            <h3 className="text-lg font-black text-gray-900 mb-1">
+                                Complete Payment
+                            </h3>
+                            <p className="text-sm text-gray-500 font-medium">Paying for {restaurant.name} Subscription</p>
+                        </div>
+                        
+                        <div className="p-8 flex flex-col items-center justify-center min-h-[200px]">
+                            {paymentStatus === 'idle' && (
+                                <>
+                                    <div className="text-3xl font-black text-gray-900 mb-6">
+                                        ₹{getPlanAmount(selectedPlanToBuy)}
+                                    </div>
+                                    <p className="text-sm font-bold text-gray-500 mb-4">Select UPI App:</p>
+                                    <div className="flex flex-col w-full gap-3">
+                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all bg-white shadow-sm hover:shadow text-gray-900 font-bold">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-5 object-contain" />
+                                            Google Pay
+                                        </button>
+                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-purple-500 hover:bg-purple-50 transition-all bg-white shadow-sm hover:shadow text-gray-900 font-bold">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-6 object-contain" />
+                                            PhonePe
+                                        </button>
+                                        <button onClick={() => handleUpiPayment(true)} className="flex items-center justify-center gap-3 py-3 rounded-xl border-2 border-gray-100 hover:border-blue-400 hover:bg-blue-50/50 transition-all bg-white shadow-sm hover:shadow text-gray-900 font-bold">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg" alt="Paytm" className="h-4 object-contain" />
+                                            Paytm
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="mt-8 flex flex-col items-center justify-center border border-gray-100 p-4 rounded-2xl bg-gray-50 w-full">
+                                        <QrCode size={120} className="text-gray-900 mb-2" />
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or Scan QR on Mobile</span>
+                                    </div>
+                                </>
+                            )}
+                            
+                            {paymentStatus === 'processing' && (
+                                <div className="flex flex-col items-center gap-4">
+                                    <Loader2 className="animate-spin text-green-500" size={40} />
+                                    <p className="font-bold text-gray-600 text-sm">Processing Payment...</p>
+                                </div>
+                            )}
+
+                            {paymentStatus === 'success' && (
+                                <div className="flex flex-col items-center gap-4 text-green-500">
+                                    <CheckCircle2 size={48} className="animate-in zoom-in" />
+                                    <p className="font-bold text-green-600 text-lg">Payment Successful</p>
+                                </div>
+                            )}
+
+                            {paymentStatus === 'failed' && (
+                                <div className="flex flex-col items-center gap-4 text-red-500">
+                                    <AlertCircle size={48} className="animate-in zoom-in" />
+                                    <p className="font-bold text-red-600 text-lg">Payment Failed</p>
+                                    <button onClick={() => setShowUpiModal(false)} className="mt-2 text-sm font-bold text-gray-500 hover:text-gray-900">Close</button>
+                                </div>
+                            )}
+                        </div>
+                        
+                        {(paymentStatus === 'idle') && (
+                            <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-center">
+                                <button 
+                                    onClick={() => setShowUpiModal(false)}
+                                    className="text-sm font-bold text-gray-500 hover:text-gray-900"
+                                >
+                                    Cancel Payment
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
