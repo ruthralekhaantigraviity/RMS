@@ -505,16 +505,16 @@ const Home = () => {
             {/* 13. Footer */}
             <footer className="bg-slate-900 pt-16 pb-8 border-t border-slate-800">
                 <div className="max-w-[1200px] mx-auto px-4 w-full">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                        <div className="lg:col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12 text-center md:text-left">
+                        <div className="md:col-span-2 lg:col-span-2 flex flex-col items-center md:items-start">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center text-white"><Utensils size={18} /></div>
                                 <h2 className="text-2xl font-black text-white tracking-tight">RestaurantHub</h2>
                             </div>
-                            <p className="text-slate-400 text-sm mb-6 max-w-sm leading-relaxed">
+                            <p className="text-slate-400 text-sm mb-6 max-w-sm leading-relaxed text-center md:text-left">
                                 The all-in-one operating system for modern restaurants. POS, inventory, online ordering, and analytics all perfectly synced.
                             </p>
-                            <div className="flex gap-4">
+                            <div className="flex gap-4 justify-center md:justify-start">
                                 <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-red-500 transition-all">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                                 </a>
@@ -523,17 +523,17 @@ const Home = () => {
                                 </a>
                             </div>
                         </div>
-                        <div>
+                        <div className="flex flex-col items-center md:items-start">
                             <h4 className="font-bold text-white mb-4">Product</h4>
-                            <ul className="space-y-3 text-sm text-slate-400">
+                            <ul className="space-y-3 text-sm text-slate-400 text-center md:text-left">
                                 <li><a href="#features" className="hover:text-red-400 transition-colors">Features</a></li>
                                 <li><a href="#pricing" className="hover:text-red-400 transition-colors">Pricing</a></li>
                                 <li><a href="#why-choose-us" className="hover:text-red-400 transition-colors">Integrations</a></li>
                             </ul>
                         </div>
-                        <div>
+                        <div className="flex flex-col items-center md:items-start">
                             <h4 className="font-bold text-white mb-4">Company</h4>
-                            <ul className="space-y-3 text-sm text-slate-400">
+                            <ul className="space-y-3 text-sm text-slate-400 text-center md:text-left">
                                 <li><a href="#about" className="hover:text-red-400 transition-colors">About Us</a></li>
                                 <li><a href="#pricing" onClick={() => setShowContact(true)} className="hover:text-red-400 transition-colors">Contact</a></li>
                             </ul>
