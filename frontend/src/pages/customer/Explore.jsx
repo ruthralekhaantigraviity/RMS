@@ -109,7 +109,7 @@ const Explore = () => {
                     
                     {/* Logo & Location */}
                     <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-start">
-                        <Link to="/" className="text-3xl font-black italic tracking-tighter text-red-500 hover:opacity-80 transition-opacity">
+                        <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-3xl font-black italic tracking-tighter text-red-500 hover:opacity-80 transition-opacity">
                             RestaurantHub
                         </Link>
                         
