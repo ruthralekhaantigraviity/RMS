@@ -112,7 +112,6 @@ function App() {
           <Route index element={<SuperAdminDashboard />} />
           <Route path="restaurants" element={<PlatformRestaurants />} />
           <Route path="plans" element={<PlanManagement />} />
-          <Route path="tickets" element={<SupportTickets />} />
           <Route path="reports" element={<GlobalReports />} />
         </Route>
 
