@@ -259,7 +259,14 @@ const Explore = () => {
                     
                     <div className="flex overflow-x-auto gap-6 pb-6 pt-2 custom-scrollbar no-scrollbar scroll-smooth">
                         {foodItems.map((item, idx) => (
-                            <div key={idx} className="flex flex-col items-center gap-3 min-w-[130px] cursor-pointer group shrink-0">
+                            <div 
+                                key={idx} 
+                                onClick={() => {
+                                    setSearch(item.name);
+                                    document.getElementById('restaurant-grid')?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                className="flex flex-col items-center gap-3 min-w-[130px] cursor-pointer group shrink-0"
+                            >
                                 <div className="w-32 h-32 rounded-full bg-transparent overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
                                     <img src={item.img} alt={item.name} className="w-full h-full object-cover mix-blend-multiply" />
                                 </div>
@@ -271,7 +278,7 @@ const Explore = () => {
                 </section>
 
                 {/* Restaurant Grid Section */}
-                <section>
+                <section id="restaurant-grid" className="scroll-mt-24">
                     <h2 className="text-2xl font-bold text-gray-900 mb-8 tracking-tight">Restaurants with Self-Pickup near you</h2>
 
                     {loading ? (
