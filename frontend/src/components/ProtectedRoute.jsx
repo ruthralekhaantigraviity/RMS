@@ -31,20 +31,20 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     if (allowedRoles && allowedRoles.length > 0) {
         const userRole = user.role || 'Customer';
         
-        // Simple string matching for roles
+        // Exact matching for roles is much safer than substring matching
         const isAllowed = allowedRoles.some(role => 
-            userRole.toLowerCase().includes(role.toLowerCase())
+            userRole.toLowerCase() === role.toLowerCase()
         );
 
         if (!isAllowed) {
             // Role not authorized, redirect to home or their appropriate dashboard
             let fallbackRoute = '/';
-            if (userRole.includes('Admin')) fallbackRoute = '/admin';
-            else if (userRole.includes('Manager')) fallbackRoute = '/manager';
-            else if (userRole.includes('Chef')) fallbackRoute = '/chef';
-            else if (userRole.includes('Waiter')) fallbackRoute = '/waiter';
-            else if (userRole.includes('Cashier')) fallbackRoute = '/cashier';
-            else if (userRole.includes('SuperAdmin')) fallbackRoute = '/super-admin';
+            if (userRole === 'SuperAdmin') fallbackRoute = '/super-admin';
+            else if (userRole === 'RestaurantAdmin' || userRole === 'Admin') fallbackRoute = '/admin';
+            else if (userRole === 'BranchManager') fallbackRoute = '/manager';
+            else if (userRole === 'Chef') fallbackRoute = '/chef';
+            else if (userRole === 'Waiter') fallbackRoute = '/waiter';
+            else if (userRole === 'Cashier') fallbackRoute = '/cashier';
             
             return <Navigate to={fallbackRoute} replace />;
         }
