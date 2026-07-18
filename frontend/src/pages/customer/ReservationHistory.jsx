@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Calendar, Clock, Users, MapPin } from 'lucide-react';
+import { ChevronLeft, Calendar, Clock, Users, MapPin, X } from 'lucide-react';
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 
 const ReservationHistory = () => {
@@ -26,6 +26,86 @@ const ReservationHistory = () => {
         };
         fetchReservations();
     }, []);
+
+    const [isModifyOpen, setIsModifyOpen] = useState(false);
+    const [modifyIdx, setModifyIdx] = useState(null);
+    const [modifyDate, setModifyDate] = useState('');
+    const [modifyTime, setModifyTime] = useState('');
+    const [modifyGuests, setModifyGuests] = useState('2');
+    const [modifySeating, setModifySeating] = useState('indoor');
+
+    const openModifyModal = (res, idx) => {
+        setModifyIdx(idx);
+        
+        let rawDate = '';
+        try {
+            const d = new Date(res.date);
+            rawDate = d.toISOString().split('T')[0];
+        } catch (e) {}
+        setModifyDate(rawDate);
+
+        let rawTime = '';
+        if (res.time === '5:00 PM') rawTime = '17:00';
+        else if (res.time === '5:30 PM') rawTime = '17:30';
+        else if (res.time === '6:00 PM') rawTime = '18:00';
+        else if (res.time === '6:30 PM') rawTime = '18:30';
+        else if (res.time === '7:00 PM') rawTime = '19:00';
+        else if (res.time === '7:30 PM') rawTime = '19:30';
+        else if (res.time === '8:00 PM') rawTime = '20:00';
+        else if (res.time === '8:30 PM') rawTime = '20:30';
+        else if (res.time === '9:00 PM') rawTime = '21:00';
+        setModifyTime(rawTime);
+
+        setModifyGuests(res.guests.toString());
+        setModifySeating(res.type === 'Indoor' ? 'indoor' : res.type === 'Outdoor' ? 'outdoor' : 'bar');
+        setIsModifyOpen(true);
+    };
+
+    const handleSaveModify = (e) => {
+        e.preventDefault();
+        
+        let formattedTime = modifyTime;
+        if (modifyTime === '17:00') formattedTime = '5:00 PM';
+        else if (modifyTime === '17:30') formattedTime = '5:30 PM';
+        else if (modifyTime === '18:00') formattedTime = '6:00 PM';
+        else if (modifyTime === '18:30') formattedTime = '6:30 PM';
+        else if (modifyTime === '19:00') formattedTime = '7:00 PM';
+        else if (modifyTime === '19:30') formattedTime = '7:30 PM';
+        else if (modifyTime === '20:00') formattedTime = '8:00 PM';
+        else if (modifyTime === '20:30') formattedTime = '8:30 PM';
+        else if (modifyTime === '21:00') formattedTime = '9:00 PM';
+
+        let formattedDate = modifyDate;
+        try {
+            const d = new Date(modifyDate);
+            formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch (err) {}
+
+        const updatedReservations = [...reservations];
+        updatedReservations[modifyIdx] = {
+            ...updatedReservations[modifyIdx],
+            date: formattedDate,
+            time: formattedTime,
+            guests: parseInt(modifyGuests) || 2,
+            type: modifySeating === 'indoor' ? 'Indoor' : modifySeating === 'outdoor' ? 'Outdoor' : 'Bar'
+        };
+
+        setReservations(updatedReservations);
+
+        const localRes = JSON.parse(localStorage.getItem('customerReservations') || '[]');
+        if (modifyIdx < localRes.length) {
+            localRes[modifyIdx] = {
+                ...localRes[modifyIdx],
+                date: formattedDate,
+                time: formattedTime,
+                guests: parseInt(modifyGuests) || 2,
+                type: modifySeating === 'indoor' ? 'Indoor' : modifySeating === 'outdoor' ? 'Outdoor' : 'Bar'
+            };
+            localStorage.setItem('customerReservations', JSON.stringify(localRes));
+        }
+
+        setIsModifyOpen(false);
+    };
 
     return (
         <div className="bg-gray-50 min-h-screen py-10 pb-24">
@@ -77,7 +157,10 @@ const ReservationHistory = () => {
                                         {res.status}
                                     </span>
                                     {res.status === 'Confirmed' && (
-                                        <button className="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors">
+                                        <button 
+                                            onClick={() => openModifyModal(res, idx)}
+                                            className="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors"
+                                        >
                                             Modify
                                         </button>
                                     )}
@@ -87,6 +170,97 @@ const ReservationHistory = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modify Modal */}
+            {isModifyOpen && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl border border-gray-100 animate-in zoom-in duration-200 relative">
+                        <button 
+                            onClick={() => setIsModifyOpen(false)}
+                            className="absolute right-4 top-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+                        <h2 className="text-xl font-bold text-gray-900 mb-6">Modify Reservation</h2>
+                        <form onSubmit={handleSaveModify} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Date</label>
+                                <input 
+                                    type="date" 
+                                    value={modifyDate}
+                                    onChange={(e) => setModifyDate(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Time</label>
+                                <select 
+                                    value={modifyTime}
+                                    onChange={(e) => setModifyTime(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                                    required
+                                >
+                                    <option value="">Select time...</option>
+                                    <option value="17:00">5:00 PM</option>
+                                    <option value="17:30">5:30 PM</option>
+                                    <option value="18:00">6:00 PM</option>
+                                    <option value="18:30">6:30 PM</option>
+                                    <option value="19:00">7:00 PM</option>
+                                    <option value="19:30">7:30 PM</option>
+                                    <option value="20:00">8:00 PM</option>
+                                    <option value="20:30">8:30 PM</option>
+                                    <option value="21:00">9:00 PM</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Guests</label>
+                                <select 
+                                    value={modifyGuests}
+                                    onChange={(e) => setModifyGuests(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                                >
+                                    <option value="1">1 Guest</option>
+                                    <option value="2">2 Guests</option>
+                                    <option value="3">3 Guests</option>
+                                    <option value="4">4 Guests</option>
+                                    <option value="5">5 Guests</option>
+                                    <option value="6">6 Guests</option>
+                                    <option value="8">8 Guests</option>
+                                    <option value="10">10 Guests</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Seating Area</label>
+                                <select 
+                                    value={modifySeating}
+                                    onChange={(e) => setModifySeating(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-orange-500 text-sm"
+                                >
+                                    <option value="indoor">Indoor Dining</option>
+                                    <option value="outdoor">Outdoor Terrace</option>
+                                    <option value="bar">Bar Lounge</option>
+                                </select>
+                            </div>
+                            <div className="flex gap-4 pt-2">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsModifyOpen(false)}
+                                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors text-sm"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-md"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
