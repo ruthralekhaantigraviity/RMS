@@ -254,29 +254,7 @@ const Home = () => {
                     </div>
                 </section>
 
-                {/* 4. QR Ordering */}
-                <section className="mb-24 flex flex-col md:flex-row items-center gap-12 bg-red-50 rounded-[3rem] p-8 md:p-16">
-                    <div className="flex-1 space-y-6">
-                        <div className="inline-block px-4 py-2 bg-red-100 text-red-600 rounded-lg font-bold text-sm">Contactless Ordering</div>
-                        <h2 className="text-4xl font-black tracking-tight text-gray-900">Smart QR Ordering</h2>
-                        <p className="text-lg text-gray-600 font-medium">Turn tables faster and increase average order value. Customers simply scan, browse a beautiful digital menu, order, and pay from their phones.</p>
-                        <div className="space-y-4 pt-4">
-                            {['Zero hardware costs', 'Auto-syncs with kitchen', 'Digital payments included'].map((item, i) => (
-                                <div key={i} className="flex items-center gap-3 font-bold text-gray-700">
-                                    <div className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center"><CheckCircle2 size={14} /></div> {item}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="flex-1 w-full flex justify-center">
-                        <div className="relative w-64 h-64 bg-white rounded-3xl shadow-2xl p-6 transform rotate-3 hover:rotate-0 transition-transform duration-500">
-                            <div className="w-full h-full border-4 border-gray-900 rounded-2xl flex items-center justify-center relative overflow-hidden bg-gray-50">
-                                <QrCode size={120} className="text-gray-900" />
-                                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white to-transparent opacity-50 animate-pulse"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+
 
                 {/* 5. Order Types */}
                 <section className="mb-24 text-center">
