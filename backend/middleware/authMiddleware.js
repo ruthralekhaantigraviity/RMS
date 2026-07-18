@@ -80,14 +80,6 @@ export const checkSubscription = async (req, res, next) => {
         const now = new Date();
         const expiry = restaurant.subscription?.expiryDate ? new Date(restaurant.subscription.expiryDate) : null;
 
-        if (restaurant.subscription?.trialActive && expiry && now > expiry) {
-            return res.status(402).json({
-                message: 'Your 1-day free trial has expired. Please subscribe to continue using the dashboard.',
-                trialExpired: true,
-                requiresSubscription: true
-            });
-        }
-
         if (restaurant.subscription?.status === 'Frozen' || (expiry && now > expiry)) {
             return res.status(402).json({ 
                 message: 'Your subscription has expired or is frozen. Please renew your subscription to continue.',
