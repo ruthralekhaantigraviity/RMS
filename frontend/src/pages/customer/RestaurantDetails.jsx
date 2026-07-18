@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { MapPin, Star, Clock, Info, ShoppingBag, Plus, Minus } from 'lucide-react';
+import { MapPin, Star, Clock, Info, ShoppingBag, Plus, Minus, CheckCircle } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
 const dummyRestaurants = [
@@ -58,6 +58,56 @@ const RestaurantDetails = () => {
     const [menu, setMenu] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const [bookingDate, setBookingDate] = useState('');
+    const [bookingTime, setBookingTime] = useState('');
+    const [bookingGuests, setBookingGuests] = useState('2');
+    const [bookingSeating, setBookingSeating] = useState('indoor');
+    const [bookingSuccess, setBookingSuccess] = useState(false);
+    const [bookingLoading, setBookingLoading] = useState(false);
+
+    const handleBookTable = (e) => {
+        e.preventDefault();
+        if (!bookingDate || !bookingTime) {
+            alert('Please select a date and time.');
+            return;
+        }
+        setBookingLoading(true);
+        setTimeout(() => {
+            setBookingLoading(false);
+            
+            let formattedTime = bookingTime;
+            if (bookingTime === '17:00') formattedTime = '5:00 PM';
+            else if (bookingTime === '17:30') formattedTime = '5:30 PM';
+            else if (bookingTime === '18:00') formattedTime = '6:00 PM';
+            else if (bookingTime === '18:30') formattedTime = '6:30 PM';
+            else if (bookingTime === '19:00') formattedTime = '7:00 PM';
+            else if (bookingTime === '19:30') formattedTime = '7:30 PM';
+            else if (bookingTime === '20:00') formattedTime = '8:00 PM';
+            else if (bookingTime === '20:30') formattedTime = '8:30 PM';
+            else if (bookingTime === '21:00') formattedTime = '9:00 PM';
+
+            let formattedDate = bookingDate;
+            try {
+                const d = new Date(bookingDate);
+                formattedDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } catch (err) {}
+
+            const newRes = {
+                date: formattedDate,
+                time: formattedTime,
+                guests: parseInt(bookingGuests) || 2,
+                type: bookingSeating === 'indoor' ? 'Indoor' : bookingSeating === 'outdoor' ? 'Outdoor' : 'Bar',
+                status: 'Confirmed',
+                statusColor: 'bg-green-50 text-green-700 border-green-100',
+                restaurantName: restaurant?.name || 'Restaurant'
+            };
+
+            const existing = JSON.parse(localStorage.getItem('customerReservations') || '[]');
+            localStorage.setItem('customerReservations', JSON.stringify([newRes, ...existing]));
+            setBookingSuccess(true);
+        }, 1200);
+    };
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -209,6 +259,99 @@ const RestaurantDetails = () => {
                             </div>
                         ))}
                         {menu.length === 0 && <div className="text-center text-gray-500 py-10">Menu not available for this restaurant.</div>}
+                    </div>
+
+                    {/* Table Booking Column */}
+                    <div className="md:w-80 shrink-0">
+                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 sticky top-24">
+                            <h3 className="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2">
+                                <Clock size={20} className="text-red-500" /> Book a Table
+                            </h3>
+                            {bookingSuccess ? (
+                                <div className="text-center py-6 animate-in zoom-in duration-300">
+                                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <CheckCircle size={32} className="text-green-600" />
+                                    </div>
+                                    <h4 className="font-bold text-gray-900 mb-1">Table Confirmed!</h4>
+                                    <p className="text-xs text-gray-500 mb-4">Your table has been reserved successfully.</p>
+                                    <button 
+                                        onClick={() => setBookingSuccess(false)}
+                                        className="text-xs text-red-500 font-bold hover:underline"
+                                    >
+                                        Book Another Table
+                                    </button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleBookTable} className="space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Date</label>
+                                        <input 
+                                            type="date" 
+                                            value={bookingDate}
+                                            onChange={(e) => setBookingDate(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-red-500 text-sm"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Time</label>
+                                        <select 
+                                            value={bookingTime}
+                                            onChange={(e) => setBookingTime(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-red-500 text-sm"
+                                            required
+                                        >
+                                            <option value="">Select time...</option>
+                                            <option value="17:00">5:00 PM</option>
+                                            <option value="17:30">5:30 PM</option>
+                                            <option value="18:00">6:00 PM</option>
+                                            <option value="18:30">6:30 PM</option>
+                                            <option value="19:00">7:00 PM</option>
+                                            <option value="19:30">7:30 PM</option>
+                                            <option value="20:00">8:00 PM</option>
+                                            <option value="20:30">8:30 PM</option>
+                                            <option value="21:00">9:00 PM</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Guests</label>
+                                        <select 
+                                            value={bookingGuests}
+                                            onChange={(e) => setBookingGuests(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-red-500 text-sm"
+                                        >
+                                            <option value="1">1 Guest</option>
+                                            <option value="2">2 Guests</option>
+                                            <option value="3">3 Guests</option>
+                                            <option value="4">4 Guests</option>
+                                            <option value="5">5 Guests</option>
+                                            <option value="6">6 Guests</option>
+                                            <option value="8">8 Guests</option>
+                                            <option value="10">10 Guests</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Seating Area</label>
+                                        <select 
+                                            value={bookingSeating}
+                                            onChange={(e) => setBookingSeating(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-200 rounded-xl outline-none focus:border-red-500 text-sm"
+                                        >
+                                            <option value="indoor">Indoor Dining</option>
+                                            <option value="outdoor">Outdoor Terrace</option>
+                                            <option value="bar">Bar Lounge</option>
+                                        </select>
+                                    </div>
+                                    <button 
+                                        type="submit" 
+                                        disabled={bookingLoading}
+                                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-75"
+                                    >
+                                        {bookingLoading ? 'Reserving...' : 'Book Table'}
+                                    </button>
+                                </form>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
