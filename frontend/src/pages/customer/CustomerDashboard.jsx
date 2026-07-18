@@ -8,6 +8,18 @@ const CustomerDashboard = () => {
     const { user, logout } = useCustomerAuth();
     const { wishlist, addToCart } = useCart();
     const [reservations, setReservations] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
+    const dashboardFoods = [
+        { id: 'd_m1', name: 'Margherita Pizza', price: 299, category: 'Mains', description: 'Classic cheese and tomato pizza with basil.', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=800' },
+        { id: 'd_m2', name: 'Pepperoni Pizza', price: 399, category: 'Mains', description: 'Double pepperoni and mozzarella cheese.', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=800' },
+        { id: 'd_m3', name: 'Garlic Bread', price: 149, category: 'Starters', description: 'Toasted french bread with garlic butter and herbs.', image: 'https://images.unsplash.com/photo-1619535860434-ba1d8fa12536?q=80&w=800' },
+        { id: 'd_m4', name: 'Greek Salad', price: 199, category: 'Salads', description: 'Fresh cucumbers, tomatoes, olives, and feta cheese.', image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800' },
+        { id: 'd_m5', name: 'Chocolate Lava Cake', price: 159, category: 'Desserts', description: 'Rich chocolate cake with a molten center.', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=800' },
+        { id: 'd_m6', name: 'Mango Smoothie', price: 129, category: 'Beverages', description: 'Creamy yogurt smoothie with fresh mango pulp.', image: 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=800' },
+        { id: 'd_m7', name: 'Paneer Tikka', price: 280, category: 'Starters', description: 'Spiced cottage cheese cubes grilled to perfection.', image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?q=80&w=800' },
+        { id: 'd_m8', name: 'Veg Hakka Noodles', price: 220, category: 'Mains', description: 'Stir-fried noodles with fresh vegetables and soy sauce.', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?q=80&w=800' }
+    ];
 
     const handleReorder = (itemsList) => {
         itemsList.forEach(item => {
@@ -233,6 +245,75 @@ const CustomerDashboard = () => {
                          </div>
                     </div>
 
+                </div>
+            </div>
+
+            {/* Quick Order Section */}
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-900 font-sans">Quick Order Menu</h3>
+                        <p className="text-gray-500 text-sm mt-0.5">Order your favorite types directly from your dashboard</p>
+                    </div>
+                    
+                    {/* Categories Row */}
+                    <div className="flex flex-wrap gap-2">
+                        {['All', 'Starters', 'Salads', 'Mains', 'Desserts', 'Beverages'].map(cat => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow-sm ${
+                                    selectedCategory === cat
+                                        ? 'bg-orange-600 text-white'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Foods Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-2">
+                    {dashboardFoods
+                        .filter(food => selectedCategory === 'All' || food.category === selectedCategory)
+                        .map(food => (
+                            <div 
+                                key={food.id}
+                                className="bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
+                            >
+                                <div className="relative aspect-[4/3] w-full overflow-hidden">
+                                    <img 
+                                        src={food.image} 
+                                        alt={food.name} 
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    />
+                                    <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[10px] font-bold text-gray-800 px-2.5 py-1 rounded-lg uppercase tracking-wider">
+                                        {food.category}
+                                    </span>
+                                </div>
+                                <div className="p-4 flex flex-col flex-1 justify-between gap-3">
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 font-sans text-base line-clamp-1 group-hover:text-orange-600 transition-colors">
+                                            {food.name}
+                                        </h4>
+                                        <p className="text-gray-500 text-xs mt-1 line-clamp-2 leading-relaxed">
+                                            {food.description}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-between items-center pt-2">
+                                        <span className="font-bold text-gray-900 text-base">₹{food.price}</span>
+                                        <button 
+                                            onClick={() => addToCart(food)}
+                                            className="px-4 py-1.5 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-bold rounded-xl transition-colors"
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                 </div>
             </div>
         </div>
