@@ -100,9 +100,11 @@ const Menu = () => {
             } else if (activeCategory === 'Salads') {
                 matchesCategory = ['salads', 'salad'].includes(itemCat);
             } else if (activeCategory === 'Mains') {
-                matchesCategory = ['pizzas', 'pizza', 'burgers', 'burger', 'chinese', 'south indian', 'mains', 'main'].includes(itemCat);
+                const isDosa = item.name.toLowerCase().includes('dosa') || item.name.toLowerCase().includes('dhosa');
+                matchesCategory = ['pizzas', 'pizza', 'burgers', 'burger', 'chinese', 'south indian', 'mains', 'main'].includes(itemCat) || isDosa;
             } else if (activeCategory === 'Desserts') {
-                matchesCategory = ['desserts', 'dessert', 'sweets', 'sweet'].includes(itemCat);
+                const isDosa = item.name.toLowerCase().includes('dosa') || item.name.toLowerCase().includes('dhosa');
+                matchesCategory = ['desserts', 'dessert', 'sweets', 'sweet'].includes(itemCat) && !isDosa;
             } else if (activeCategory === 'Beverages') {
                 matchesCategory = ['beverages', 'beverage', 'drinks', 'drink'].includes(itemCat);
             } else {
