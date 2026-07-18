@@ -107,6 +107,36 @@ const ReservationHistory = () => {
         setIsModifyOpen(false);
     };
 
+    const [isCancelOpen, setIsCancelOpen] = useState(false);
+    const [cancelIdx, setCancelIdx] = useState(null);
+
+    const openCancelModal = (idx) => {
+        setCancelIdx(idx);
+        setIsCancelOpen(true);
+    };
+
+    const handleConfirmCancel = () => {
+        const updatedReservations = [...reservations];
+        updatedReservations[cancelIdx] = {
+            ...updatedReservations[cancelIdx],
+            status: 'Cancelled',
+            statusColor: 'bg-red-50 text-red-700 border-red-100'
+        };
+        setReservations(updatedReservations);
+
+        const localRes = JSON.parse(localStorage.getItem('customerReservations') || '[]');
+        if (cancelIdx < localRes.length) {
+            localRes[cancelIdx] = {
+                ...localRes[cancelIdx],
+                status: 'Cancelled',
+                statusColor: 'bg-red-50 text-red-700 border-red-100'
+            };
+            localStorage.setItem('customerReservations', JSON.stringify(localRes));
+        }
+
+        setIsCancelOpen(false);
+    };
+
     return (
         <div className="bg-gray-50 min-h-screen py-10 pb-24">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -153,9 +183,19 @@ const ReservationHistory = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between w-full md:w-auto gap-4 self-end md:self-center border-t border-gray-50 pt-4 md:border-t-0 md:pt-0">
-                                    <span className={`px-3 py-1 text-xs font-bold border rounded-lg ${res.statusColor || 'bg-green-50 text-green-700 border-green-100'}`}>
-                                        {res.status}
-                                    </span>
+                                    {res.status === 'Confirmed' ? (
+                                        <button 
+                                            onClick={() => openCancelModal(idx)}
+                                            className="px-3 py-1 text-xs font-bold border rounded-lg bg-green-50 text-green-700 border-green-100 hover:bg-red-50 hover:text-red-700 hover:border-red-100 transition-colors cursor-pointer"
+                                            title="Click to cancel reservation"
+                                        >
+                                            {res.status}
+                                        </button>
+                                    ) : (
+                                        <span className={`px-3 py-1 text-xs font-bold border rounded-lg ${res.statusColor || 'bg-gray-50 text-gray-500 border-gray-100'}`}>
+                                            {res.status}
+                                        </span>
+                                    )}
                                     {res.status === 'Confirmed' && (
                                         <button 
                                             onClick={() => openModifyModal(res, idx)}
@@ -258,6 +298,33 @@ const ReservationHistory = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            {/* Cancel Modal */}
+            {isCancelOpen && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl p-6 md:p-8 max-w-sm w-full shadow-2xl border border-gray-100 animate-in zoom-in duration-200 text-center">
+                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+                            <X size={32} />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-900 mb-2">Cancel Reservation?</h2>
+                        <p className="text-sm text-gray-500 mb-6">Are you sure you want to cancel this table reservation? This action cannot be undone.</p>
+                        <div className="flex gap-4">
+                            <button 
+                                type="button"
+                                onClick={() => setIsCancelOpen(false)}
+                                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors text-sm"
+                            >
+                                Keep Booking
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={handleConfirmCancel}
+                                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-md shadow-red-600/10"
+                            >
+                                Yes, Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
