@@ -69,12 +69,12 @@ const Home = () => {
             {/* SaaS Header */}
             <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm py-4 px-4 lg:px-8">
                 <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
-                    <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 text-white">
+                    <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-2 cursor-pointer group">
+                        <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 text-white group-hover:scale-105 transition-transform">
                             <Utensils size={24} />
                         </div>
-                        <h1 className="text-2xl font-black tracking-tight text-gray-900">RestaurantHub</h1>
-                    </div>
+                        <h1 className="text-2xl font-black tracking-tight text-gray-900 group-hover:text-red-500 transition-colors">RestaurantHub</h1>
+                    </Link>
                     
                     <nav className="hidden md:flex gap-8 font-medium text-sm text-gray-600">
                         <a href="#features" className="hover:text-red-500 transition-colors">Features</a>
