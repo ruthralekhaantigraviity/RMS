@@ -86,8 +86,8 @@ const SubscriptionPortal = () => {
                 <div className="bg-red-50 border border-red-200 rounded-2xl p-6 flex items-start gap-4">
                     <AlertTriangle className="text-red-500 mt-1 shrink-0" size={24} />
                     <div>
-                        <h3 className="text-red-800 font-bold text-lg">Account Frozen / Free Trial Expired</h3>
-                        <p className="text-red-700 mt-1">Your 1-day free trial or subscription has expired. Your staff dashboards are currently locked and cannot accept new orders. Please subscribe to a plan to restore full access.</p>
+                        <h3 className="text-red-800 font-bold text-lg">Account Frozen / Subscription Expired</h3>
+                        <p className="text-red-700 mt-1">Your platform subscription has expired. Your staff dashboards are currently locked and cannot accept new orders. Please subscribe to a plan to restore full access.</p>
                         <button 
                             onClick={() => triggerPaymentFlow(sub.plan || 'Starter')}
                             disabled={submittingPlan !== null}
