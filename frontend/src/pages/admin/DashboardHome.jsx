@@ -21,19 +21,7 @@ const topDishes = [
     { name: 'Mint Cooler', sales: 65 },
 ];
 
-const recentOrders = [
-    { id: '#1024', customer: 'Aarav Singh', table: 'T-4', amount: '₹42.00', status: 'Served' },
-    { id: '#1023', customer: 'Priya Mehta', table: 'T-8', amount: '₹28.50', status: 'In Kitchen' },
-    { id: '#1022', customer: 'Ravi Kumar', table: 'T-2', amount: '₹65.00', status: 'Completed' },
-    { id: '#1021', customer: 'Sana Patel', table: 'T-6', amount: '₹19.00', status: 'Served' },
-    { id: '#1020', customer: 'Dev Joshi', table: 'T-1', amount: '₹55.00', status: 'Completed' },
-];
 
-const statusStyle = {
-    'Served': 'bg-blue-100 text-blue-700',
-    'In Kitchen': 'bg-orange-100 text-orange-700',
-    'Completed': 'bg-green-100 text-green-700',
-};
 
 const DashboardHome = () => {
     return (
@@ -125,41 +113,7 @@ const DashboardHome = () => {
                 </div>
             </div>
 
-            {/* Recent Orders Table */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-lg font-bold text-gray-800" style={{ fontFamily: 'Poppins, sans-serif' }}>Recent Orders</h3>
-                    <Link to="/admin/orders" className="text-green-600 hover:text-green-700 text-sm font-semibold transition-colors">View All →</Link>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <thead>
-                            <tr className="border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wider">
-                                <th className="pb-3 font-semibold">Order ID</th>
-                                <th className="pb-3 font-semibold">Customer</th>
-                                <th className="pb-3 font-semibold">Table</th>
-                                <th className="pb-3 font-semibold text-right">Amount</th>
-                                <th className="pb-3 font-semibold text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50">
-                            {recentOrders.map((order) => (
-                                <tr key={order.id} className="hover:bg-gray-50/60 transition-colors">
-                                    <td className="py-4 text-sm font-bold text-gray-800" style={{ fontFamily: 'Manrope, sans-serif' }}>{order.id}</td>
-                                    <td className="py-4 text-sm text-gray-600">{order.customer}</td>
-                                    <td className="py-4 text-sm font-medium text-gray-500">{order.table}</td>
-                                    <td className="py-4 text-sm font-bold text-gray-800 text-right" style={{ fontFamily: 'Manrope, sans-serif' }}>{order.amount}</td>
-                                    <td className="py-4 text-right">
-                                        <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${statusStyle[order.status]}`}>
-                                            {order.status}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+
         </div>
     );
 };
