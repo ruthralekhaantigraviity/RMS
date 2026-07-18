@@ -193,9 +193,6 @@ const StaffManagement = () => {
                             <option key={b._id} value={b._id}>{b.name}</option>
                         ))}
                     </select>
-                    <button className="p-2 border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50 transition-colors">
-                        <Filter size={18} />
-                    </button>
                 </div>
             </div>
 
