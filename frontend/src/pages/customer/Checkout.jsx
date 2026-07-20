@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -23,6 +23,18 @@ const Checkout = () => {
     const [upiMethod, setUpiMethod] = useState('QR'); // 'QR' or 'ID'
     const [isScanned, setIsScanned] = useState(false);
     const [upiPlatform, setUpiPlatform] = useState(''); // 'GPay', 'PhonePe', 'Paytm'
+
+    useEffect(() => {
+        let timer;
+        if (paymentMethod === 'UPI' && upiMethod === 'QR' && !isScanned) {
+            timer = setTimeout(() => {
+                setIsScanned(true);
+            }, 3000); // Transition to payment apps after 3 seconds of scanning simulation
+        }
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    }, [paymentMethod, upiMethod, isScanned]);
 
     // If cart is empty and order not placed, kick them out
     if (cartItems.length === 0 && !orderPlaced) {
@@ -290,40 +302,13 @@ const Checkout = () => {
                                                     <div className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-blue-600"></div>
                                                     <div className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-blue-600"></div>
 
-                                                    <svg viewBox="0 0 100 100" className="w-full h-full text-gray-800 opacity-90">
-                                                        <rect x="5" y="5" width="25" height="25" fill="currentColor" />
-                                                        <rect x="8" y="8" width="19" height="19" fill="white" />
-                                                        <rect x="13" y="13" width="9" height="9" fill="currentColor" />
-
-                                                        <rect x="70" y="5" width="25" height="25" fill="currentColor" />
-                                                        <rect x="73" y="8" width="19" height="19" fill="white" />
-                                                        <rect x="78" y="13" width="9" height="9" fill="currentColor" />
-
-                                                        <rect x="5" y="70" width="25" height="25" fill="currentColor" />
-                                                        <rect x="8" y="73" width="19" height="19" fill="white" />
-                                                        <rect x="13" y="78" width="9" height="9" fill="currentColor" />
-
-                                                        <rect x="40" y="10" width="10" height="20" fill="currentColor" />
-                                                        <rect x="55" y="30" width="15" height="10" fill="currentColor" />
-                                                        <rect x="20" y="45" width="20" height="15" fill="currentColor" />
-                                                        <rect x="45" y="45" width="20" height="20" fill="currentColor" />
-                                                        <rect x="70" y="45" width="15" height="15" fill="currentColor" />
-                                                        <rect x="45" y="70" width="20" height="20" fill="currentColor" />
-                                                    </svg>
+                                                    <img src="/images/payment_qr.png" alt="Scan to pay" className="w-full h-full object-contain" />
                                                 </div>
 
                                                 <div>
                                                     <h3 className="font-bold text-gray-900 text-sm">Scan QR Code to Pay</h3>
-                                                    <p className="text-xs text-gray-500 mt-1">Use GPay, PhonePe, Paytm, or any banking app to scan.</p>
+                                                    <p className="text-xs text-gray-500 mt-1">Scanning QR code... Payment apps will be shown automatically after scan completion.</p>
                                                 </div>
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsScanned(true)}
-                                                    className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-600/20 active:scale-95 transition-all"
-                                                >
-                                                    Simulate Scan Successful
-                                                </button>
                                             </>
                                         ) : (
                                             <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
