@@ -123,7 +123,10 @@ const PlatformRestaurants = () => {
                                             <span className="font-bold text-gray-900">{restaurant.name}</span>
                                         </div>
                                     </td>
-                                    <td className="p-4 text-gray-600">{restaurant.ownerId?.email || 'N/A'}</td>
+                                    <td className="p-4">
+                                        <div className="text-sm font-semibold text-gray-900">{restaurant.ownerId?.name || 'N/A'}</div>
+                                        <div className="text-xs text-gray-500">{restaurant.ownerId?.email || 'N/A'}</div>
+                                    </td>
                                     <td className="p-4">
                                         <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
                                             {restaurant.subscription?.plan || 'N/A'}
@@ -218,7 +221,8 @@ const PlatformRestaurants = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-lg font-bold text-gray-900">{viewingRestaurant.name}</h4>
-                                    <p className="text-sm text-gray-500">{viewingRestaurant.ownerId?.email || 'N/A'}</p>
+                                    <p className="text-sm text-gray-700 font-medium">Owner: {viewingRestaurant.ownerId?.name || 'N/A'}</p>
+                                    <p className="text-xs text-gray-500">{viewingRestaurant.ownerId?.email || 'N/A'}</p>
                                 </div>
                             </div>
                             
