@@ -23,6 +23,7 @@ const Checkout = () => {
     const [upiMethod, setUpiMethod] = useState('QR'); // 'QR' or 'ID'
     const [isScanned, setIsScanned] = useState(false);
     const [upiPlatform, setUpiPlatform] = useState(''); // 'GPay', 'PhonePe', 'Paytm'
+    const [checkoutStep, setCheckoutStep] = useState(1);
 
     useEffect(() => {
         let timer;
@@ -173,213 +174,225 @@ const Checkout = () => {
                         </div>
                     </div>
 
+                    {/* Help banner for Step 1 */}
+                    {checkoutStep === 1 && (
+                        <div className="bg-orange-50 border border-orange-100 rounded-3xl p-6 text-left animate-in fade-in duration-300">
+                            <h3 className="font-bold text-orange-950 text-base">Complete your details to proceed</h3>
+                            <p className="text-sm text-orange-800/80 mt-1">Review your order details and click the <strong>Proceed</strong> button in the order summary sidebar to select a subscription plan and choose your payment method.</p>
+                        </div>
+                    )}
+
                     {/* Subscription selection dropdown */}
-                    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-4">
-                        <h2 className="text-xl font-bold text-gray-900 font-sans">Subscription Plan</h2>
-                        <p className="text-sm text-gray-500 leading-relaxed">Select a meal plan option for this order. Subscriptions give you additional discounts on your order total.</p>
-                        <select
-                            value={subscriptionPlan}
-                            onChange={(e) => setSubscriptionPlan(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-semibold text-gray-800 text-sm"
-                        >
-                            <option value="One-time Order">One-time Order (Standard Price)</option>
-                            <option value="Weekly Subscription">Weekly Subscription (10% Discount)</option>
-                            <option value="Monthly Subscription">Monthly Subscription (20% Discount)</option>
-                        </select>
-                    </div>
+                    {checkoutStep === 2 && (
+                        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                            <h2 className="text-xl font-bold text-gray-900 font-sans">Subscription Plan</h2>
+                            <p className="text-sm text-gray-500 leading-relaxed">Select a meal plan option for this order. Subscriptions give you additional discounts on your order total.</p>
+                            <select
+                                value={subscriptionPlan}
+                                onChange={(e) => setSubscriptionPlan(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-semibold text-gray-800 text-sm"
+                            >
+                                <option value="One-time Order">One-time Order (Standard Price)</option>
+                                <option value="Weekly Subscription">Weekly Subscription (10% Discount)</option>
+                                <option value="Monthly Subscription">Monthly Subscription (20% Discount)</option>
+                            </select>
+                        </div>
+                    )}
 
                     {/* Payment Information */}
-                    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-6">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-900 font-sans">Payment Method</h2>
-                            <ShieldCheck className="text-green-500" size={24} />
-                        </div>
-
-                        {/* Payment Method Selector */}
-                        <div className="grid grid-cols-3 gap-4">
-                            {['Card', 'UPI', 'Cash on Delivery'].map((method) => (
-                                <button
-                                    key={method}
-                                    type="button"
-                                    onClick={() => setPaymentMethod(method)}
-                                    className={`py-3.5 px-4 rounded-xl border text-sm font-bold transition-all ${
-                                        paymentMethod === method
-                                            ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-sm shadow-orange-500/10'
-                                            : 'border-gray-200 hover:border-gray-300 text-gray-600'
-                                    }`}
-                                >
-                                    {method}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Payment Details Container */}
-                        {paymentMethod === 'Card' && (
-                            <div className="bg-gray-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-xl shadow-gray-900/20 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                                <div className="flex justify-between items-center mb-8 relative z-10">
-                                    <CreditCard size={28} className="text-gray-400" />
-                                    <span className="font-bold tracking-widest text-lg">VISA</span>
-                                </div>
-                                
-                                <div className="space-y-4 relative z-10">
-                                    <div>
-                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Card Number</label>
-                                        <input type="text" defaultValue="•••• •••• •••• 4242" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono text-lg transition-colors" required />
-                                    </div>
-                                    <div className="flex gap-6">
-                                        <div className="flex-1">
-                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Expiry</label>
-                                            <input type="text" defaultValue="12/28" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
-                                        </div>
-                                        <div className="flex-1">
-                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">CVC</label>
-                                            <input type="password" defaultValue="•••" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Cardholder Name</label>
-                                        <input type="text" placeholder="JOHN DOE" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-bold transition-colors" required />
-                                    </div>
-                                </div>
+                    {checkoutStep === 2 && (
+                        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="flex justify-between items-center">
+                                <h2 className="text-xl font-bold text-gray-900 font-sans">Payment Method</h2>
+                                <ShieldCheck className="text-green-500" size={24} />
                             </div>
-                        )}
 
-                        {paymentMethod === 'UPI' && (
-                            <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 text-left">
-                                <style>{`
-                                    @keyframes scan {
-                                        0%, 100% { transform: translateY(0); }
-                                        50% { transform: translateY(168px); }
-                                    }
-                                    .scanner-laser {
-                                        animation: scan 2s ease-in-out infinite;
-                                    }
-                                `}</style>
-
-                                {/* Sub-selector: QR Code vs UPI ID */}
-                                <div className="flex gap-3 border-b border-gray-100 pb-4">
+                            {/* Payment Method Selector */}
+                            <div className="grid grid-cols-3 gap-4">
+                                {['Card', 'UPI', 'Cash on Delivery'].map((method) => (
                                     <button
+                                        key={method}
                                         type="button"
-                                        onClick={() => {
-                                            setUpiMethod('QR');
-                                            setIsScanned(false);
-                                            setUpiPlatform('');
-                                        }}
-                                        className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
-                                            upiMethod === 'QR'
-                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        onClick={() => setPaymentMethod(method)}
+                                        className={`py-3.5 px-4 rounded-xl border text-sm font-bold transition-all ${
+                                            paymentMethod === method
+                                                ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-sm shadow-orange-500/10'
+                                                : 'border-gray-200 hover:border-gray-300 text-gray-600'
                                         }`}
                                     >
-                                        Scan QR Code
+                                        {method}
                                     </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setUpiMethod('ID')}
-                                        className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
-                                            upiMethod === 'ID'
-                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        Enter UPI ID
-                                    </button>
-                                </div>
+                                ))}
+                            </div>
 
-                                {upiMethod === 'QR' ? (
-                                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                                        {!isScanned ? (
-                                            <>
-                                                {/* QR Scanner Frame */}
-                                                <div className="w-48 h-48 relative border-2 border-blue-500 rounded-2xl p-3 bg-white shadow-md overflow-hidden flex items-center justify-center">
-                                                    {/* Scanning laser effect */}
-                                                    <div className="absolute left-0 right-0 top-0 h-1 bg-blue-500 shadow-[0_0_10px_2px_rgba(59,130,246,0.7)] scanner-laser z-10"></div>
-                                                    
-                                                    {/* Frame corners */}
-                                                    <div className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-blue-600"></div>
-                                                    <div className="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 border-blue-600"></div>
-                                                    <div className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-blue-600"></div>
-                                                    <div className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-blue-600"></div>
-
-                                                    <img src="/images/payment_qr.png" alt="Scan to pay" className="w-full h-full object-contain" />
-                                                </div>
-
-                                                <div>
-                                                    <h3 className="font-bold text-gray-900 text-sm">Scan QR Code to Pay</h3>
-                                                    <p className="text-xs text-gray-500 mt-1">Scanning QR code... Payment apps will be shown automatically after scan completion.</p>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
-                                                <div className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-200 rounded-2xl text-center">
-                                                    <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg mb-1">✓</span>
-                                                    <h4 className="font-bold text-green-900 text-sm">Scan Completed Successfully!</h4>
-                                                    <p className="text-[11px] text-green-700 mt-0.5">Please select the platform you used to make the payment:</p>
-                                                </div>
-
-                                                {/* App Logos selector */}
-                                                <div className="grid grid-cols-3 gap-3">
-                                                    {[
-                                                        { id: 'GPay', name: 'Google Pay', short: 'GPay' },
-                                                        { id: 'PhonePe', name: 'PhonePe', short: 'PhonePe' },
-                                                        { id: 'Paytm', name: 'Paytm', short: 'Paytm' }
-                                                    ].map(app => (
-                                                        <button
-                                                            key={app.id}
-                                                            type="button"
-                                                            onClick={() => setUpiPlatform(app.id)}
-                                                            className={`py-3 px-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all text-xs font-bold ${
-                                                                upiPlatform === app.id
-                                                                    ? 'border-orange-500 bg-orange-50/50 text-orange-700 scale-105 shadow-sm'
-                                                                    : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-700'
-                                                            }`}
-                                                        >
-                                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center font-black text-[10px] uppercase shadow-sm">
-                                                                {app.short}
-                                                            </div>
-                                                            {app.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        setIsScanned(false);
-                                                        setUpiPlatform('');
-                                                    }}
-                                                    className="text-xs text-gray-500 hover:text-gray-700 underline font-medium"
-                                                >
-                                                    Re-scan QR Code
-                                                </button>
+                            {/* Payment Details Container */}
+                            {paymentMethod === 'Card' && (
+                                <div className="bg-gray-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-xl shadow-gray-900/20 animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                                    <div className="flex justify-between items-center mb-8 relative z-10">
+                                        <CreditCard size={28} className="text-gray-400" />
+                                        <span className="font-bold tracking-widest text-lg">VISA</span>
+                                    </div>
+                                    
+                                    <div className="space-y-4 relative z-10">
+                                        <div>
+                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Card Number</label>
+                                            <input type="text" defaultValue="•••• •••• •••• 4242" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono text-lg transition-colors" required />
+                                        </div>
+                                        <div className="flex gap-6">
+                                            <div className="flex-1">
+                                                <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Expiry</label>
+                                                <input type="text" defaultValue="12/28" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
                                             </div>
-                                        )}
+                                            <div className="flex-1">
+                                                <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">CVC</label>
+                                                <input type="password" defaultValue="•••" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Cardholder Name</label>
+                                            <input type="text" placeholder="JOHN DOE" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-bold transition-colors" required />
+                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        <label className="block text-sm font-bold text-gray-700">Enter UPI ID</label>
-                                        <input 
-                                            type="text" 
-                                            value={upiId}
-                                            onChange={(e) => setUpiId(e.target.value)}
-                                            placeholder="e.g. mobile@upi, username@okaxis" 
-                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-mono text-sm"
-                                            required={upiMethod === 'ID'}
-                                        />
-                                        <p className="text-xs text-gray-500">Pay using BHIM, Google Pay, PhonePe, Paytm, or any UPI app.</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                                </div>
+                            )}
 
-                        {paymentMethod === 'Cash on Delivery' && (
-                            <div className="p-6 bg-green-50/50 rounded-2xl border border-green-100 animate-in fade-in slide-in-from-top-4 duration-300 text-left">
-                                <h3 className="font-bold text-green-800 text-base">Cash on Delivery Confirmed</h3>
-                                <p className="text-sm text-green-700/80 mt-1 leading-relaxed">No online payment is required. You can pay via cash, card, or UPI directly at the restaurant counter when picking up your order.</p>
-                            </div>
-                        )}
-                    </div>
+                            {paymentMethod === 'UPI' && (
+                                <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 text-left">
+                                    <style>{`
+                                        @keyframes scan {
+                                            0%, 100% { transform: translateY(0); }
+                                            50% { transform: translateY(168px); }
+                                        }
+                                        .scanner-laser {
+                                            animation: scan 2s ease-in-out infinite;
+                                        }
+                                    `}</style>
+
+                                    {/* Sub-selector: QR Code vs UPI ID */}
+                                    <div className="flex gap-3 border-b border-gray-100 pb-4">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setUpiMethod('QR');
+                                                setIsScanned(false);
+                                                setUpiPlatform('');
+                                            }}
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
+                                                upiMethod === 'QR'
+                                                    ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Scan QR Code
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setUpiMethod('ID')}
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
+                                                upiMethod === 'ID'
+                                                    ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                            }`}
+                                        >
+                                            Enter UPI ID
+                                        </button>
+                                    </div>
+
+                                    {upiMethod === 'QR' ? (
+                                        <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                                            {!isScanned ? (
+                                                <>
+                                                    {/* QR Scanner Frame */}
+                                                    <div className="w-48 h-48 relative border-2 border-blue-500 rounded-2xl p-3 bg-white shadow-md overflow-hidden flex items-center justify-center">
+                                                        {/* Scanning laser effect */}
+                                                        <div className="absolute left-0 right-0 top-0 h-1 bg-blue-500 shadow-[0_0_10px_2px_rgba(59,130,246,0.7)] scanner-laser z-10"></div>
+                                                        
+                                                        {/* Frame corners */}
+                                                        <div className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-blue-600"></div>
+                                                        <div className="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 border-blue-600"></div>
+                                                        <div className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-blue-600"></div>
+                                                        <div className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-blue-600"></div>
+
+                                                        <img src="/images/payment_qr.png" alt="Scan to pay" className="w-full h-full object-contain" />
+                                                    </div>
+
+                                                    <div>
+                                                        <h3 className="font-bold text-gray-900 text-sm">Scan QR Code to Pay</h3>
+                                                        <p className="text-xs text-gray-500 mt-1">Scanning QR code... Payment apps will be shown automatically after scan completion.</p>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                                                    <div className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-200 rounded-2xl text-center">
+                                                        <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg mb-1">✓</span>
+                                                        <h4 className="font-bold text-green-900 text-sm">Scan Completed Successfully!</h4>
+                                                        <p className="text-[11px] text-green-700 mt-0.5">Please select the platform you used to make the payment:</p>
+                                                    </div>
+
+                                                    {/* App Logos selector */}
+                                                    <div className="grid grid-cols-3 gap-3">
+                                                        {[
+                                                            { id: 'GPay', name: 'Google Pay', short: 'GPay' },
+                                                            { id: 'PhonePe', name: 'PhonePe', short: 'PhonePe' },
+                                                            { id: 'Paytm', name: 'Paytm', short: 'Paytm' }
+                                                        ].map(app => (
+                                                            <button
+                                                                key={app.id}
+                                                                type="button"
+                                                                onClick={() => setUpiPlatform(app.id)}
+                                                                className={`py-3 px-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all text-xs font-bold ${
+                                                                    upiPlatform === app.id
+                                                                        ? 'border-orange-500 bg-orange-50/50 text-orange-700 scale-105 shadow-sm'
+                                                                        : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-700'
+                                                                }`}
+                                                            >
+                                                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center font-black text-[10px] uppercase shadow-sm">
+                                                                    {app.short}
+                                                                </div>
+                                                                {app.name}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setIsScanned(false);
+                                                            setUpiPlatform('');
+                                                        }}
+                                                        className="text-xs text-gray-500 hover:text-gray-700 underline font-medium"
+                                                    >
+                                                        Re-scan QR Code
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-3">
+                                            <label className="block text-sm font-bold text-gray-700">Enter UPI ID</label>
+                                            <input 
+                                                type="text" 
+                                                value={upiId}
+                                                onChange={(e) => setUpiId(e.target.value)}
+                                                placeholder="e.g. mobile@upi, username@okaxis" 
+                                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-mono text-sm"
+                                                required={upiMethod === 'ID'}
+                                            />
+                                            <p className="text-xs text-gray-500">Pay using BHIM, Google Pay, PhonePe, Paytm, or any UPI app.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {paymentMethod === 'Cash on Delivery' && (
+                                <div className="p-6 bg-green-50/50 rounded-2xl border border-green-100 animate-in fade-in slide-in-from-top-4 duration-300 text-left">
+                                    <h3 className="font-bold text-green-800 text-base">Cash on Delivery Confirmed</h3>
+                                    <p className="text-sm text-green-700/80 mt-1 leading-relaxed">No online payment is required. You can pay via cash, card, or UPI directly at the restaurant counter when picking up your order.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                 </div>
 
@@ -456,23 +469,42 @@ const Checkout = () => {
                             </div>
                         </div>
                         
-                        <button 
-                            type="submit" 
-                            disabled={isPlacingOrder}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl mt-8 transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-600/20 active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
-                        >
-                            {isPlacingOrder ? (
-                                <>
-                                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                    Processing Payment...
-                                </>
-                            ) : (
-                                <>Pay ₹{grandTotal.toFixed(2)} <ChevronRight size={18} /></>
-                            )}
-                        </button>
+                        {checkoutStep === 1 ? (
+                            <button 
+                                type="button" 
+                                onClick={() => setCheckoutStep(2)}
+                                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl mt-8 transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-600/20 active:scale-[0.98]"
+                            >
+                                Proceed <ChevronRight size={18} />
+                            </button>
+                        ) : (
+                            <div className="space-y-3 mt-8">
+                                <button 
+                                    type="submit" 
+                                    disabled={isPlacingOrder}
+                                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-600/20 active:scale-[0.98] disabled:opacity-70 disabled:active:scale-100"
+                                >
+                                    {isPlacingOrder ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                            </svg>
+                                            Processing Payment...
+                                        </>
+                                    ) : (
+                                        <>Pay ₹{grandTotal.toFixed(2)} <ChevronRight size={18} /></>
+                                    )}
+                                </button>
+                                <button 
+                                    type="button" 
+                                    onClick={() => setCheckoutStep(1)}
+                                    className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm transition-colors"
+                                >
+                                    Back to Details
+                                </button>
+                            </div>
+                        )}
                         
                     </div>
                 </div>
