@@ -58,8 +58,15 @@ const OrderHistory = () => {
                                         <ShoppingBag size={28} />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-900 font-sans mb-1">#{order._id.substring(order._id.length - 6).toUpperCase()}</h3>
-                                        <p className="text-sm text-gray-500 font-medium">{new Date(order.createdAt).toLocaleDateString()} • {order.status}</p>
+                                        <h3 className="text-xl font-bold text-gray-900 font-sans mb-1 flex items-center gap-2">
+                                            #{order._id.substring(order._id.length - 6).toUpperCase()}
+                                            {order.subscriptionPlan && order.subscriptionPlan !== 'One-time Order' && (
+                                                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                                                    {order.subscriptionPlan}
+                                                </span>
+                                            )}
+                                        </h3>
+                                        <p className="text-sm text-gray-500 font-medium">{new Date(order.createdAt).toLocaleDateString()} • {order.status} • Paid via {order.paymentMethod || 'Card'}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center justify-between md:flex-col md:items-end gap-2">
