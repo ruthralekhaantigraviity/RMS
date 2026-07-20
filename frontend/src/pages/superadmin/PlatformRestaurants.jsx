@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Check, X, Ban, RefreshCw, Eye, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const PlatformRestaurants = () => {
     const { api } = useAuth();
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [viewingRestaurant, setViewingRestaurant] = useState(null);
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
 
     useEffect(() => {
         const fetchRestaurants = async () => {
@@ -28,8 +37,9 @@ const PlatformRestaurants = () => {
             setRestaurants(restaurants.map(r => 
                 r._id === id ? { ...r, approvalStatus: status } : r
             ));
+            toast.success(`Restaurant ${status.toLowerCase()} successfully!`);
         } catch (error) {
-            alert('Failed to update approval status');
+            toast.error('Failed to update approval status');
         }
     };
 
@@ -40,22 +50,29 @@ const PlatformRestaurants = () => {
             setRestaurants(restaurants.map(r => 
                 r._id === id ? { ...r, subscription: { ...r.subscription, status: newStatus } } : r
             ));
+            toast.success(`Account status updated to ${newStatus}!`);
         } catch (error) {
-            alert('Failed to update subscription');
+            toast.error('Failed to update subscription');
         }
     };
 
     const handleDeleteRestaurant = async (id) => {
-        if (!window.confirm("Are you sure you want to permanently delete this restaurant? This action cannot be undone.")) {
-            return;
-        }
-        try {
-            await api.delete(`/super-admin/restaurants/${id}`);
-            setRestaurants(restaurants.filter(r => r._id !== id));
-        } catch (error) {
-            console.error("Failed to delete restaurant", error);
-            alert('Failed to delete restaurant');
-        }
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Restaurant',
+            message: 'Are you sure you want to permanently delete this restaurant? This action cannot be undone.',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/super-admin/restaurants/${id}`);
+                    setRestaurants(restaurants.filter(r => r._id !== id));
+                    toast.success('Restaurant deleted successfully!');
+                } catch (error) {
+                    console.error("Failed to delete restaurant", error);
+                    toast.error('Failed to delete restaurant');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     const calculateRemainingDays = (expiryDate) => {
@@ -254,6 +271,11 @@ const PlatformRestaurants = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
         </div>
     );
 };

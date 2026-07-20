@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, CreditCard, 
@@ -7,9 +7,39 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const SuperAdminLayout = () => {
-    const { logout, user } = useAuth();
+    const { logout, user, api } = useAuth();
     const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    const fetchNotifications = async () => {
+        try {
+            const res = await api.get('/super-admin/notifications');
+            setNotifications(res.data);
+        } catch (error) {
+            console.error("Failed to fetch notifications", error);
+        }
+    };
+
+    useEffect(() => {
+        if (api) {
+            fetchNotifications();
+            const interval = setInterval(fetchNotifications, 10000); // Check every 10 seconds for live notifications
+            return () => clearInterval(interval);
+        }
+    }, [api]);
+
+    const handleMarkAsRead = async (id) => {
+        try {
+            await api.put(`/super-admin/notifications/${id}/read`);
+            setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
+        } catch (error) {
+            console.error("Failed to mark as read", error);
+        }
+    };
+
+    const unreadCount = notifications.filter(n => !n.read).length;
 
     const navigation = [
         { name: 'Overview', href: '/super-admin', icon: LayoutDashboard },
@@ -83,9 +113,67 @@ const SuperAdminLayout = () => {
                         </h2>
                     </div>
                     <div className="flex items-center gap-4">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
-                            <Bell size={20} />
-                        </button>
+                        <div className="relative">
+                            <button 
+                                onClick={() => setShowDropdown(!showDropdown)}
+                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all relative"
+                                title="Notifications"
+                            >
+                                <Bell size={20} />
+                                {unreadCount > 0 && (
+                                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></span>
+                                )}
+                            </button>
+                            
+                            {showDropdown && (
+                                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in slide-in-from-top-3 duration-200">
+                                    <div className="px-5 py-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                                        <h3 className="font-bold text-gray-900 text-sm">System Notifications</h3>
+                                        {unreadCount > 0 && (
+                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                                                {unreadCount} New
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="max-h-72 overflow-y-auto divide-y divide-gray-50 custom-scrollbar">
+                                        {notifications.length === 0 ? (
+                                            <div className="px-5 py-8 text-center text-gray-400 text-xs font-medium">
+                                                No new signups or system alerts.
+                                            </div>
+                                        ) : (
+                                            notifications.map(n => (
+                                                <div 
+                                                    key={n._id} 
+                                                    className={`px-5 py-3.5 transition-colors flex flex-col gap-1 text-left ${
+                                                        !n.read ? 'bg-blue-50/10' : ''
+                                                    }`}
+                                                >
+                                                    <div className="flex justify-between items-start gap-2">
+                                                        <span className="font-bold text-gray-900 text-xs leading-normal">
+                                                            {n.title}
+                                                        </span>
+                                                        {!n.read && (
+                                                            <button 
+                                                                onClick={() => handleMarkAsRead(n._id)}
+                                                                className="text-[10px] text-blue-600 hover:text-blue-700 font-bold shrink-0"
+                                                            >
+                                                                Mark read
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-gray-500 text-[11px] leading-relaxed">
+                                                        {n.desc}
+                                                    </p>
+                                                    <span className="text-[9px] text-gray-400 mt-1">
+                                                        {new Date(n.createdAt).toLocaleString()}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex items-center gap-3 pl-4 border-l border-gray-200 cursor-pointer group">
                             <div className="text-right hidden md:block group-hover:opacity-80 transition-opacity">
                                 <p className="text-sm font-bold text-gray-900 capitalize">{user?.name || 'Super Admin'}</p>

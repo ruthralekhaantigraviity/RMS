@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { MessageSquare, Clock, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const SupportTickets = () => {
     const { api } = useAuth();
@@ -25,8 +26,9 @@ const SupportTickets = () => {
         try {
             await api.put(`/super-admin/tickets/${id}`, { status });
             setTickets(tickets.map(t => t._id === id ? { ...t, status } : t));
+            toast.success('Ticket marked as resolved successfully!');
         } catch (error) {
-            alert('Failed to update ticket');
+            toast.error('Failed to update ticket');
         }
     };
 

@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import Order from '../models/Order.js';
 import Plan from '../models/Plan.js';
 import Ticket from '../models/Ticket.js';
+import Notification from '../models/Notification.js';
 
 // @desc    Get global stats
 // @route   GET /api/super-admin/stats
@@ -157,6 +158,35 @@ export const updateApprovalStatus = async (req, res) => {
         
         await restaurant.save();
         res.json(restaurant);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get all notifications for Super Admin
+// @route   GET /api/super-admin/notifications
+// @access  Private/SuperAdmin
+export const getSuperAdminNotifications = async (req, res) => {
+    try {
+        const notifications = await Notification.find({ type: 'System' }).sort({ createdAt: -1 });
+        res.json(notifications);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Mark notification as read for Super Admin
+// @route   PUT /api/super-admin/notifications/:id/read
+// @access  Private/SuperAdmin
+export const markSuperAdminNotificationAsRead = async (req, res) => {
+    try {
+        const notification = await Notification.findById(req.params.id);
+        if (!notification) {
+            return res.status(404).json({ message: 'Notification not found' });
+        }
+        notification.read = true;
+        await notification.save();
+        res.json(notification);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
