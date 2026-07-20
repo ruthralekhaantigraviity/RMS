@@ -20,6 +20,9 @@ const Checkout = () => {
     const [subscriptionPlan, setSubscriptionPlan] = useState('One-time Order');
     const [paymentMethod, setPaymentMethod] = useState('Card');
     const [upiId, setUpiId] = useState('');
+    const [upiMethod, setUpiMethod] = useState('QR'); // 'QR' or 'ID'
+    const [isScanned, setIsScanned] = useState(false);
+    const [upiPlatform, setUpiPlatform] = useState(''); // 'GPay', 'PhonePe', 'Paytm'
 
     // If cart is empty and order not placed, kick them out
     if (cartItems.length === 0 && !orderPlaced) {
@@ -72,7 +75,9 @@ const Checkout = () => {
                 source: 'Self-Pickup',
                 restaurantId,
                 branchId,
-                paymentMethod,
+                paymentMethod: paymentMethod === 'UPI' 
+                    ? (upiMethod === 'QR' ? `UPI - ${upiPlatform || 'QR'}` : `UPI ID - ${upiId}`) 
+                    : paymentMethod,
                 subscriptionPlan,
                 taxPrice: tax,
                 totalPrice: grandTotal
@@ -229,17 +234,157 @@ const Checkout = () => {
                         )}
 
                         {paymentMethod === 'UPI' && (
-                            <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-3 text-left">
-                                <label className="block text-sm font-bold text-gray-700">Enter UPI ID</label>
-                                <input 
-                                    type="text" 
-                                    value={upiId}
-                                    onChange={(e) => setUpiId(e.target.value)}
-                                    placeholder="e.g. mobile@upi, username@okaxis" 
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-mono text-sm"
-                                    required={paymentMethod === 'UPI'}
-                                />
-                                <p className="text-xs text-gray-500">Pay using BHIM, Google Pay, PhonePe, Paytm, or any UPI app.</p>
+                            <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 text-left">
+                                <style>{`
+                                    @keyframes scan {
+                                        0%, 100% { transform: translateY(0); }
+                                        50% { transform: translateY(168px); }
+                                    }
+                                    .scanner-laser {
+                                        animation: scan 2s ease-in-out infinite;
+                                    }
+                                `}</style>
+
+                                {/* Sub-selector: QR Code vs UPI ID */}
+                                <div className="flex gap-3 border-b border-gray-100 pb-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setUpiMethod('QR');
+                                            setIsScanned(false);
+                                            setUpiPlatform('');
+                                        }}
+                                        className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
+                                            upiMethod === 'QR'
+                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        Scan QR Code
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setUpiMethod('ID')}
+                                        className={`flex-1 py-2 text-xs font-bold rounded-lg border transition-all ${
+                                            upiMethod === 'ID'
+                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        Enter UPI ID
+                                    </button>
+                                </div>
+
+                                {upiMethod === 'QR' ? (
+                                    <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                                        {!isScanned ? (
+                                            <>
+                                                {/* QR Scanner Frame */}
+                                                <div className="w-48 h-48 relative border-2 border-blue-500 rounded-2xl p-3 bg-white shadow-md overflow-hidden flex items-center justify-center">
+                                                    {/* Scanning laser effect */}
+                                                    <div className="absolute left-0 right-0 top-0 h-1 bg-blue-500 shadow-[0_0_10px_2px_rgba(59,130,246,0.7)] scanner-laser z-10"></div>
+                                                    
+                                                    {/* Frame corners */}
+                                                    <div className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-blue-600"></div>
+                                                    <div className="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 border-blue-600"></div>
+                                                    <div className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-blue-600"></div>
+                                                    <div className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-blue-600"></div>
+
+                                                    <svg viewBox="0 0 100 100" className="w-full h-full text-gray-800 opacity-90">
+                                                        <rect x="5" y="5" width="25" height="25" fill="currentColor" />
+                                                        <rect x="8" y="8" width="19" height="19" fill="white" />
+                                                        <rect x="13" y="13" width="9" height="9" fill="currentColor" />
+
+                                                        <rect x="70" y="5" width="25" height="25" fill="currentColor" />
+                                                        <rect x="73" y="8" width="19" height="19" fill="white" />
+                                                        <rect x="78" y="13" width="9" height="9" fill="currentColor" />
+
+                                                        <rect x="5" y="70" width="25" height="25" fill="currentColor" />
+                                                        <rect x="8" y="73" width="19" height="19" fill="white" />
+                                                        <rect x="13" y="78" width="9" height="9" fill="currentColor" />
+
+                                                        <rect x="40" y="10" width="10" height="20" fill="currentColor" />
+                                                        <rect x="55" y="30" width="15" height="10" fill="currentColor" />
+                                                        <rect x="20" y="45" width="20" height="15" fill="currentColor" />
+                                                        <rect x="45" y="45" width="20" height="20" fill="currentColor" />
+                                                        <rect x="70" y="45" width="15" height="15" fill="currentColor" />
+                                                        <rect x="45" y="70" width="20" height="20" fill="currentColor" />
+                                                    </svg>
+                                                </div>
+
+                                                <div>
+                                                    <h3 className="font-bold text-gray-900 text-sm">Scan QR Code to Pay</h3>
+                                                    <p className="text-xs text-gray-500 mt-1">Use GPay, PhonePe, Paytm, or any banking app to scan.</p>
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsScanned(true)}
+                                                    className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-600/20 active:scale-95 transition-all"
+                                                >
+                                                    Simulate Scan Successful
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <div className="w-full space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="flex flex-col items-center justify-center p-4 bg-green-50 border border-green-200 rounded-2xl text-center">
+                                                    <span className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold text-lg mb-1">✓</span>
+                                                    <h4 className="font-bold text-green-900 text-sm">Scan Completed Successfully!</h4>
+                                                    <p className="text-[11px] text-green-700 mt-0.5">Please select the platform you used to make the payment:</p>
+                                                </div>
+
+                                                {/* App Logos selector */}
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    {[
+                                                        { id: 'GPay', name: 'Google Pay', short: 'GPay' },
+                                                        { id: 'PhonePe', name: 'PhonePe', short: 'PhonePe' },
+                                                        { id: 'Paytm', name: 'Paytm', short: 'Paytm' }
+                                                    ].map(app => (
+                                                        <button
+                                                            key={app.id}
+                                                            type="button"
+                                                            onClick={() => setUpiPlatform(app.id)}
+                                                            className={`py-3 px-2 rounded-xl border flex flex-col items-center gap-1.5 transition-all text-xs font-bold ${
+                                                                upiPlatform === app.id
+                                                                    ? 'border-orange-500 bg-orange-50/50 text-orange-700 scale-105 shadow-sm'
+                                                                    : 'border-gray-200 bg-white hover:bg-gray-50 text-gray-700'
+                                                            }`}
+                                                        >
+                                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center font-black text-[10px] uppercase shadow-sm">
+                                                                {app.short}
+                                                            </div>
+                                                            {app.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setIsScanned(false);
+                                                        setUpiPlatform('');
+                                                    }}
+                                                    className="text-xs text-gray-500 hover:text-gray-700 underline font-medium"
+                                                >
+                                                    Re-scan QR Code
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        <label className="block text-sm font-bold text-gray-700">Enter UPI ID</label>
+                                        <input 
+                                            type="text" 
+                                            value={upiId}
+                                            onChange={(e) => setUpiId(e.target.value)}
+                                            placeholder="e.g. mobile@upi, username@okaxis" 
+                                            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-mono text-sm"
+                                            required={upiMethod === 'ID'}
+                                        />
+                                        <p className="text-xs text-gray-500">Pay using BHIM, Google Pay, PhonePe, Paytm, or any UPI app.</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
