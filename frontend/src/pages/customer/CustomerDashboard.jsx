@@ -39,18 +39,18 @@ const CustomerDashboard = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-in slide-in-from-bottom-4 duration-500">
             {/* Header / Welcome */}
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div className="flex items-center gap-6">
+            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left">
                     <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg shrink-0">
                         <span className="text-3xl font-bold text-orange-600 font-sans">
                             {user?.name?.charAt(0) || 'C'}
                         </span>
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 font-sans tracking-tight">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 font-sans tracking-tight">
                             Welcome back, {user?.name || 'Foodie'}!
                         </h1>
-                        <p className="text-gray-500 mt-1">Ready for your next culinary adventure?</p>
+                        <p className="text-gray-500 mt-1 text-sm sm:text-base">Ready for your next culinary adventure?</p>
                     </div>
                 </div>
                 <div className="flex gap-4">
@@ -68,7 +68,7 @@ const CustomerDashboard = () => {
                 {/* Left Column: Loyalty & Quick Stats */}
                 <div className="space-y-8">
                     {/* Loyalty Card */}
-                    <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-8 text-white shadow-xl relative overflow-hidden group">
+                    <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-500/30 transition-colors"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-2 text-orange-400 mb-6 font-bold tracking-widest text-xs uppercase">

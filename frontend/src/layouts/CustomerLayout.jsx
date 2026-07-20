@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { ShoppingCart, User, UtensilsCrossed, Heart } from 'lucide-react';
+import { ShoppingCart, User, UtensilsCrossed, Heart, CalendarDays, ShoppingBag } from 'lucide-react';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { useCart } from '../context/CartContext';
 import CartDrawer from '../components/CartDrawer';
@@ -108,9 +108,29 @@ const CustomerLayout = () => {
                 </div>
             </header>
             
-            <main className="flex-grow">
+            <main className="flex-grow pb-16 md:pb-0">
                 <Outlet />
             </main>
+
+            {/* Mobile Bottom Navigation */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2.5 px-6 flex justify-between items-center z-40 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+                <Link to="/explore" className="flex flex-col items-center text-gray-500 hover:text-orange-600 transition-colors">
+                    <UtensilsCrossed size={20} />
+                    <span className="text-[10px] font-bold mt-1">Explore</span>
+                </Link>
+                <Link to="/menu" className="flex flex-col items-center text-gray-500 hover:text-orange-600 transition-colors">
+                    <ShoppingBag size={20} />
+                    <span className="text-[10px] font-bold mt-1">Menu</span>
+                </Link>
+                <Link to="/reservations" className="flex flex-col items-center text-gray-500 hover:text-orange-600 transition-colors">
+                    <CalendarDays size={20} />
+                    <span className="text-[10px] font-bold mt-1">Booking</span>
+                </Link>
+                <Link to="/profile" className="flex flex-col items-center text-gray-500 hover:text-orange-600 transition-colors">
+                    <User size={20} />
+                    <span className="text-[10px] font-bold mt-1">Account</span>
+                </Link>
+            </div>
 
             <footer className="bg-gray-900 text-gray-300 py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">

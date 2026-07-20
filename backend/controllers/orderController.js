@@ -1,4 +1,16 @@
 import Order from '../models/Order.js';
+import mongoose from 'mongoose';
+
+const sanitizeOrderItems = (items) => {
+    if (!items) return items;
+    return items.map(item => {
+        const sanitizedItem = { ...item };
+        if (sanitizedItem.product && !mongoose.Types.ObjectId.isValid(sanitizedItem.product)) {
+            delete sanitizedItem.product;
+        }
+        return sanitizedItem;
+    });
+};
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -10,13 +22,12 @@ export const addOrderItems = async (req, res) => {
         res.status(400).json({ message: 'No order items' });
         return;
     } else {
-        let finalBranchId = branchId || (req.user ? req.user.branchId : null);
-        let finalRestaurantId = restaurantId || (req.user ? req.user.restaurantId : null);
+        let finalBranchId = (branchId && mongoose.Types.ObjectId.isValid(branchId)) ? branchId : (req.user ? req.user.branchId : null);
+        let finalRestaurantId = (restaurantId && mongoose.Types.ObjectId.isValid(restaurantId)) ? restaurantId : (req.user ? req.user.restaurantId : null);
 
         // If the user is an owner/admin testing the system and doesn't have a branchId, 
         // fallback to the first branch of the restaurant so schema validation doesn't fail
         if (!finalBranchId && finalRestaurantId) {
-            const mongoose = await import('mongoose');
             const Branch = mongoose.model('Branch');
             const firstBranch = await Branch.findOne({ restaurantId: finalRestaurantId });
             if (firstBranch) {
@@ -26,7 +37,6 @@ export const addOrderItems = async (req, res) => {
 
         // Ultimate fallback for manually created local test users who have NO restaurantId or branchId
         if (!finalRestaurantId || !finalBranchId) {
-            const mongoose = await import('mongoose');
             const Restaurant = mongoose.model('Restaurant');
             const Branch = mongoose.model('Branch');
             const firstRestaurant = await Restaurant.findOne();
@@ -37,7 +47,6 @@ export const addOrderItems = async (req, res) => {
 
         let finalUserId = req.user ? req.user._id : null;
         if (!finalUserId) {
-            const mongoose = await import('mongoose');
             const User = mongoose.model('User');
             let guestUser = await User.findOne({ role: 'Customer' });
             if (!guestUser) {
@@ -47,7 +56,7 @@ export const addOrderItems = async (req, res) => {
         }
 
         const order = new Order({
-            orderItems,
+            orderItems: sanitizeOrderItems(orderItems),
             user: finalUserId,
             restaurantId: finalRestaurantId,
             branchId: finalBranchId,
@@ -95,7 +104,7 @@ export const appendOrderItems = async (req, res) => {
     try {
         const order = await Order.findById(req.params.id);
         if (order) {
-            order.orderItems.push(...orderItems);
+            order.orderItems.push(...sanitizeOrderItems(orderItems));
             // Recalculate total price
             order.totalPrice += totalPrice;
             if (taxPrice) order.taxPrice += taxPrice;
