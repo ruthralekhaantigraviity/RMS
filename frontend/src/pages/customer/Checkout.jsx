@@ -259,15 +259,6 @@ const Checkout = () => {
 
                             {paymentMethod === 'UPI' && (
                                 <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-6 text-left">
-                                    <style>{`
-                                        @keyframes scan {
-                                            0%, 100% { transform: translateY(0); }
-                                            50% { transform: translateY(168px); }
-                                        }
-                                        .scanner-laser {
-                                            animation: scan 2s ease-in-out infinite;
-                                        }
-                                    `}</style>
 
                                     {/* Sub-selector: QR Code vs UPI ID */}
                                     <div className="flex gap-3 border-b border-gray-100 pb-4">
@@ -303,23 +294,14 @@ const Checkout = () => {
                                         <div className="flex flex-col items-center justify-center space-y-4 text-center">
                                             {!isScanned ? (
                                                 <>
-                                                    {/* QR Scanner Frame */}
-                                                    <div className="w-48 h-48 relative border-2 border-blue-500 rounded-2xl p-3 bg-white shadow-md overflow-hidden flex items-center justify-center">
-                                                        {/* Scanning laser effect */}
-                                                        <div className="absolute left-0 right-0 top-0 h-1 bg-blue-500 shadow-[0_0_10px_2px_rgba(59,130,246,0.7)] scanner-laser z-10"></div>
-                                                        
-                                                        {/* Frame corners */}
-                                                        <div className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 border-blue-600"></div>
-                                                        <div className="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 border-blue-600"></div>
-                                                        <div className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 border-blue-600"></div>
-                                                        <div className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 border-blue-600"></div>
-
-                                                        <img src="/images/payment_qr.png" alt="Scan to pay" className="w-full h-full object-contain" />
+                                                    {/* Clean QR code wrapper */}
+                                                    <div className="w-48 h-48 bg-white p-3 rounded-2xl border border-gray-200 shadow-md flex items-center justify-center">
+                                                        <img src="/images/payment_qr.png" alt="Scan to pay" className="w-full h-full object-contain rounded-xl" />
                                                     </div>
 
                                                     <div>
                                                         <h3 className="font-bold text-gray-900 text-sm">Scan QR Code to Pay</h3>
-                                                        <p className="text-xs text-gray-500 mt-1">Scanning QR code... Payment apps will be shown automatically after scan completion.</p>
+                                                        <p className="text-xs text-gray-500 mt-1">Use GPay, PhonePe, Paytm, or any banking app to scan. Payment apps will be shown automatically after scan.</p>
                                                     </div>
                                                 </>
                                             ) : (
