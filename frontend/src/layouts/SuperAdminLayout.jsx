@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, CreditCard, 
-    Settings, Bell, LogOut, User, Menu 
+    Settings, Bell, LogOut, User, Menu, X 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
