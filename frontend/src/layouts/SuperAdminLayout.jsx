@@ -1,13 +1,15 @@
+import { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, CreditCard, 
-    Settings, Bell, LogOut, User 
+    Settings, Bell, LogOut, User, Menu 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const SuperAdminLayout = () => {
     const { logout, user } = useAuth();
     const location = useLocation();
+    const [isOpen, setIsOpen] = useState(false);
 
     const navigation = [
         { name: 'Overview', href: '/super-admin', icon: LayoutDashboard },
@@ -17,9 +19,19 @@ const SuperAdminLayout = () => {
     ];
 
     return (
-        <div className="flex h-screen bg-gray-50">
+        <div className="flex h-screen bg-gray-50 relative">
+            {/* Mobile Overlay */}
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-30 md:hidden" 
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+            
             {/* Sidebar */}
-            <div className="w-64 bg-slate-900 text-white flex flex-col">
+            <div className={`w-64 bg-slate-900 text-white flex flex-col fixed inset-y-0 left-0 md:sticky md:top-0 h-screen transition-transform duration-300 z-40 border-r border-slate-800 ${
+                isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            }`}>
                 <div className="h-16 flex items-center px-6 border-b border-slate-800">
                     <h1 className="text-xl font-bold font-sans tracking-tight">RestaurantHub<span className="text-blue-500">SaaS</span></h1>
                 </div>
@@ -33,6 +45,7 @@ const SuperAdminLayout = () => {
                             <Link
                                 key={item.name}
                                 to={item.href}
+                                onClick={() => setIsOpen(false)}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
                                     isActive 
                                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20' 
@@ -57,10 +70,18 @@ const SuperAdminLayout = () => {
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
                 {/* Header */}
-                <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 shrink-0">
-                    <h2 className="text-lg font-bold text-gray-900 font-sans capitalize">
-                        {location.pathname.split('/').pop().replace('-', ' ') || 'Overview'}
-                    </h2>
+                <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-4 md:px-8 shrink-0">
+                    <div className="flex items-center gap-2">
+                        <button 
+                            onClick={() => setIsOpen(!isOpen)} 
+                            className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg shrink-0"
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <h2 className="text-lg font-bold text-gray-900 font-sans capitalize">
+                            {location.pathname.split('/').pop().replace('-', ' ') || 'Overview'}
+                        </h2>
+                    </div>
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all">
                             <Bell size={20} />

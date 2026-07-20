@@ -1,4 +1,4 @@
-import { Bell, User, Search, LogOut } from 'lucide-react';
+import { Bell, User, Search, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 
@@ -47,9 +47,15 @@ const CashierTopbar = () => {
     const unreadCount = notifications.filter(n => !n.read).length || 0;
 
     return (
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10 shadow-sm">
-            <div className="flex-1 flex items-center gap-4">
-                <div className="relative w-96">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-4 md:px-8 sticky top-0 z-10 shadow-sm">
+            <div className="flex-1 flex items-center gap-2 md:gap-4">
+                <button 
+                    onClick={() => window.dispatchEvent(new Event('toggle-sidebar'))} 
+                    className="md:hidden p-2 text-gray-500 hover:bg-gray-100 rounded-lg shrink-0"
+                >
+                    <Menu size={24} />
+                </button>
+                <div className="relative w-full max-w-xs md:w-96 hidden md:block">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                     <input 
                         type="text"
