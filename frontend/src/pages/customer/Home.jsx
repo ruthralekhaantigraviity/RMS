@@ -18,6 +18,8 @@ const Home = () => {
     const [isYearly, setIsYearly] = useState(false);
     const [openFaq, setOpenFaq] = useState(0);
     const [showContact, setShowContact] = useState(false);
+    const [plans, setPlans] = useState([]);
+    const [plansLoading, setPlansLoading] = useState(true);
 
     // Dummy data for the landing page grid (just in case they need to see demo restaurants)
     const dummyRestaurants = [
@@ -50,6 +52,26 @@ const Home = () => {
             }
         };
         fetchRestaurants();
+    }, []);
+
+    // Fetch subscription plans from backend
+    useEffect(() => {
+        const fetchPlans = async () => {
+            try {
+                let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
+                if (!API_URL.endsWith('/api')) API_URL += '/api';
+                const res = await axios.get(`${API_URL}/plans`);
+                if (res.data && res.data.length > 0) {
+                    setPlans(res.data);
+                }
+            } catch (error) {
+                console.error("Failed to load plans", error);
+            } finally {
+                setPlansLoading(false);
+            }
+        };
+        fetchPlans();
     }, []);
 
     // Core SaaS Features
@@ -226,7 +248,7 @@ const Home = () => {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                             {restaurants.slice(0,6).map((restaurant, idx) => (
-                                <div key={idx} className="group cursor-pointer block hover:scale-105 transition-transform duration-200">
+                                <Link to={`/restaurant/${restaurant._id}`} key={idx} className="group cursor-pointer block hover:scale-105 transition-transform duration-200">
                                     <div className="relative rounded-2xl overflow-hidden aspect-square mb-3 shadow-sm">
                                         <img src={restaurant.img || restaurant.logo || "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"} alt={restaurant.name} className="w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
@@ -234,7 +256,7 @@ const Home = () => {
                                             <h3 className="text-sm font-bold truncate">{restaurant.name}</h3>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     )}
@@ -421,61 +443,69 @@ const Home = () => {
                                 <div className={`w-6 h-6 bg-white rounded-full absolute top-1 transition-transform duration-300 shadow-sm ${isYearly ? 'left-7' : 'left-1'}`}></div>
                             </button>
                             <span className={`font-bold flex items-center gap-2 ${isYearly ? 'text-gray-900' : 'text-gray-400'}`}>
-                                Yearly <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Save 20%</span>
+                                Yearly <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wider">Save more</span>
                             </span>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                            <h3 className="text-xl font-bold mb-2">Starter</h3>
-                            <p className="text-gray-500 text-sm font-medium mb-6">Perfect for small cafes and food trucks.</p>
-                            <div className="text-4xl font-black mb-6">₹{isYearly ? '39' : '49'}<span className="text-lg text-gray-400 font-medium">/mo</span></div>
-                            <Link to={`/staff/register?plan=Starter&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Subscribe Now</Link>
-                            <div className="space-y-4">
-                                {['1 Outlet', 'Basic POS Billing', 'QR Ordering', 'Email Support'].map((f, i) => (
-                                    <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-green-500" /><span className="font-medium text-sm text-gray-600">{f}</span></div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-gray-900 text-white p-8 rounded-3xl border border-gray-800 shadow-2xl relative transform md:-translate-y-4">
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">Most Popular</div>
-                            <h3 className="text-xl font-bold mb-2">Professional</h3>
-                            <p className="text-gray-400 text-sm font-medium mb-6">For growing restaurants and multi-locations.</p>
-                            <div className="text-4xl font-black mb-6">₹{isYearly ? '79' : '99'}<span className="text-lg text-gray-500 font-medium">/mo</span></div>
-                            <Link to={`/staff/register?plan=Professional&billing=${isYearly ? 'yearly' : 'monthly'}`} className="w-full py-3 rounded-xl bg-white text-gray-900 font-bold hover:bg-gray-100 transition-colors mb-8 shadow-lg shadow-white/10 flex justify-center items-center">Subscribe Now</Link>
-                            <div className="space-y-4">
-                                {['Up to 3 Outlets', 'Kitchen Display System', 'Online Ordering App', 'Advanced Analytics', 'Priority Support'].map((f, i) => (
-                                    <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-red-400" /><span className="font-medium text-sm text-gray-300">{f}</span></div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                            <h3 className="text-xl font-bold mb-2">Enterprise</h3>
-                            <p className="text-gray-500 text-sm font-medium mb-6">Custom solutions for massive chains.</p>
-                            <div className="text-4xl font-black mb-6">Custom</div>
-                            {showContact ? (
-                                <div className="w-full p-4 rounded-xl border-2 border-red-100 bg-red-50 text-left mb-8 transition-all animate-fade-in">
-                                    <div className="flex items-center gap-2 font-bold text-gray-900 mb-2 text-lg">
-                                        <Phone size={18} className="text-red-500" /> +1 (800) 123-4567
+                    {plansLoading ? (
+                        <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500"></div></div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                            {plans.map((plan, idx) => {
+                                const isPopular = idx === 1; // Highlight the middle plan
+                                const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+                                const savings = plan.monthlyPrice && plan.yearlyPrice
+                                    ? Math.round((1 - plan.yearlyPrice / plan.monthlyPrice) * 100)
+                                    : 0;
+                                return (
+                                    <div key={plan._id} className={`p-8 rounded-3xl relative ${
+                                        isPopular
+                                            ? 'bg-gray-900 text-white border border-gray-800 shadow-2xl transform md:-translate-y-4'
+                                            : 'bg-white border border-gray-100 shadow-sm'
+                                    }`}>
+                                        {isPopular && (
+                                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">Most Popular</div>
+                                        )}
+                                        <h3 className={`text-xl font-bold mb-2 ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+                                        <div className={`text-4xl font-black mb-1 ${isPopular ? 'text-white' : 'text-gray-900'}`}>
+                                            ₹{(price || 0).toLocaleString('en-IN')}
+                                            <span className={`text-lg font-medium ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>/mo</span>
+                                        </div>
+                                        {isYearly && savings > 0 && (
+                                            <p className={`text-xs font-bold mb-6 ${isPopular ? 'text-green-400' : 'text-green-600'}`}>
+                                                Save {savings}% vs monthly billing
+                                            </p>
+                                        )}
+                                        {!isYearly && <p className={`text-xs mb-6 ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>Billed monthly. Cancel anytime.</p>}
+                                        <Link 
+                                            to={`/staff/register?plan=${encodeURIComponent(plan.name)}&billing=${isYearly ? 'yearly' : 'monthly'}`}
+                                            className={`w-full py-3 rounded-xl font-bold mb-8 flex justify-center items-center transition-colors ${
+                                                isPopular
+                                                    ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg shadow-white/10'
+                                                    : 'border-2 border-gray-200 text-gray-700 hover:border-gray-900'
+                                            }`}
+                                        >
+                                            Subscribe Now
+                                        </Link>
+                                        <div className="space-y-4">
+                                            {plan.features.map((f, i) => (
+                                                <div key={i} className="flex items-center gap-3">
+                                                    <CheckCircle2 size={18} className={isPopular ? 'text-red-400' : 'text-green-500'} />
+                                                    <span className={`font-medium text-sm ${isPopular ? 'text-gray-300' : 'text-gray-600'}`}>{f}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="flex items-start gap-2 text-sm font-medium text-gray-700 leading-tight">
-                                        <MapPin size={18} className="text-red-500 shrink-0" /> 
-                                        <span>123 Innovation Way, Suite 500<br/>San Francisco, CA 94103</span>
-                                    </div>
+                                );
+                            })}
+                            {plans.length === 0 && (
+                                <div className="col-span-3 text-center py-12 text-gray-400">
+                                    <p className="font-medium">No plans available. Please contact the administrator.</p>
                                 </div>
-                            ) : (
-                                <button onClick={() => setShowContact(true)} className="w-full py-3 rounded-xl border-2 border-gray-200 font-bold text-gray-700 hover:border-gray-900 transition-colors mb-8 flex justify-center items-center">Contact Sales</button>
                             )}
-                            <div className="space-y-4">
-                                {['Unlimited Outlets', 'Custom APIs & Webhooks', 'Dedicated Account Manager', 'SLA Guarantee'].map((f, i) => (
-                                    <div key={i} className="flex items-center gap-3"><CheckCircle2 size={18} className="text-green-500" /><span className="font-medium text-sm text-gray-600">{f}</span></div>
-                                ))}
-                            </div>
                         </div>
-                    </div>
+                    )}
                 </section>
 
                 {/* 12. FAQ */}

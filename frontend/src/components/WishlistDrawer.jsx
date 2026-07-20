@@ -1,6 +1,7 @@
 import { X, Heart, ShoppingBag, ShoppingCart, Trash2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { getItemImage } from '../utils/imageHelper';
 
 const WishlistDrawer = () => {
     const { isWishlistOpen, setIsWishlistOpen, wishlist, toggleWishlist, addToCart, setIsCartOpen } = useCart();
@@ -59,7 +60,12 @@ const WishlistDrawer = () => {
                             return (
                                 <div key={itemId} className="flex gap-4 bg-white items-center">
                                     <div className="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
-                                        <img src={item.image || item.img} alt={item.name} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={getItemImage(item)} 
+                                            onError={(e) => { e.target.onerror = null; e.target.src = getItemImage({ ...item, image: '' }); }}
+                                            alt={item.name} 
+                                            className="w-full h-full object-cover" 
+                                        />
                                     </div>
                                     <div className="flex-1 flex flex-col justify-between">
                                         <div className="flex justify-between items-start">

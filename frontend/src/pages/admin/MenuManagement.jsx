@@ -3,6 +3,7 @@ import { Plus, Search, Edit2, Trash2, Tag, Image as ImageIcon, X } from 'lucide-
 import toast from 'react-hot-toast';
 import ConfirmModal from '../../components/ConfirmModal';
 import { useAuth } from '../../context/AuthContext';
+import { getItemImage } from '../../utils/imageHelper';
 
 const MenuManagement = () => {
     const { api } = useAuth();
@@ -225,7 +226,12 @@ const MenuManagement = () => {
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 shrink-0 overflow-hidden border border-gray-200">
-                                                {item.image ? <img src={item.image} alt={item.name} className="w-full h-full object-cover"/> : <ImageIcon size={20} />}
+                                                <img 
+                                                    src={getItemImage(item)} 
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = getItemImage({ ...item, image: '' }); }}
+                                                    alt={item.name} 
+                                                    className="w-full h-full object-cover"
+                                                />
                                             </div>
                                             <div>
                                                 <p className="font-semibold text-gray-900">{item.name}</p>

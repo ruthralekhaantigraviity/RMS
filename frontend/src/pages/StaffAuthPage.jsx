@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-do
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, UtensilsCrossed, ArrowRight, Mail, Lock, User as UserIcon, Tag, AlertCircle, Phone, CheckCircle2, QrCode, Loader2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const StaffAuthPage = () => {
     const navigate = useNavigate();
@@ -21,16 +22,44 @@ const StaffAuthPage = () => {
     const [scanActive, setScanActive] = useState(false);
     const [showUpiModal, setShowUpiModal] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success', 'failed'
+    const [plans, setPlans] = useState([]);
+    const [plansLoading, setPlansLoading] = useState(true);
     
     const { login, register: registerUser } = useAuth();
     
     const { register, handleSubmit, watch, formState: { errors, isValid }, trigger, getValues, reset } = useForm({
         mode: 'onChange',
         defaultValues: {
-            plan: searchParams.get('plan') || 'Basic',
+            plan: searchParams.get('plan') || '',
             billingCycle: searchParams.get('billing') || 'monthly'
         }
     });
+
+    // Fetch plans from API
+    useEffect(() => {
+        const fetchPlans = async () => {
+            try {
+                let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+                if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
+                if (!API_URL.endsWith('/api')) API_URL += '/api';
+                const res = await axios.get(`${API_URL}/plans`);
+                if (res.data && res.data.length > 0) {
+                    setPlans(res.data);
+                    // Auto-select the plan from URL params or first plan
+                    const urlPlan = searchParams.get('plan');
+                    if (!urlPlan || !res.data.find(p => p.name === urlPlan)) {
+                        // Set default to first plan name if URL plan not found
+                        reset({ plan: res.data[0].name, billingCycle: searchParams.get('billing') || 'monthly' });
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to fetch plans', err);
+            } finally {
+                setPlansLoading(false);
+            }
+        };
+        fetchPlans();
+    }, []);
 
     const onSubmitLogin = async (data) => {
         setLoading(true);
@@ -69,11 +98,13 @@ const StaffAuthPage = () => {
     };
 
     const getPlanAmount = () => {
-        const selectedPlan = watch('plan');
+        const selectedPlanName = watch('plan');
         const isYearly = watch('billingCycle') === 'yearly';
-        if (selectedPlan === 'Basic') return isYearly ? '39.00' : '49.00';
-        if (selectedPlan === 'Pro') return isYearly ? '79.00' : '99.00';
-        return '199.00';
+        const found = plans.find(p => p.name === selectedPlanName);
+        if (found) {
+            return isYearly ? (found.yearlyPrice || 0).toFixed(2) : (found.monthlyPrice || 0).toFixed(2);
+        }
+        return '0.00';
     };
 
     const startDummyScan = () => {
@@ -323,26 +354,44 @@ const StaffAuthPage = () => {
 
             <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
                 <button type="button" onClick={() => trigger().then(() => register('billingCycle').onChange({ target: { name: 'billingCycle', value: 'monthly' } }))} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isYearly ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>Monthly</button>
-                <button type="button" onClick={() => trigger().then(() => register('billingCycle').onChange({ target: { name: 'billingCycle', value: 'yearly' } }))} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isYearly ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>Yearly (Save 20%)</button>
+                <button type="button" onClick={() => trigger().then(() => register('billingCycle').onChange({ target: { name: 'billingCycle', value: 'yearly' } }))} className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isYearly ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}>Yearly (Save more)</button>
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
-                {['Basic', 'Pro', 'Enterprise'].map((plan) => (
-                    <label key={plan} className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedPlan === plan ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}>
-                        <input type="radio" value={plan} {...register('plan')} className="hidden" />
-                        <div className="flex justify-between items-center mb-1">
-                            <span className="font-bold text-gray-900">{plan}</span>
-                            <span className="font-bold text-green-600">
-                                {plan === 'Basic' && (isYearly ? '₹39/mo' : '₹49/mo')}
-                                {plan === 'Pro' && (isYearly ? '₹79/mo' : '₹99/mo')}
-                                {plan === 'Enterprise' && 'Custom'}
-                            </span>
-                        </div>
-                        <p className="text-xs text-gray-500 font-medium">Cancel anytime.</p>
-                        {selectedPlan === plan && <CheckCircle2 size={18} className="absolute top-4 right-4 text-green-500" />}
-                    </label>
-                ))}
-            </div>
+            {plansLoading ? (
+                <div className="flex justify-center py-6"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div></div>
+            ) : (
+                <div className="grid grid-cols-1 gap-3">
+                    {plans.map((plan) => {
+                        const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+                        const savings = plan.monthlyPrice && plan.yearlyPrice
+                            ? Math.round((1 - plan.yearlyPrice / plan.monthlyPrice) * 100)
+                            : 0;
+                        return (
+                            <label key={plan._id} className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedPlan === plan.name ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}>
+                                <input type="radio" value={plan.name} {...register('plan')} className="hidden" />
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="font-bold text-gray-900">{plan.name}</span>
+                                    <span className="font-bold text-green-600">
+                                        ₹{(price || 0).toLocaleString('en-IN')}/mo
+                                        {isYearly && savings > 0 && (
+                                            <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-semibold">
+                                                Save {savings}%
+                                            </span>
+                                        )}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-gray-500 font-medium">
+                                    {plan.features.slice(0, 2).join(' · ')}{plan.features.length > 2 ? ` · +${plan.features.length - 2} more` : ''}
+                                </p>
+                                {selectedPlan === plan.name && <CheckCircle2 size={18} className="absolute top-4 right-4 text-green-500" />}
+                            </label>
+                        );
+                    })}
+                    {plans.length === 0 && (
+                        <p className="text-gray-400 text-sm text-center py-4">No plans available. Please try again later.</p>
+                    )}
+                </div>
+            )}
 
             <button
                 type="button"
@@ -520,7 +569,7 @@ const StaffAuthPage = () => {
                             {paymentStatus === 'idle' && (
                                 <>
                                     <div className="text-3xl font-black text-gray-900 mb-6">
-                                        {watch('plan') === 'Basic' ? (watch('billingCycle') === 'yearly' ? '₹39.00' : '₹49.00') : watch('plan') === 'Pro' ? (watch('billingCycle') === 'yearly' ? '₹79.00' : '₹99.00') : '₹199.00'}
+                                        ₹{getPlanAmount()}/mo
                                     </div>
                                     <p className="text-sm font-bold text-gray-500 mb-4">Select UPI App:</p>
                                     <div className="flex flex-col w-full gap-3">

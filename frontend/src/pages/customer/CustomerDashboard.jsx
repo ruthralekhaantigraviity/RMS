@@ -3,6 +3,7 @@ import { Gift, Clock, Star, MapPin, ChevronRight, ShoppingBag, Heart, LogOut } f
 import { useCustomerAuth } from '../../context/CustomerAuthContext';
 import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { getItemImage } from '../../utils/imageHelper';
 
 const CustomerDashboard = () => {
     const { user, logout, api } = useCustomerAuth();
@@ -136,11 +137,9 @@ const CustomerDashboard = () => {
                                                 <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
                                                     {sub.subscriptionPlan}
                                                 </span>
-                                                {sub.restaurantId?.name && (
-                                                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
-                                                        📍 {sub.restaurantId.name}
-                                                    </span>
-                                                )}
+                                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 border border-orange-200">
+                                                    📍 {sub.restaurantId?.name || 'Platform Restaurant'}
+                                                </span>
                                             </div>
                                             <span className="text-[10px] text-gray-500 font-semibold">
                                                 {new Date(sub.createdAt).toLocaleDateString()}
@@ -316,7 +315,8 @@ const CustomerDashboard = () => {
                             >
                                 <div className="relative aspect-[4/3] w-full overflow-hidden">
                                     <img 
-                                        src={food.image} 
+                                        src={getItemImage(food)} 
+                                        onError={(e) => { e.target.onerror = null; e.target.src = getItemImage({ ...food, image: '' }); }}
                                         alt={food.name} 
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                     />

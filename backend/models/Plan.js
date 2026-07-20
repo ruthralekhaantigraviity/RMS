@@ -6,14 +6,13 @@ const planSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    price: {
+    monthlyPrice: {
         type: Number,
         required: true,
     },
-    billingCycle: {
-        type: String,
-        enum: ['Monthly', 'Yearly'],
-        default: 'Monthly'
+    yearlyPrice: {
+        type: Number,
+        required: true,
     },
     features: [{
         type: String
