@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Store, Users, CreditCard, ShoppingBag, TrendingUp, AlertCircle, ArrowRight } from 'lucide-react';
+import { Store, Users, CreditCard, ShoppingBag, TrendingUp, AlertCircle, ArrowRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const SuperAdminDashboard = () => {
@@ -14,6 +14,17 @@ const SuperAdminDashboard = () => {
     });
     const [restaurants, setRestaurants] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [viewingRestaurant, setViewingRestaurant] = useState(null);
+
+    const calculateRemainingDays = (expiryDate) => {
+        if (!expiryDate) return 'No expiry date set';
+        const diffTime = new Date(expiryDate) - new Date();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) {
+            return `Expired ${Math.abs(diffDays)} days ago`;
+        }
+        return `${diffDays} days remaining`;
+    };
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -71,10 +82,19 @@ const SuperAdminDashboard = () => {
                             const diffTime = new Date(r.subscription.expiryDate) - new Date();
                             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                             return (
-                                <div key={r._id} className="flex justify-between items-center bg-white border border-red-100/50 p-4 rounded-2xl shadow-sm">
+                                <div 
+                                    key={r._id} 
+                                    className="flex justify-between items-center bg-white border border-red-100/50 p-4 rounded-2xl shadow-sm cursor-pointer hover:shadow-md hover:border-red-200 transition-all"
+                                    onClick={() => setViewingRestaurant(r)}
+                                    title="Click to view subscription details"
+                                >
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-700 font-bold text-lg shrink-0">
-                                            {r.name.charAt(0)}
+                                        <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-700 font-bold text-lg shrink-0 border border-red-200 overflow-hidden">
+                                            {r.logo ? (
+                                                <img src={r.logo} alt={r.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                r.name.charAt(0)
+                                            )}
                                         </div>
                                         <div>
                                             <span className="font-bold text-gray-900 block">{r.name}</span>
@@ -207,6 +227,84 @@ const SuperAdminDashboard = () => {
                     </table>
                 </div>
             </div>
+
+            {/* View Details Modal */}
+            {viewingRestaurant && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setViewingRestaurant(null)}></div>
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-gray-900 text-lg">Restaurant Subscription Details</h3>
+                            <button onClick={() => setViewingRestaurant(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="flex items-center gap-4 border-b border-gray-50 pb-4">
+                                <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0 border border-gray-200">
+                                    {viewingRestaurant.logo ? (
+                                        <img src={viewingRestaurant.logo} alt={viewingRestaurant.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600 font-bold text-2xl">
+                                            {viewingRestaurant.name.charAt(0)}
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-gray-900">{viewingRestaurant.name}</h4>
+                                    <p className="text-sm text-gray-500">{viewingRestaurant.ownerId?.email || 'N/A'}</p>
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 font-medium">Subscription Plan:</span>
+                                    <span className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
+                                        {viewingRestaurant.subscription?.plan || 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 font-medium">Subscription Status:</span>
+                                    <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                                        viewingRestaurant.subscription?.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                    }`}>
+                                        {viewingRestaurant.subscription?.status || 'Unknown'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 font-medium">Start Date:</span>
+                                    <span className="text-gray-900 font-semibold">
+                                        {viewingRestaurant.createdAt ? new Date(viewingRestaurant.createdAt).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <span className="text-gray-500 font-medium">Expiry / End Date:</span>
+                                    <span className="text-gray-900 font-semibold">
+                                        {viewingRestaurant.subscription?.expiryDate ? new Date(viewingRestaurant.subscription?.expiryDate).toLocaleDateString() : 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between items-center text-sm border-t border-gray-50 pt-3">
+                                    <span className="text-gray-500 font-medium">Subscription Period:</span>
+                                    <span className={`font-bold ${
+                                        viewingRestaurant.subscription?.expiryDate && (new Date(viewingRestaurant.subscription?.expiryDate) - new Date()) / (1000 * 60 * 60 * 24) <= 7
+                                        ? 'text-red-600'
+                                        : 'text-gray-900'
+                                    }`}>
+                                        {calculateRemainingDays(viewingRestaurant.subscription?.expiryDate)}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <button 
+                                onClick={() => setViewingRestaurant(null)}
+                                className="w-full mt-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors text-sm"
+                            >
+                                Close Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
