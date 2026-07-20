@@ -71,6 +71,22 @@ export const updateSubscription = async (req, res) => {
     }
 };
 
+// @desc    Delete a restaurant
+// @route   DELETE /api/super-admin/restaurants/:id
+// @access  Private/SuperAdmin
+export const deleteRestaurant = async (req, res) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurant not found' });
+        }
+        await Restaurant.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Restaurant deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // --- PLAN MANAGEMENT ---
 
 export const getPlans = async (req, res) => {

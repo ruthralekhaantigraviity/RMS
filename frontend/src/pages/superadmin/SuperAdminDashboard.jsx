@@ -47,8 +47,62 @@ const SuperAdminDashboard = () => {
 
     if (loading) return <div className="flex items-center justify-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div></div>;
 
+    const upcomingExpirations = restaurants.filter(r => {
+        if (!r.subscription?.expiryDate) return false;
+        const diffTime = new Date(r.subscription.expiryDate) - new Date();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7 && r.subscription.status === 'Active';
+    });
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Expiry Alerts */}
+            {upcomingExpirations.length > 0 && (
+                <div className="bg-red-50 border border-red-200 rounded-3xl p-6 space-y-4">
+                    <div className="flex items-center gap-3 text-red-700">
+                        <AlertCircle size={24} className="shrink-0 animate-bounce" />
+                        <div>
+                            <h3 className="text-lg font-bold">Subscription Renewal Alerts</h3>
+                            <p className="text-sm text-red-600">The following restaurants have subscriptions expiring soon or expired.</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {upcomingExpirations.map(r => {
+                            const diffTime = new Date(r.subscription.expiryDate) - new Date();
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            return (
+                                <div key={r._id} className="flex justify-between items-center bg-white border border-red-100/50 p-4 rounded-2xl shadow-sm">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-red-700 font-bold text-lg shrink-0">
+                                            {r.name.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <span className="font-bold text-gray-900 block">{r.name}</span>
+                                            <span className="text-xs text-gray-500 font-medium">Plan: {r.subscription.plan}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className={`text-xs px-2.5 py-1 rounded-full font-bold inline-block ${
+                                            diffDays < 0 
+                                            ? 'bg-red-100 text-red-700 border border-red-200' 
+                                            : 'bg-orange-100 text-orange-700 border border-orange-200'
+                                        }`}>
+                                            {diffDays < 0 
+                                                ? `Expired ${Math.abs(diffDays)}d ago` 
+                                                : diffDays === 0 
+                                                    ? 'Expires today!' 
+                                                    : `Expires in ${diffDays}d`
+                                            }
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 block mt-1">End: {new Date(r.subscription.expiryDate).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
