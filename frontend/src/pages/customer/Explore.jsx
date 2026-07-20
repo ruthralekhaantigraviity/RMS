@@ -114,18 +114,18 @@ const Explore = () => {
                         </Link>
                         
                         {/* Location Selector */}
-                        <div className="relative hidden md:block">
+                        <div className="relative">
                             <div 
                                 onClick={() => setIsLocationOpen(!isLocationOpen)}
-                                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 px-2 py-1.5 rounded-lg transition-colors border-b-2 border-transparent hover:border-gray-200"
+                                className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover:bg-gray-50 px-1.5 sm:px-2 py-1.5 rounded-lg transition-colors border-b-2 border-transparent hover:border-gray-200"
                             >
-                                <MapPin size={20} className="text-red-500 shrink-0" />
+                                <MapPin size={18} className="text-red-500 shrink-0" />
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-gray-800 line-clamp-1 border-b border-dashed border-gray-400">
+                                    <span className="text-xs sm:text-sm font-bold text-gray-800 line-clamp-1 border-b border-dashed border-gray-400 max-w-[80px] xs:max-w-[120px] sm:max-w-none">
                                         {location}
                                     </span>
                                 </div>
-                                <ChevronDown size={16} className="text-red-500" />
+                                <ChevronDown size={14} className="text-red-500" />
                             </div>
 
                             {isLocationOpen && (
@@ -164,21 +164,16 @@ const Explore = () => {
                             />
                         </div>
 
-                        {/* Mobile Location (shows only on small screens) */}
-                        <div className="md:hidden flex items-center text-red-500">
-                            <MapPin size={24} />
-                        </div>
-
                         {user ? (
                             <div className="relative">
                                 <button 
                                     onClick={() => setIsProfileOpen(!isProfileOpen)} 
-                                    className="hidden md:flex items-center gap-2 hover:bg-gray-50 px-3 py-2 rounded-xl transition-colors font-bold text-gray-700"
+                                    className="flex items-center gap-2 hover:bg-gray-50 p-2 md:px-3 md:py-2 rounded-xl transition-colors font-bold text-gray-700"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 shrink-0">
                                         <User size={18} />
                                     </div>
-                                    {user.name}
+                                    <span className="hidden md:inline">{user.name}</span>
                                 </button>
                                 
                                 {isProfileOpen && (
@@ -208,11 +203,11 @@ const Explore = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className="hidden md:flex items-center gap-3">
-                                <Link to="/login?type=customer" className="text-gray-600 hover:text-red-500 font-medium px-4 py-2 rounded-xl hover:bg-red-50 transition-colors">
+                            <div className="flex items-center gap-2 md:gap-3 text-sm shrink-0">
+                                <Link to="/login?type=customer" className="text-gray-600 hover:text-red-500 font-medium px-2 py-1.5 md:px-4 md:py-2 rounded-xl hover:bg-red-50 transition-colors">
                                     Log in
                                 </Link>
-                                <Link to="/register?type=customer" className="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-2 rounded-xl shadow-sm hover:shadow transition-all">
+                                <Link to="/register?type=customer" className="bg-red-500 hover:bg-red-600 text-white font-bold px-3 py-1.5 md:px-6 md:py-2 rounded-xl shadow-sm hover:shadow transition-all text-xs md:text-sm">
                                     Sign up
                                 </Link>
                             </div>
