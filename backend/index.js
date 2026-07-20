@@ -44,6 +44,8 @@ import offerRoutes from './routes/offerRoutes.js';
 import taxRoutes from './routes/taxRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import planRoutes from './routes/planRoutes.js';
+import Plan from './models/Plan.js';
 
 
 
@@ -68,6 +70,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/super-admin', superAdminRoutes);
 app.use('/api/tables', tableRoutes);
+app.use('/api/plans', planRoutes);
 
 import path from 'path';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
@@ -92,4 +95,20 @@ if (process.env.NODE_ENV === 'production') {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, async () => {
+    console.log(`Server running on port ${PORT}`);
+    // Auto-seed default plans if none exist
+    try {
+        const count = await Plan.countDocuments();
+        if (count === 0) {
+            await Plan.insertMany([
+                { name: 'Starter', monthlyPrice: 2999, yearlyPrice: 2399, features: ['1 Branch', 'Basic POS Billing', 'QR Ordering', 'Email Support'], isActive: true },
+                { name: 'Professional', monthlyPrice: 5999, yearlyPrice: 4799, features: ['Up to 3 Branches', 'Kitchen Display System', 'Online Ordering', 'Advanced Analytics', 'Priority Support'], isActive: true },
+                { name: 'Enterprise', monthlyPrice: 12999, yearlyPrice: 10399, features: ['Unlimited Branches', 'Custom APIs & Webhooks', 'Dedicated Account Manager', 'SLA Guarantee', 'White-label Branding'], isActive: true }
+            ]);
+            console.log('Default subscription plans seeded.');
+        }
+    } catch (e) {
+        console.error('Error seeding plans:', e.message);
+    }
+});

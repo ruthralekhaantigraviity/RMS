@@ -4,6 +4,7 @@ import { useCustomerAuth } from '../../context/CustomerAuthContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { CreditCard, MapPin, Ticket, ChevronRight, Utensils, CheckCircle, ShieldCheck, ArrowRight, Store } from 'lucide-react';
 import axios from 'axios';
+import { getItemImage } from '../../utils/imageHelper';
 
 const Checkout = () => {
     const { cartItems, cartTotal, clearCart } = useCart();
@@ -30,18 +31,35 @@ const Checkout = () => {
 
     useEffect(() => {
         const fetchRestaurants = async () => {
+            const dummyRestaurants = [
+                { _id: 'demo1', name: 'Pizza Palace', address: '123 Food Street' },
+                { _id: 'demo2', name: 'Burger Hub', address: '456 Fast Lane' },
+                { _id: 'demo3', name: 'South Indian Cafe', address: '789 Spice Road' }
+            ];
+            
             try {
                 let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
                 if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
                 if (!API_URL.endsWith('/api')) API_URL += '/api';
                 const res = await axios.get(`${API_URL}/restaurants`);
                 const activeList = res.data.filter(r => r.isActive !== false);
-                setRestaurantsList(activeList);
-                if (activeList.length > 0 && !selectedRestaurantId && !location.state?.restaurantId) {
-                    setSelectedRestaurantId(activeList[0]._id);
+                
+                const finalRestaurants = activeList.length > 0 ? activeList : dummyRestaurants;
+                setRestaurantsList(finalRestaurants);
+                
+                if (location.state?.restaurantId) {
+                    setSelectedRestaurantId(location.state.restaurantId);
+                } else if (finalRestaurants.length > 0 && !selectedRestaurantId) {
+                    setSelectedRestaurantId(finalRestaurants[0]._id);
                 }
             } catch (error) {
                 console.error("Failed to load restaurants for checkout", error);
+                setRestaurantsList(dummyRestaurants);
+                if (location.state?.restaurantId) {
+                    setSelectedRestaurantId(location.state.restaurantId);
+                } else if (!selectedRestaurantId) {
+                    setSelectedRestaurantId(dummyRestaurants[0]._id);
+                }
             }
         };
         fetchRestaurants();
@@ -455,7 +473,12 @@ const Checkout = () => {
                             {cartItems.map(item => (
                                 <div key={item.id} className="flex gap-4">
                                     <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        <img 
+                                            src={getItemImage(item)} 
+                                            onError={(e) => { e.target.onerror = null; e.target.src = getItemImage({ ...item, image: '' }); }}
+                                            alt={item.name} 
+                                            className="w-full h-full object-cover" 
+                                        />
                                     </div>
                                     <div className="flex-1 flex flex-col justify-center">
                                         <h4 className="font-bold text-gray-900 text-sm leading-tight">{item.name}</h4>

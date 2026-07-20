@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { getItemImage } from '../utils/imageHelper';
 
 const CartContext = createContext();
 
@@ -15,8 +16,14 @@ export const CartProvider = ({ children }) => {
         const savedCart = localStorage.getItem('restosys_cart');
         const savedWishlist = localStorage.getItem('restosys_wishlist');
         try {
-            if (savedCart) setCartItems(JSON.parse(savedCart));
-            if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+            if (savedCart) {
+                const parsed = JSON.parse(savedCart);
+                setCartItems(parsed.map(item => ({ ...item, image: getItemImage(item) })));
+            }
+            if (savedWishlist) {
+                const parsed = JSON.parse(savedWishlist);
+                setWishlist(parsed.map(item => ({ ...item, image: getItemImage(item) })));
+            }
         } catch (e) {
             localStorage.removeItem('restosys_cart');
             localStorage.removeItem('restosys_wishlist');
@@ -34,9 +41,9 @@ export const CartProvider = ({ children }) => {
         setCartItems(prev => {
             const existing = prev.find(i => (i.id || i._id) === itemId);
             if (existing) {
-                return prev.map(i => (i.id || i._id) === itemId ? { ...i, quantity: i.quantity + quantity } : i);
+                return prev.map(i => (i.id || i._id) === itemId ? { ...i, quantity: i.quantity + quantity, image: getItemImage(i) } : i);
             }
-            return [...prev, { ...item, id: itemId, _id: itemId, quantity }];
+            return [...prev, { ...item, id: itemId, _id: itemId, quantity, image: getItemImage(item) }];
         });
         setIsCartOpen(true); // Auto open cart when adding
     };
@@ -63,7 +70,7 @@ export const CartProvider = ({ children }) => {
             if (exists) {
                 return prev.filter(i => (i._id || i.id) !== itemId);
             }
-            return [...prev, item];
+            return [...prev, { ...item, image: getItemImage(item) }];
         });
     };
 

@@ -12,7 +12,7 @@ router.route('/subscribe')
     .put(protect, authorize('RestaurantAdmin'), selfSubscribe);
 
 router.route('/')
-    .get(protect, authorize('SuperAdmin'), getRestaurants)
+    .get(getRestaurants)
     .post(protect, authorize('SuperAdmin'), createRestaurant);
 
 router.route('/:id/subscription')

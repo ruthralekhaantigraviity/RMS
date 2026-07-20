@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { MapPin, Star, Clock, Info, ShoppingBag, Plus, Minus, CheckCircle } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { getItemImage } from '../../utils/imageHelper';
 
 const dummyRestaurants = [
     { _id: 'demo1', name: 'Pizza Palace', logo: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' },
@@ -256,7 +257,12 @@ const RestaurantDetails = () => {
                                                 <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{item.description}</p>
                                             </div>
                                             <div className="w-32 h-32 shrink-0 relative overflow-hidden rounded-xl">
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300" />
+                                                <img 
+                                                    src={getItemImage(item)} 
+                                                    onError={(e) => { e.target.onerror = null; e.target.src = getItemImage({ ...item, image: '' }); }}
+                                                    alt={item.name} 
+                                                    className="w-full h-full object-cover rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300" 
+                                                />
                                             </div>
                                         </div>
                                     ))}
