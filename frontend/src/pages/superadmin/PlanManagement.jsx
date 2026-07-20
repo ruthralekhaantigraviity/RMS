@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Plus, Edit, Trash2, X, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const PlanManagement = () => {
     const { api } = useAuth();
@@ -11,6 +12,13 @@ const PlanManagement = () => {
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingPlan, setEditingPlan] = useState(null);
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => {},
+        isDestructive: true
+    });
     
     // Form state
     const [formData, setFormData] = useState({
@@ -105,17 +113,23 @@ const PlanManagement = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this plan? This cannot be undone.")) {
-            try {
-                await api.delete(`/super-admin/plans/${id}`);
-                toast.success('Plan deleted successfully!');
-                fetchPlans();
-            } catch (error) {
-                console.error("Failed to delete plan", error);
-                toast.error(error.response?.data?.message || 'Failed to delete plan');
-            }
-        }
+    const handleDelete = (id) => {
+        setConfirmModal({
+            isOpen: true,
+            title: 'Delete Plan',
+            message: 'Are you sure you want to delete this plan? This cannot be undone.',
+            onConfirm: async () => {
+                try {
+                    await api.delete(`/super-admin/plans/${id}`);
+                    toast.success('Plan deleted successfully!');
+                    fetchPlans();
+                } catch (error) {
+                    console.error("Failed to delete plan", error);
+                    toast.error(error.response?.data?.message || 'Failed to delete plan');
+                }
+            },
+            isDestructive: true
+        });
     };
 
     if (loading && plans.length === 0) {
@@ -282,6 +296,11 @@ const PlanManagement = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal 
+                {...confirmModal} 
+                onClose={() => setConfirmModal({...confirmModal, isOpen: false})} 
+            />
         </div>
     );
 };

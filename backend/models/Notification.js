@@ -21,7 +21,6 @@ const notificationSchema = new mongoose.Schema({
     restaurantId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant',
-        required: true,
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Store, Users, CreditCard, ShoppingBag, TrendingUp, AlertCircle, ArrowRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const SuperAdminDashboard = () => {
     const { api } = useAuth();
@@ -51,8 +52,9 @@ const SuperAdminDashboard = () => {
             setRestaurants(restaurants.map(r => 
                 r._id === id ? { ...r, subscription: { ...r.subscription, status: newStatus } } : r
             ));
+            toast.success(`Account status updated to ${newStatus}!`);
         } catch (error) {
-            alert('Failed to update subscription');
+            toast.error('Failed to update subscription');
         }
     };
 

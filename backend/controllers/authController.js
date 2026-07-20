@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Role from '../models/Role.js';
 import Restaurant from '../models/Restaurant.js';
+import Notification from '../models/Notification.js';
 
 // Generate JWT
 const generateToken = (id) => {
@@ -68,6 +69,25 @@ export const registerUser = async (req, res) => {
         }
 
         if (user) {
+            // Create system notification for Super Admin
+            try {
+                if (role === 'RestaurantAdmin') {
+                    await Notification.create({
+                        title: 'New Restaurant Registered',
+                        desc: `New restaurant "${req.body.restaurantName || 'Unnamed'}" has registered. Owner: ${name} (${email})`,
+                        type: 'System'
+                    });
+                } else if (role === 'Customer') {
+                    await Notification.create({
+                        title: 'New Customer Signup',
+                        desc: `New customer "${name}" (${email}) registered on the platform.`,
+                        type: 'System'
+                    });
+                }
+            } catch (notifErr) {
+                console.error("Failed to create signup notification", notifErr);
+            }
+
             const token = generateToken(user._id);
             
             const cookieName = loginType === 'customer' ? 'jwt_customer' : 'jwt_staff';
