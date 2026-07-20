@@ -55,6 +55,10 @@ const orderSchema = new mongoose.Schema({
         required: true,
         default: 'Card',
     },
+    subscriptionPlan: {
+        type: String,
+        default: 'One-time Order',
+    },
     paymentResult: {
         id: { type: String },
         status: { type: String },

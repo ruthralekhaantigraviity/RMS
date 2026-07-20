@@ -17,6 +17,10 @@ const Checkout = () => {
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
 
+    const [subscriptionPlan, setSubscriptionPlan] = useState('One-time Order');
+    const [paymentMethod, setPaymentMethod] = useState('Card');
+    const [upiId, setUpiId] = useState('');
+
     // If cart is empty and order not placed, kick them out
     if (cartItems.length === 0 && !orderPlaced) {
         return (
@@ -27,8 +31,16 @@ const Checkout = () => {
         );
     }
 
-    const tax = (cartTotal - discount) * 0.05; // 5% tax
-    const grandTotal = cartTotal - discount + tax;
+    let subscriptionDiscount = 0;
+    if (subscriptionPlan === 'Weekly Subscription') {
+        subscriptionDiscount = cartTotal * 0.10;
+    } else if (subscriptionPlan === 'Monthly Subscription') {
+        subscriptionDiscount = cartTotal * 0.20;
+    }
+
+    const totalDiscount = discount + subscriptionDiscount;
+    const tax = (cartTotal - totalDiscount) * 0.05; // 5% tax
+    const grandTotal = cartTotal - totalDiscount + tax;
 
     const location = useLocation();
     const { restaurantId, branchId } = location.state || {};
@@ -60,7 +72,8 @@ const Checkout = () => {
                 source: 'Self-Pickup',
                 restaurantId,
                 branchId,
-                paymentMethod: 'Card',
+                paymentMethod,
+                subscriptionPlan,
                 taxPrice: tax,
                 totalPrice: grandTotal
             };
@@ -86,18 +99,26 @@ const Checkout = () => {
                     <h1 className="text-3xl font-bold text-gray-900 font-sans tracking-tight mb-2">Order Confirmed!</h1>
                     <p className="text-gray-500 mb-8 text-lg">Your order #{orderPlaced.substring(orderPlaced.length - 6).toUpperCase()} has been sent to the kitchen.</p>
                     
-                    <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left border border-gray-100">
+                    <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left border border-gray-100 space-y-2.5">
                         <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Order Details</p>
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-gray-700">Type</span>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-600">Type</span>
                             <span className="font-bold text-gray-900">Self-Pickup</span>
                         </div>
-                        <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-gray-700">Amount Paid</span>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-600">Plan / Subscription</span>
+                            <span className="font-bold text-purple-700 bg-purple-100/50 px-2 py-0.5 rounded-lg border border-purple-200 text-xs">{subscriptionPlan}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-600">Payment Method</span>
+                            <span className="font-bold text-gray-900">{paymentMethod}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="font-medium text-gray-600">Amount Paid</span>
                             <span className="font-bold text-gray-900">₹{grandTotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                            <span className="font-medium text-gray-700">Est. Time</span>
+                        <div className="flex justify-between items-center text-sm border-t border-gray-200/50 pt-2">
+                            <span className="font-medium text-gray-600">Est. Prep Time</span>
                             <span className="font-bold text-orange-600">20-25 mins</span>
                         </div>
                     </div>
@@ -135,41 +156,99 @@ const Checkout = () => {
                         </div>
                     </div>
 
+                    {/* Subscription selection dropdown */}
+                    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-4">
+                        <h2 className="text-xl font-bold text-gray-900 font-sans">Subscription Plan</h2>
+                        <p className="text-sm text-gray-500 leading-relaxed">Select a meal plan option for this order. Subscriptions give you additional discounts on your order total.</p>
+                        <select
+                            value={subscriptionPlan}
+                            onChange={(e) => setSubscriptionPlan(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-semibold text-gray-800 text-sm"
+                        >
+                            <option value="One-time Order">One-time Order (Standard Price)</option>
+                            <option value="Weekly Subscription">Weekly Subscription (10% Discount)</option>
+                            <option value="Monthly Subscription">Monthly Subscription (20% Discount)</option>
+                        </select>
+                    </div>
+
                     {/* Payment Information */}
-                    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
-                        <div className="flex justify-between items-center mb-6">
+                    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-6">
+                        <div className="flex justify-between items-center">
                             <h2 className="text-xl font-bold text-gray-900 font-sans">Payment Method</h2>
                             <ShieldCheck className="text-green-500" size={24} />
                         </div>
-                        
-                        <div className="bg-gray-900 rounded-2xl p-6 text-white relative overflow-hidden mb-6 shadow-xl shadow-gray-900/20">
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
-                            <div className="flex justify-between items-center mb-8 relative z-10">
-                                <CreditCard size={28} className="text-gray-400" />
-                                <span className="font-bold tracking-widest">VISA</span>
-                            </div>
-                            
-                            <div className="space-y-4 relative z-10">
-                                <div>
-                                    <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Card Number</label>
-                                    <input type="text" defaultValue="•••• •••• •••• 4242" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono text-lg transition-colors" required />
-                                </div>
-                                <div className="flex gap-6">
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Expiry</label>
-                                        <input type="text" defaultValue="12/28" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
-                                    </div>
-                                    <div className="flex-1">
-                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">CVC</label>
-                                        <input type="password" defaultValue="•••" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Cardholder Name</label>
-                                    <input type="text" placeholder="JOHN DOE" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-bold transition-colors" required />
-                                </div>
-                            </div>
+
+                        {/* Payment Method Selector */}
+                        <div className="grid grid-cols-3 gap-4">
+                            {['Card', 'UPI', 'Cash on Delivery'].map((method) => (
+                                <button
+                                    key={method}
+                                    type="button"
+                                    onClick={() => setPaymentMethod(method)}
+                                    className={`py-3.5 px-4 rounded-xl border text-sm font-bold transition-all ${
+                                        paymentMethod === method
+                                            ? 'border-orange-500 bg-orange-50 text-orange-600 shadow-sm shadow-orange-500/10'
+                                            : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                                    }`}
+                                >
+                                    {method}
+                                </button>
+                            ))}
                         </div>
+
+                        {/* Payment Details Container */}
+                        {paymentMethod === 'Card' && (
+                            <div className="bg-gray-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-xl shadow-gray-900/20 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
+                                <div className="flex justify-between items-center mb-8 relative z-10">
+                                    <CreditCard size={28} className="text-gray-400" />
+                                    <span className="font-bold tracking-widest text-lg">VISA</span>
+                                </div>
+                                
+                                <div className="space-y-4 relative z-10">
+                                    <div>
+                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Card Number</label>
+                                        <input type="text" defaultValue="•••• •••• •••• 4242" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono text-lg transition-colors" required />
+                                    </div>
+                                    <div className="flex gap-6">
+                                        <div className="flex-1">
+                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Expiry</label>
+                                            <input type="text" defaultValue="12/28" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
+                                        </div>
+                                        <div className="flex-1">
+                                            <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">CVC</label>
+                                            <input type="password" defaultValue="•••" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-mono transition-colors" required />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-1 block">Cardholder Name</label>
+                                        <input type="text" placeholder="JOHN DOE" className="w-full bg-transparent border-b border-gray-700 focus:border-orange-500 outline-none pb-1 font-bold transition-colors" required />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {paymentMethod === 'UPI' && (
+                            <div className="p-6 bg-blue-50/50 rounded-2xl border border-blue-100 animate-in fade-in slide-in-from-top-4 duration-300 space-y-3 text-left">
+                                <label className="block text-sm font-bold text-gray-700">Enter UPI ID</label>
+                                <input 
+                                    type="text" 
+                                    value={upiId}
+                                    onChange={(e) => setUpiId(e.target.value)}
+                                    placeholder="e.g. mobile@upi, username@okaxis" 
+                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors bg-white font-mono text-sm"
+                                    required={paymentMethod === 'UPI'}
+                                />
+                                <p className="text-xs text-gray-500">Pay using BHIM, Google Pay, PhonePe, Paytm, or any UPI app.</p>
+                            </div>
+                        )}
+
+                        {paymentMethod === 'Cash on Delivery' && (
+                            <div className="p-6 bg-green-50/50 rounded-2xl border border-green-100 animate-in fade-in slide-in-from-top-4 duration-300 text-left">
+                                <h3 className="font-bold text-green-800 text-base">Cash on Delivery Confirmed</h3>
+                                <p className="text-sm text-green-700/80 mt-1 leading-relaxed">No online payment is required. You can pay via cash, card, or UPI directly at the restaurant counter when picking up your order.</p>
+                            </div>
+                        )}
                     </div>
 
                 </div>
@@ -226,8 +305,14 @@ const Checkout = () => {
                             </div>
                             {discount > 0 && (
                                 <div className="flex justify-between items-center text-sm font-bold text-green-600">
-                                    <span>Discount (20%)</span>
+                                    <span>Promo Discount (20%)</span>
                                     <span>-₹{discount.toFixed(2)}</span>
+                                </div>
+                            )}
+                            {subscriptionDiscount > 0 && (
+                                <div className="flex justify-between items-center text-sm font-bold text-purple-600">
+                                    <span>Subscription Discount ({subscriptionPlan === 'Weekly Subscription' ? '10%' : '20%'})</span>
+                                    <span>-₹{subscriptionDiscount.toFixed(2)}</span>
                                 </div>
                             )}
                             <div className="flex justify-between items-center text-sm font-medium text-gray-500">
@@ -236,7 +321,7 @@ const Checkout = () => {
                             </div>
                             
                             <div className="flex justify-between items-end pt-4">
-                                <span className="text-lg font-bold text-gray-900">Total</span>
+                                <span>Total</span>
                                 <span className="text-3xl font-bold text-orange-600 tracking-tight">₹{grandTotal.toFixed(2)}</span>
                             </div>
                         </div>

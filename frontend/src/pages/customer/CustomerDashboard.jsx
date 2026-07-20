@@ -5,10 +5,30 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 
 const CustomerDashboard = () => {
-    const { user, logout } = useCustomerAuth();
+    const { user, logout, api } = useCustomerAuth();
     const { wishlist, addToCart } = useCart();
     const [reservations, setReservations] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [orders, setOrders] = useState([]);
+    const [loadingOrders, setLoadingOrders] = useState(true);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const { data } = await api.get('/orders/myorders');
+                setOrders(data);
+            } catch (error) {
+                console.error("Failed to fetch customer orders", error);
+            } finally {
+                setLoadingOrders(false);
+            }
+        };
+        if (api) {
+            fetchOrders();
+        }
+    }, [api]);
+
+    const activeSubscriptions = orders.filter(o => o.subscriptionPlan && o.subscriptionPlan !== 'One-time Order');
 
     const dashboardFoods = [
         { id: 'd_m1', name: 'Margherita Pizza', price: 299, category: 'Mains', description: 'Classic cheese and tomato pizza with basil.', image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=800' },
@@ -94,7 +114,43 @@ const CustomerDashboard = () => {
                         </div>
                     </div>
 
-                    {/* Wishlist Stat Card removed */}
+                    {/* Active Meal Subscriptions */}
+                    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <Clock size={20} className="text-purple-600" /> Active Meal Subscriptions
+                        </h3>
+                        <div className="space-y-3">
+                            {loadingOrders ? (
+                                <div className="text-center py-6 text-xs text-gray-400 font-medium">
+                                    Loading subscriptions...
+                                </div>
+                            ) : activeSubscriptions.length === 0 ? (
+                                <div className="text-center py-6 text-xs text-gray-400 font-medium bg-gray-50 rounded-2xl">
+                                    No active meal subscriptions. Subscribe during checkout!
+                                </div>
+                            ) : (
+                                activeSubscriptions.map((sub, idx) => (
+                                    <div key={idx} className="border border-purple-100 bg-purple-50/30 rounded-2xl p-4 space-y-2 text-left">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+                                                {sub.subscriptionPlan}
+                                            </span>
+                                            <span className="text-[10px] text-gray-500 font-semibold">
+                                                {new Date(sub.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                        <p className="font-bold text-gray-900 text-sm truncate">
+                                            {sub.orderItems.map(i => i.name).join(', ')}
+                                        </p>
+                                        <div className="flex justify-between items-center text-xs text-gray-500">
+                                            <span>Paid via: {sub.paymentMethod}</span>
+                                            <span className="font-bold text-purple-700">₹{sub.totalPrice.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
 
                     {/* Active Coupons */}
                     <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
