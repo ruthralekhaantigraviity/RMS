@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Calculator, ReceiptText, LayoutGrid, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -5,6 +6,13 @@ import clsx from 'clsx';
 
 const CashierSidebar = () => {
     const { logout } = useAuth();
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const handleToggle = () => setIsOpen(prev => !prev);
+        window.addEventListener('toggle-sidebar', handleToggle);
+        return () => window.removeEventListener('toggle-sidebar', handleToggle);
+    }, []);
 
     const menuGroups = [
         {
@@ -23,7 +31,18 @@ const CashierSidebar = () => {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-100 flex flex-col h-screen sticky top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
+        <>
+        {/* Mobile Overlay */}
+        {isOpen && (
+            <div 
+                className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-30 md:hidden" 
+                onClick={() => setIsOpen(false)}
+            />
+        )}
+        <aside className={clsx(
+            "w-64 bg-white border-r border-gray-100 flex flex-col h-screen fixed inset-y-0 left-0 md:sticky md:top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-40 transition-transform duration-300",
+            isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        )}>
             {/* Logo area */}
             <div className="h-20 flex items-center px-6 border-b border-gray-50">
                 <div className="flex items-center gap-3">
@@ -87,6 +106,7 @@ const CashierSidebar = () => {
                 </button>
             </div>
         </aside>
+        </>
     );
 };
 

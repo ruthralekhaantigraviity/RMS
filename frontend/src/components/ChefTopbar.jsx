@@ -1,4 +1,4 @@
-import { Bell, User, Clock, LogOut } from 'lucide-react';
+import { Bell, User, Clock, LogOut, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 
@@ -55,10 +55,18 @@ const ChefTopbar = () => {
     const unreadCount = chefNotifications.filter(n => !n.read).length || 0;
 
     return (
-        <header className="h-16 bg-[#1e2330] border-b border-[#2a3040] flex items-center justify-between px-8 sticky top-0 z-10">
-            <div className="flex items-center gap-2 text-gray-400 font-bold text-sm bg-[#151923] px-4 py-1.5 rounded-lg border border-[#2a3040]">
-                <Clock size={16} className="text-orange-400" />
-                {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        <header className="h-16 bg-[#1e2330] border-b border-[#2a3040] flex items-center justify-between px-4 md:px-8 sticky top-0 z-10">
+            <div className="flex items-center gap-2">
+                <button 
+                    onClick={() => window.dispatchEvent(new Event('toggle-sidebar'))} 
+                    className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-[#252b3b] rounded-lg shrink-0"
+                >
+                    <Menu size={24} />
+                </button>
+                <div className="flex items-center gap-2 text-gray-400 font-bold text-sm bg-[#151923] px-4 py-1.5 rounded-lg border border-[#2a3040]">
+                    <Clock size={16} className="text-orange-400" />
+                    {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
             </div>
             
             <div className="flex items-center gap-6">
