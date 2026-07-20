@@ -185,7 +185,8 @@ const SuperAdminDashboard = () => {
                                             </div>
                                             <div>
                                                 <span className="font-bold text-gray-900 block text-base">{restaurant.name}</span>
-                                                <span className="text-sm text-gray-500">{restaurant.ownerId?.email || 'No Owner'}</span>
+                                                <span className="text-xs text-gray-600 block font-semibold">Owner: {restaurant.ownerId?.name || 'N/A'}</span>
+                                                <span className="text-[11px] text-gray-400 block">{restaurant.ownerId?.email || 'No Owner'}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -254,7 +255,8 @@ const SuperAdminDashboard = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-lg font-bold text-gray-900">{viewingRestaurant.name}</h4>
-                                    <p className="text-sm text-gray-500">{viewingRestaurant.ownerId?.email || 'N/A'}</p>
+                                    <p className="text-sm text-gray-700 font-medium">Owner: {viewingRestaurant.ownerId?.name || 'N/A'}</p>
+                                    <p className="text-xs text-gray-500">{viewingRestaurant.ownerId?.email || 'N/A'}</p>
                                 </div>
                             </div>
                             

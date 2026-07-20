@@ -12,6 +12,7 @@ const SuperAdminLayout = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [activeNotification, setActiveNotification] = useState(null);
 
     const fetchNotifications = async () => {
         try {
@@ -144,7 +145,12 @@ const SuperAdminLayout = () => {
                                             notifications.map(n => (
                                                 <div 
                                                     key={n._id} 
-                                                    className={`px-5 py-3.5 transition-colors flex flex-col gap-1 text-left ${
+                                                    onClick={() => {
+                                                        setActiveNotification(n);
+                                                        if (!n.read) handleMarkAsRead(n._id);
+                                                        setShowDropdown(false);
+                                                    }}
+                                                    className={`px-5 py-3.5 transition-colors flex flex-col gap-1 text-left cursor-pointer hover:bg-gray-50 ${
                                                         !n.read ? 'bg-blue-50/10' : ''
                                                     }`}
                                                 >
@@ -154,7 +160,10 @@ const SuperAdminLayout = () => {
                                                         </span>
                                                         {!n.read && (
                                                             <button 
-                                                                onClick={() => handleMarkAsRead(n._id)}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleMarkAsRead(n._id);
+                                                                }}
                                                                 className="text-[10px] text-blue-600 hover:text-blue-700 font-bold shrink-0"
                                                             >
                                                                 Mark read
@@ -191,6 +200,38 @@ const SuperAdminLayout = () => {
                     <Outlet />
                 </main>
             </div>
+
+            {/* Active Notification Details Modal */}
+            {activeNotification && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" onClick={() => setActiveNotification(null)}></div>
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="font-bold text-gray-900 text-lg">System Notification</h3>
+                            <button onClick={() => setActiveNotification(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4 text-left">
+                            <div className="bg-blue-50/30 p-4 rounded-xl border border-blue-100/30">
+                                <h4 className="text-base font-bold text-blue-800">{activeNotification.title}</h4>
+                                <p className="text-xs text-gray-400 mt-1">{new Date(activeNotification.createdAt).toLocaleString()}</p>
+                            </div>
+                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                                    {activeNotification.desc}
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setActiveNotification(null)}
+                                className="w-full mt-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors text-sm shadow-sm"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
