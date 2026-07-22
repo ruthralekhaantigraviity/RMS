@@ -62,52 +62,27 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                     {step === 'scan' && (
                         <div className="w-full flex flex-col items-center gap-4">
                             {/* Pulsing scan frame */}
-                            <div
-                                onClick={() => setStep('upi')}
-                                className="relative cursor-pointer group"
-                                title="Click to simulate scan"
-                            >
-                                {/* Corner borders */}
-                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500 rounded-tl-lg z-10" />
-                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500 rounded-tr-lg z-10" />
-                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500 rounded-bl-lg z-10" />
-                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500 rounded-br-lg z-10" />
-
-                                {/* Scanning laser line animation */}
-                                <div className="absolute left-2 right-2 h-0.5 bg-green-400/80 z-20 animate-[scan_2s_ease-in-out_infinite]"
-                                    style={{ animation: 'scanLine 2s ease-in-out infinite' }}
-                                />
-
-                                <img
+                            <img
                                     src="/upi_qr.png"
                                     alt="UPI QR Code"
-                                    className="w-52 h-52 object-contain rounded-xl group-hover:opacity-90 transition-opacity"
+                                    onClick={() => setStep('upi')}
+                                    className="w-56 h-56 object-contain rounded-2xl cursor-pointer hover:scale-105 transition-transform duration-200"
                                     onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
                                 />
-                                {/* Fallback if image fails */}
-                                <div className="w-52 h-52 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl items-center justify-center hidden flex-col gap-2">
-                                    <div className="grid grid-cols-3 gap-1">
-                                        {[...Array(9)].map((_,i) => (
-                                            <div key={i} className={`w-5 h-5 rounded-sm ${i%2===0?'bg-gray-800':'bg-gray-200'}`} />
-                                        ))}
-                                    </div>
+                                {/* Fallback grid if image fails */}
+                                <div
+                                    onClick={() => setStep('upi')}
+                                    className="w-56 h-56 bg-gray-50 border-2 border-gray-200 rounded-2xl items-center justify-center hidden flex-col gap-1 cursor-pointer"
+                                >
+                                    {[...Array(5)].map((_,r) => (
+                                        <div key={r} className="flex gap-1">
+                                            {[...Array(5)].map((_,c) => (
+                                                <div key={c} className={`w-8 h-8 rounded-sm ${(r+c)%2===0 ? 'bg-gray-800' : 'bg-gray-100'}`} />
+                                            ))}
+                                        </div>
+                                    ))}
                                 </div>
-                            </div>
-
-                            <p className="text-xs font-bold text-gray-500 text-center">
-                                📱 Scan with any UPI app to pay
-                            </p>
-                            <p className="text-[10px] text-gray-400 text-center -mt-2">
-                                After scanning, tap the button below
-                            </p>
-
-                            <button
-                                onClick={() => setStep('upi')}
-                                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-sm shadow-lg shadow-green-500/30 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-                            >
-                                ✅ I've Scanned — Select UPI App
-                            </button>
-                        </div>
+                        
                     )}
 
                     {/* STEP 2 — UPI App Selection */}
@@ -187,16 +162,6 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                         </button>
                     </div>
                 )}
-            </div>
-
-            {/* Scan laser keyframe */}
-            <style>{`
-                @keyframes scanLine {
-                    0%   { top: 8px;  opacity: 1; }
-                    50%  { top: calc(100% - 8px); opacity: 0.7; }
-                    100% { top: 8px;  opacity: 1; }
-                }
-            `}</style>
         </div>
     );
 };
