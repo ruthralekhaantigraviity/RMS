@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Save, Store, CreditCard, Bell, Lock, User } from 'lucide-react';
+import { Save, Store, CreditCard, Bell, Lock, User, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Settings = () => {
     const { api } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [activeTab, setActiveTab] = useState('profile');
+    const [subscription, setSubscription] = useState(null);
     
     const [formData, setFormData] = useState({
         name: '',
@@ -27,6 +29,7 @@ const Settings = () => {
                         phone: res.data.phone || '',
                         address: res.data.address || ''
                     });
+                    setSubscription(res.data.subscription);
                 }
             } catch (error) {
                 console.error('Failed to fetch settings', error);
@@ -141,6 +144,19 @@ const Settings = () => {
                                             className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:bg-white focus:ring-2 focus:ring-green-100 transition-all"
                                             placeholder="e.g. 123 Main St, City"
                                         />
+                                    </div>
+                                </div>
+
+                                <div className="mt-10 border-t border-gray-100 pt-8">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>Subscription Plan</h3>
+                                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-semibold text-gray-500 mb-1">Current Plan</p>
+                                            <p className="text-xl font-black text-gray-900">{subscription?.plan || 'Starter'}</p>
+                                        </div>
+                                        <Link to="/admin/billing" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 text-sm shadow-sm">
+                                            Upgrade Plan <ArrowRight size={16} />
+                                        </Link>
                                     </div>
                                 </div>
                             </>

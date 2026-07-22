@@ -40,7 +40,7 @@ const importData = async () => {
             name: 'Super Admin',
             email: 'admin@restosys.com',
             password: 'password123',
-            role: adminRole._id
+            role: 'SuperAdmin'
         });
 
         console.log('Admin user seeded! (Email: admin@restosys.com, Password: password123)');
