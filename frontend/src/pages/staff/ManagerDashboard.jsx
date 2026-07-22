@@ -1,141 +1,310 @@
-import { Store, Users, ShoppingBag, Clock, AlertTriangle, CheckCircle2, MoreVertical, LogOut, Bell, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { Store, Users, AlertTriangle, TrendingUp, MoreVertical, Clock, ShoppingBag, Phone, Mail, MapPin, X, Eye, Info, Search, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ManagerDashboard = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { api } = useAuth();
+  const [suppliers, setSuppliers] = useState([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
-    const handleLogout = () => {
-        navigate('/login');
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const { data } = await api.get('/suppliers');
+        setSuppliers(data);
+      } catch (error) {
+        console.error('Failed to fetch suppliers', error);
+        toast.error('Unable to load suppliers');
+      } finally {
+        setLoadingSuppliers(false);
+      }
     };
+    fetchSuppliers();
+  }, []);
 
-    return (
-        <div className="w-full max-w-[1600px] mx-auto space-y-6">
-                
-                {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-110 transition-transform"></div>
-                        <div className="relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><Store size={24}/></div>
-                                <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><TrendingUp size={14}/> +12%</span>
-                            </div>
-                            <p className="text-gray-500 text-sm font-medium mb-1">Today's Revenue</p>
-                            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250.00</h2>
-                        </div>
-                    </div>
+  const filteredSuppliers = suppliers.filter(s =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (s.category && s.category.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full group-hover:scale-110 transition-transform"></div>
-                        <div className="relative">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-orange-100 text-orange-600 rounded-xl"><Users size={24}/></div>
-                                <span className="text-xs font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-md">3 on break</span>
-                            </div>
-                            <p className="text-gray-500 text-sm font-medium mb-1">Staff on Shift</p>
-                            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>12</h2>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column (Orders & Stock) */}
-                    <div className="lg:col-span-2 space-y-6">
-                        
-
-
-                        {/* Low Stock Warnings */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                    <AlertTriangle size={20} className="text-red-500" /> Stock Alerts
-                                </h3>
-                                <span className="bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full">3 Items</span>
-                            </div>
-                            <div className="divide-y divide-gray-50">
-                                <div className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                                    <div>
-                                        <p className="font-bold text-gray-900 text-sm">Avocado (Haas)</p>
-                                        <p className="text-xs text-gray-500">Produce Category</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-red-600 font-bold text-sm">5 lbs left</p>
-                                        <p className="text-xs text-gray-400">Min: 20 lbs</p>
-                                    </div>
-                                    <button onClick={() => navigate('/manager/inventory')} className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
-                                </div>
-                                <div className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                                    <div>
-                                        <p className="font-bold text-gray-900 text-sm">Premium Ground Beef</p>
-                                        <p className="text-xs text-gray-500">Meat Category</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-orange-600 font-bold text-sm">45 lbs left</p>
-                                        <p className="text-xs text-gray-400">Min: 50 lbs</p>
-                                    </div>
-                                    <button onClick={() => navigate('/manager/inventory')} className="text-sm font-bold text-green-600 hover:text-green-700 px-3 py-1.5 bg-green-50 rounded-lg transition-colors">Order</button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    {/* Right Column (Staff & Daily Goal) */}
-                    <div className="space-y-6">
-                        
-                        {/* Daily Goal Progress */}
-                        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-md">
-                            <h3 className="font-bold text-green-50 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Daily Revenue Goal</h3>
-                            <p className="text-3xl font-extrabold mb-6 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250 <span className="text-lg text-green-200 font-medium">/ ₹5,000</span></p>
-                            
-                            <div className="w-full bg-green-700/50 rounded-full h-3 mb-2">
-                                <div className="bg-white rounded-full h-3 w-[85%] relative">
-                                    <div className="absolute right-0 -top-2 w-7 h-7 bg-white rounded-full border-4 border-green-500 shadow-md"></div>
-                                </div>
-                            </div>
-                            <div className="flex justify-between text-sm font-bold text-green-100">
-                                <span>85% Completed</span>
-                                <span>₹750 to go</span>
-                            </div>
-                        </div>
-
-                        {/* Staff on Shift */}
-                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                                <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Current Shift (Evening)</h3>
-                                <button className="text-gray-400 hover:text-gray-600"><MoreVertical size={18}/></button>
-                            </div>
-                            <div className="p-4 space-y-4">
-                                {[
-                                    { name: 'Marcus Wong', role: 'Head Chef', status: 'Working' },
-                                    { name: 'Elena Rodriguez', role: 'Senior Waiter', status: 'Working' },
-                                    { name: 'Jessica Lee', role: 'Line Cook', status: 'On Break' },
-                                    { name: 'David Smith', role: 'Cashier', status: 'Working' },
-                                ].map((staff, i) => (
-                                    <div key={i} className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center font-bold text-gray-600">
-                                            {staff.name.charAt(0)}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="font-bold text-gray-900 text-sm">{staff.name}</p>
-                                            <p className="text-xs text-gray-500">{staff.role}</p>
-                                        </div>
-                                        <div className={`w-2.5 h-2.5 rounded-full ${staff.status === 'Working' ? 'bg-green-500' : 'bg-orange-500'}`} title={staff.status}></div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="p-4 border-t border-gray-50">
-                                <button onClick={() => navigate('/manager/staff')} className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">
-                                    Manage Schedule
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+  return (
+    <div className="w-full max-w-[1600px] mx-auto space-y-6">
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-110 transition-transform" />
+          <div className="relative">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><Store size={24} /></div>
+              <span className="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-1 rounded-md flex items-center gap-1"><TrendingUp size={14} /> +12%</span>
+            </div>
+            <p className="text-gray-500 text-sm font-medium mb-1">Today's Revenue</p>
+            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250.00</h2>
+          </div>
         </div>
-    );
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full group-hover:scale-110 transition-transform" />
+          <div className="relative">
+            <div className="flex justify-between items-start mb-4">
+              <div className="p-3 bg-orange-100 text-orange-600 rounded-xl"><Users size={24} /></div>
+              <span className="text-xs font-bold text-orange-700 bg-orange-50 px-2.5 py-1 rounded-md">3 on break</span>
+            </div>
+            <p className="text-gray-500 text-sm font-medium mb-1">Staff on Shift</p>
+            <h2 className="text-3xl font-extrabold text-gray-900" style={{ fontFamily: 'Manrope, sans-serif' }}>12</h2>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column (Orders & Stock) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <AlertTriangle size={20} className="text-red-500" /> Stock Alerts
+              </h3>
+              <span className="bg-red-100 text-red-600 text-xs font-bold px-2.5 py-1 rounded-full">3 Items</span>
+            </div>
+            {/* Stock warnings placeholder/items */}
+            <div className="p-4 space-y-3">
+              <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">Tomato Puree</p>
+                  <p className="text-xs text-gray-500">2 cans left · Min: 10 cans</p>
+                </div>
+                <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded">Critical</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-50">
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">Mozzarella Cheese</p>
+                  <p className="text-xs text-gray-500">4 kg left · Min: 15 kg</p>
+                </div>
+                <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded">Critical</span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div>
+                  <p className="font-bold text-gray-900 text-sm">Olive Oil</p>
+                  <p className="text-xs text-gray-500">5 liters left · Min: 12 liters</p>
+                </div>
+                <span className="bg-orange-50 text-orange-600 text-xs font-bold px-2 py-1 rounded">Low Stock</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column (Staff & Daily Goal) */}
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-md">
+            <h3 className="font-bold text-green-50 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>Daily Revenue Goal</h3>
+            <p className="text-3xl font-extrabold mb-6 mt-2" style={{ fontFamily: 'Manrope, sans-serif' }}>₹4,250 <span className="text-lg text-green-200 font-medium">/ ₹5,000</span></p>
+            <div className="w-full bg-green-700/50 rounded-full h-3 mb-2">
+              <div className="bg-white rounded-full h-3 w-[85%] relative">
+                <div className="absolute right-0 -top-2 w-7 h-7 bg-white rounded-full border-4 border-green-500 shadow-md" />
+              </div>
+            </div>
+            <div className="flex justify-between text-sm font-bold text-green-100"><span>85% Completed</span><span>₹750 to go</span></div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider">Current Shift (Evening)</h3>
+              <button className="text-gray-400 hover:text-gray-600"><MoreVertical size={18} /></button>
+            </div>
+            <div className="p-4 space-y-4">
+              {[{ name: 'Marcus Wong', role: 'Head Chef', status: 'Working' },{ name: 'Elena Rodriguez', role: 'Senior Waiter', status: 'Working' },{ name: 'Jessica Lee', role: 'Line Cook', status: 'On Break' },{ name: 'David Smith', role: 'Cashier', status: 'Working' }].map((staff, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center font-bold text-gray-600">{staff.name.charAt(0)}</div>
+                  <div className="flex-1">
+                    <p className="font-bold text-gray-900 text-sm">{staff.name}</p>
+                    <p className="text-xs text-gray-500">{staff.role}</p>
+                  </div>
+                  <div className={`w-2.5 h-2.5 rounded-full ${staff.status === 'Working' ? 'bg-green-500' : 'bg-orange-500'}`} title={staff.status} />
+                </div>
+              ))}
+            </div>
+            <div className="p-4 border-t border-gray-50">
+              <button onClick={() => navigate('/manager/staff')} className="w-full py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-bold rounded-lg transition-colors">Manage Schedule</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Supplier Section */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div>
+            <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Supplier Contact Directory
+            </h3>
+            <p className="text-gray-500 text-xs mt-0.5">Quick call and supplier directory for inventory management.</p>
+          </div>
+          
+          {/* Quick Search */}
+          <div className="relative w-full sm:w-72">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <input 
+              type="text" 
+              placeholder="Search suppliers..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all font-medium"
+            />
+          </div>
+        </div>
+
+        {loadingSuppliers ? (
+          <div className="flex items-center justify-center py-10">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+          </div>
+        ) : (
+          <div>
+            {filteredSuppliers.length === 0 ? (
+              <div className="text-center py-10 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <p className="text-gray-500 text-sm font-medium">No suppliers found.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredSuppliers.map((s) => {
+                  const initials = s.name ? s.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'SP';
+                  return (
+                    <div key={s._id} className="p-4 border border-gray-100 rounded-2xl bg-white hover:shadow-md transition-shadow flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-green-50 text-green-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        {initials}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-1.5">
+                          <p className="font-bold text-gray-900 text-sm truncate">{s.name}</p>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 ${s.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {s.isActive !== false ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                        <p className="text-xs font-semibold text-green-600 mt-0.5">{s.category || 'General'}</p>
+                        
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-2">
+                          <Phone size={12} className="shrink-0" />
+                          <span className="truncate">{s.phone}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
+                          <button 
+                            onClick={() => setSelectedSupplier(s)}
+                            className="flex-1 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1"
+                          >
+                            <Eye size={12} /> View
+                          </button>
+                          <a 
+                            href={`tel:${s.phone}`} 
+                            className="flex-1 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1 text-center"
+                          >
+                            <Phone size={12} /> Call
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Supplier Details Modal */}
+      {selectedSupplier && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 animate-in fade-in">
+          <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white relative">
+              <button 
+                onClick={() => setSelectedSupplier(null)}
+                className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors p-1.5 hover:bg-white/10 rounded-full"
+              >
+                <X size={20} />
+              </button>
+              <span className="bg-white/20 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                {selectedSupplier.category || 'General'}
+              </span>
+              <h3 className="text-xl font-bold mt-2 pr-6 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {selectedSupplier.name}
+              </h3>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 space-y-4 text-sm text-gray-700">
+              {selectedSupplier.contactPerson && (
+                <div className="flex items-start gap-3">
+                  <Users size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400">Contact Person</p>
+                    <p className="font-bold text-gray-900 mt-0.5">{selectedSupplier.contactPerson}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-3">
+                <Phone size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-gray-400">Phone Number</p>
+                  <p className="font-bold text-gray-900 mt-0.5">{selectedSupplier.phone}</p>
+                </div>
+              </div>
+
+              {selectedSupplier.email && (
+                <div className="flex items-start gap-3">
+                  <Mail size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400">Email Address</p>
+                    <p className="font-medium text-gray-900 mt-0.5 break-all">{selectedSupplier.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {selectedSupplier.address && (
+                <div className="flex items-start gap-3">
+                  <MapPin size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-gray-400">Address</p>
+                    <p className="font-medium text-gray-900 mt-0.5">{selectedSupplier.address}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-3">
+                <Info size={16} className="text-gray-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-xs font-semibold text-gray-400">Status</p>
+                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mt-1 ${selectedSupplier.isActive !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                    {selectedSupplier.isActive !== false ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="p-6 bg-gray-50 border-t border-gray-100 flex gap-3">
+              <a 
+                href={`tel:${selectedSupplier.phone}`}
+                className="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 text-center"
+              >
+                <Phone size={16} /> Place Quick Call
+              </a>
+              <button 
+                onClick={() => setSelectedSupplier(null)}
+                className="px-5 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-colors text-center"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ManagerDashboard;
