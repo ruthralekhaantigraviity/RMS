@@ -101,7 +101,11 @@ export const getPlans = async (req, res) => {
 
 export const createPlan = async (req, res) => {
     try {
-        const plan = await Plan.create(req.body);
+        const payload = { ...req.body };
+        if (payload.monthlyPrice === undefined && payload.price !== undefined) payload.monthlyPrice = Number(payload.price);
+        if (payload.yearlyPrice === undefined && payload.price !== undefined) payload.yearlyPrice = Number(payload.price);
+        if (payload.isActive === undefined) payload.isActive = true;
+        const plan = await Plan.create(payload);
         res.status(201).json(plan);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -110,7 +114,10 @@ export const createPlan = async (req, res) => {
 
 export const updatePlan = async (req, res) => {
     try {
-        const plan = await Plan.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const payload = { ...req.body };
+        if (payload.monthlyPrice === undefined && payload.price !== undefined) payload.monthlyPrice = Number(payload.price);
+        if (payload.yearlyPrice === undefined && payload.price !== undefined) payload.yearlyPrice = Number(payload.price);
+        const plan = await Plan.findByIdAndUpdate(req.params.id, payload, { new: true });
         res.json(plan);
     } catch (error) {
         res.status(400).json({ message: error.message });

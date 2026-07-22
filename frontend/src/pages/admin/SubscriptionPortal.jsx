@@ -9,7 +9,7 @@ const SubscriptionPortal = () => {
     const [submittingPlan, setSubmittingPlan] = useState(null);
     const [showUpiModal, setShowUpiModal] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success', 'failed'
-    const [selectedPlanToBuy, setSelectedPlanToBuy] = useState(null);
+    const [plans, setPlans] = useState([]);
 
     const fetchRestaurantInfo = async () => {
         try {
@@ -22,11 +22,27 @@ const SubscriptionPortal = () => {
         }
     };
 
+    const fetchPlans = async () => {
+        try {
+            const res = await api.get('/plans');
+            if (res.data && res.data.length > 0) {
+                setPlans(res.data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch plans", error);
+        }
+    };
+
     useEffect(() => {
         fetchRestaurantInfo();
+        fetchPlans();
     }, [api]);
 
     const getPlanAmount = (planName) => {
+        const found = plans.find(p => p.name === planName);
+        if (found) {
+            return (found.monthlyPrice || found.price || 0).toFixed(2);
+        }
         if (planName === 'Starter') return '49.00';
         if (planName === 'Professional') return '99.00';
         return '199.00';
@@ -121,45 +137,51 @@ const SubscriptionPortal = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {['Starter', 'Professional', 'Enterprise'].map(plan => (
-                        <div key={plan} className={`border-2 rounded-2xl p-6 transition-all ${
-                            sub.plan === plan && !isFrozen ? 'border-blue-600 bg-blue-50/50' : 'border-gray-100 hover:border-gray-200'
-                        }`}>
-                            <h4 className="font-bold text-gray-900 text-lg mb-2">{plan}</h4>
-                            <div className="mb-6">
-                                <span className="text-3xl font-black text-gray-900">
-                                    {plan === 'Starter' ? '₹49' : plan === 'Professional' ? '₹99' : '₹199'}
-                                </span>
-                                <span className="text-gray-500">/mo</span>
+                    {(plans.length > 0 ? plans : [
+                        { name: 'Starter', monthlyPrice: 49, features: ['Basic POS Features', 'Single Branch'] },
+                        { name: 'Professional', monthlyPrice: 99, features: ['Basic POS Features', 'Multi Branch Support', 'Self-Pickup Orders'] },
+                        { name: 'Enterprise', monthlyPrice: 199, features: ['Basic POS Features', 'Multi Branch Support', 'Self-Pickup Orders'] }
+                    ]).map(planItem => {
+                        const planName = typeof planItem === 'string' ? planItem : planItem.name;
+                        const price = typeof planItem === 'object' ? (planItem.monthlyPrice || planItem.price || 0) : (planName === 'Starter' ? 49 : planName === 'Professional' ? 99 : 199);
+                        const featuresList = typeof planItem === 'object' && planItem.features ? planItem.features : ['Basic POS Features', 'Multi Branch Support'];
+                        
+                        return (
+                            <div key={planName} className={`border-2 rounded-2xl p-6 transition-all flex flex-col justify-between ${
+                                sub.plan === planName && !isFrozen ? 'border-blue-600 bg-blue-50/50' : 'border-gray-100 hover:border-gray-200'
+                            }`}>
+                                <div>
+                                    <h4 className="font-bold text-gray-900 text-lg mb-2">{planName}</h4>
+                                    <div className="mb-6">
+                                        <span className="text-3xl font-black text-gray-900">
+                                            ₹{price.toLocaleString('en-IN')}
+                                        </span>
+                                        <span className="text-gray-500">/mo</span>
+                                    </div>
+                                    
+                                    <ul className="space-y-3 mb-8">
+                                        {featuresList.map((feat, fIdx) => (
+                                            <li key={fIdx} className="flex items-center gap-2 text-sm text-gray-600">
+                                                <ShieldCheck size={16} className="text-blue-500 shrink-0" /> {feat}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                
+                                <button 
+                                    onClick={() => triggerPaymentFlow(planName)}
+                                    disabled={submittingPlan !== null}
+                                    className={`w-full py-2.5 rounded-xl font-bold transition-colors ${
+                                        sub.plan === planName && !isFrozen
+                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    }`}
+                                >
+                                    {submittingPlan === planName ? 'Subscribing...' : (sub.plan === planName && !isFrozen ? 'Current Plan' : 'Subscribe')}
+                                </button>
                             </div>
-                            
-                            <ul className="space-y-3 mb-8">
-                                <li className="flex items-center gap-2 text-sm text-gray-600">
-                                    <ShieldCheck size={16} className="text-blue-500" /> Basic POS Features
-                                </li>
-                                <li className="flex items-center gap-2 text-sm text-gray-600">
-                                    <ShieldCheck size={16} className="text-blue-500" /> {plan === 'Starter' ? 'Single Branch' : 'Multi Branch Support'}
-                                </li>
-                                {plan !== 'Starter' && (
-                                    <li className="flex items-center gap-2 text-sm text-gray-600">
-                                        <ShieldCheck size={16} className="text-blue-500" /> Self-Pickup Orders
-                                    </li>
-                                )}
-                            </ul>
-                            
-                            <button 
-                                onClick={() => triggerPaymentFlow(plan)}
-                                disabled={submittingPlan !== null}
-                                className={`w-full py-2.5 rounded-xl font-bold transition-colors ${
-                                    sub.plan === plan && !isFrozen
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                            >
-                                {submittingPlan === plan ? 'Subscribing...' : (sub.plan === plan && !isFrozen ? 'Current Plan' : 'Subscribe')}
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
             

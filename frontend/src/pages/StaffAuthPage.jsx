@@ -361,13 +361,19 @@ const StaffAuthPage = () => {
                 <div className="flex justify-center py-6"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div></div>
             ) : (
                 <div className="grid grid-cols-1 gap-3">
-                    {plans.map((plan) => {
-                        const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
-                        const savings = plan.monthlyPrice && plan.yearlyPrice
-                            ? Math.round((1 - plan.yearlyPrice / plan.monthlyPrice) * 100)
+                    {(plans.length > 0 ? plans : [
+                        { _id: 'p1', name: 'Starter', monthlyPrice: 49, yearlyPrice: 39, features: ['1 Branch', 'Basic Reporting', 'Email Support'] },
+                        { _id: 'p2', name: 'Professional', monthlyPrice: 99, yearlyPrice: 79, features: ['3 Branches', 'Advanced Analytics', 'Priority Support'] },
+                        { _id: 'p3', name: 'Enterprise', monthlyPrice: 199, yearlyPrice: 159, features: ['Unlimited Branches', 'Custom Features', '24/7 Support'] }
+                    ]).map((plan, idx) => {
+                        const mPrice = plan.monthlyPrice || plan.price || 0;
+                        const yPrice = plan.yearlyPrice || mPrice;
+                        const price = isYearly ? yPrice : mPrice;
+                        const savings = mPrice && yPrice && mPrice > yPrice
+                            ? Math.round((1 - yPrice / mPrice) * 100)
                             : 0;
                         return (
-                            <label key={plan._id} className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedPlan === plan.name ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}>
+                            <label key={plan._id || idx} className={`relative p-4 border-2 rounded-xl cursor-pointer transition-all ${selectedPlan === plan.name ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-green-200'}`}>
                                 <input type="radio" value={plan.name} {...register('plan')} className="hidden" />
                                 <div className="flex justify-between items-center mb-1">
                                     <span className="font-bold text-gray-900">{plan.name}</span>
@@ -381,15 +387,12 @@ const StaffAuthPage = () => {
                                     </span>
                                 </div>
                                 <p className="text-xs text-gray-500 font-medium">
-                                    {plan.features.slice(0, 2).join(' · ')}{plan.features.length > 2 ? ` · +${plan.features.length - 2} more` : ''}
+                                    {(plan.features || []).slice(0, 2).join(' · ')}{(plan.features || []).length > 2 ? ` · +${plan.features.length - 2} more` : ''}
                                 </p>
                                 {selectedPlan === plan.name && <CheckCircle2 size={18} className="absolute top-4 right-4 text-green-500" />}
                             </label>
                         );
                     })}
-                    {plans.length === 0 && (
-                        <p className="text-gray-400 text-sm text-center py-4">No plans available. Please try again later.</p>
-                    )}
                 </div>
             )}
 
