@@ -17,94 +17,170 @@ const getPlanMeta = (name) => {
         { bg: 'bg-gray-100', text: 'text-gray-600', border: 'border-gray-300', ring: 'ring-gray-400', grad: 'from-gray-500 to-gray-600', icon: Star };
 };
 
-/* ─── UPI Payment Modal ─────────────────────────────────────────── */
+/* ─── UPI Payment Modal — 3-step flow ──────────────────────────── */
+// step: 'scan' → show QR image  |  'upi' → show UPI app list  |  'processing' | 'success' | 'failed'
 const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
-    const [status, setStatus] = useState('idle'); // idle | processing | success | failed
+    const [step, setStep] = useState('scan');
 
-    const handlePay = (ok) => {
-        setStatus('processing');
-        setTimeout(() => setStatus(ok ? 'success' : 'failed'), 1500);
-        if (ok) setTimeout(() => onSuccess(), 3000);
+    const handlePay = () => {
+        setStep('processing');
+        // Simulate payment processing
+        setTimeout(() => {
+            setStep('success');
+            setTimeout(() => onSuccess(), 2000);
+        }, 2000);
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden">
+
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100">
                     <div>
                         <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Complete Payment</p>
                         <h3 className="text-lg font-black text-gray-900">{plan} Plan</h3>
                     </div>
-                    {status === 'idle' && (
+                    {(step === 'scan' || step === 'upi') && (
                         <button onClick={onClose} className="p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
                             <X size={18} />
                         </button>
                     )}
                 </div>
 
-                <div className="p-6 flex flex-col items-center min-h-[220px] justify-center">
-                    {status === 'idle' && (
-                        <>
-                            <div className="text-4xl font-black text-gray-900 mb-1">₹{planPrice}</div>
-                            <p className="text-xs text-gray-400 mb-6">per month · cancel anytime</p>
-                            {/* QR Code — shown first */}
-                            <div className="flex flex-col items-center border border-gray-100 p-4 rounded-2xl bg-gray-50 w-full mb-5">
-                                <QrCode size={100} className="text-gray-800 mb-2" />
-                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Scan QR to pay on mobile</span>
+                {/* Price */}
+                {(step === 'scan' || step === 'upi') && (
+                    <div className="text-center pt-5 pb-1">
+                        <div className="text-4xl font-black text-gray-900">₹{planPrice}</div>
+                        <p className="text-xs text-gray-400 mt-1">per month · cancel anytime</p>
+                    </div>
+                )}
+
+                <div className="p-6 flex flex-col items-center justify-center">
+
+                    {/* STEP 1 — QR Scanner image */}
+                    {step === 'scan' && (
+                        <div className="w-full flex flex-col items-center gap-4">
+                            {/* Pulsing scan frame */}
+                            <div
+                                onClick={() => setStep('upi')}
+                                className="relative cursor-pointer group"
+                                title="Click to simulate scan"
+                            >
+                                {/* Corner borders */}
+                                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-500 rounded-tl-lg z-10" />
+                                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-500 rounded-tr-lg z-10" />
+                                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-500 rounded-bl-lg z-10" />
+                                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-500 rounded-br-lg z-10" />
+
+                                {/* Scanning laser line animation */}
+                                <div className="absolute left-2 right-2 h-0.5 bg-green-400/80 z-20 animate-[scan_2s_ease-in-out_infinite]"
+                                    style={{ animation: 'scanLine 2s ease-in-out infinite' }}
+                                />
+
+                                <img
+                                    src="/upi_qr.png"
+                                    alt="UPI QR Code"
+                                    className="w-52 h-52 object-contain rounded-xl group-hover:opacity-90 transition-opacity"
+                                    onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
+                                />
+                                {/* Fallback if image fails */}
+                                <div className="w-52 h-52 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl items-center justify-center hidden flex-col gap-2">
+                                    <div className="grid grid-cols-3 gap-1">
+                                        {[...Array(9)].map((_,i) => (
+                                            <div key={i} className={`w-5 h-5 rounded-sm ${i%2===0?'bg-gray-800':'bg-gray-200'}`} />
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Divider */}
-                            <div className="flex items-center gap-3 w-full mb-4">
-                                <div className="flex-1 h-px bg-gray-100" />
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or pay via UPI app</span>
-                                <div className="flex-1 h-px bg-gray-100" />
-                            </div>
+                            <p className="text-xs font-bold text-gray-500 text-center">
+                                📱 Scan with any UPI app to pay
+                            </p>
+                            <p className="text-[10px] text-gray-400 text-center -mt-2">
+                                After scanning, tap the button below
+                            </p>
 
-                            <div className="w-full flex flex-col gap-2">
-                                {[
-                                    { name: 'Google Pay', src: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg', color: 'hover:border-blue-500 hover:bg-blue-50' },
-                                    { name: 'PhonePe',    src: 'https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg',    color: 'hover:border-purple-500 hover:bg-purple-50' },
-                                    { name: 'Paytm',      src: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg', color: 'hover:border-blue-400 hover:bg-blue-50' },
-                                ].map(app => (
-                                    <button
-                                        key={app.name}
-                                        onClick={() => handlePay(true)}
-                                        className={`flex items-center gap-3 py-2.5 px-4 rounded-xl border-2 border-gray-100 ${app.color} transition-all bg-white shadow-sm text-gray-900 font-semibold text-sm`}
-                                    >
-                                        <img src={app.src} alt={app.name} className="h-5 object-contain w-16" />
-                                        {app.name}
-                                    </button>
-                                ))}
+                            <button
+                                onClick={() => setStep('upi')}
+                                className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-2xl text-sm shadow-lg shadow-green-500/30 hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                            >
+                                ✅ I've Scanned — Select UPI App
+                            </button>
+                        </div>
+                    )}
+
+                    {/* STEP 2 — UPI App Selection */}
+                    {step === 'upi' && (
+                        <div className="w-full flex flex-col gap-3">
+                            <p className="text-xs font-bold text-gray-500 text-center mb-1">Choose your UPI app to confirm payment</p>
+                            {[
+                                { name: 'Google Pay',  src: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg',                    hover: 'hover:border-blue-400   hover:bg-blue-50'   },
+                                { name: 'PhonePe',     src: 'https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg',                        hover: 'hover:border-purple-400 hover:bg-purple-50' },
+                                { name: 'Paytm',       src: 'https://upload.wikimedia.org/wikipedia/commons/2/24/Paytm_Logo_%28standalone%29.svg',          hover: 'hover:border-sky-400    hover:bg-sky-50'    },
+                            ].map(app => (
+                                <button
+                                    key={app.name}
+                                    onClick={handlePay}
+                                    className={`flex items-center gap-4 py-3 px-4 rounded-2xl border-2 border-gray-100 ${app.hover} transition-all bg-white shadow-sm text-gray-900 font-semibold text-sm w-full`}
+                                >
+                                    <img src={app.src} alt={app.name} className="h-6 object-contain w-16 shrink-0" />
+                                    <span>{app.name}</span>
+                                    <span className="ml-auto text-gray-300">›</span>
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => setStep('scan')}
+                                className="text-xs text-gray-400 hover:text-gray-600 font-semibold mt-1 self-center transition-colors"
+                            >
+                                ← Back to QR
+                            </button>
+                        </div>
+                    )}
+
+                    {/* STEP 3 — Processing */}
+                    {step === 'processing' && (
+                        <div className="flex flex-col items-center gap-4 py-6">
+                            <div className="relative">
+                                <Loader2 size={52} className="animate-spin text-green-400" />
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-6 h-6 bg-green-100 rounded-full" />
+                                </div>
                             </div>
-                        </>
-                    )}
-                    {status === 'processing' && (
-                        <div className="flex flex-col items-center gap-3">
-                            <Loader2 size={40} className="animate-spin text-green-500" />
-                            <p className="font-bold text-gray-600 text-sm">Processing payment…</p>
+                            <p className="font-bold text-gray-700">Processing payment…</p>
+                            <p className="text-xs text-gray-400">Please wait, do not close this window</p>
                         </div>
                     )}
-                    {status === 'success' && (
-                        <div className="flex flex-col items-center gap-3 text-green-500">
-                            <CheckCircle2 size={52} className="animate-bounce" />
-                            <p className="font-black text-green-600 text-lg">Payment Successful!</p>
-                            <p className="text-xs text-gray-400">Activating your {plan} plan…</p>
+
+                    {/* STEP 4 — Success */}
+                    {step === 'success' && (
+                        <div className="flex flex-col items-center gap-3 py-6">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                                <CheckCircle2 size={40} className="text-green-500" />
+                            </div>
+                            <p className="font-black text-green-600 text-xl">Payment Successful!</p>
+                            <p className="text-sm text-gray-500 text-center">
+                                Your <span className="font-bold text-gray-800">{plan}</span> plan is now active 🎉
+                            </p>
+                            <p className="text-xs text-gray-400">Redirecting…</p>
                         </div>
                     )}
-                    {status === 'failed' && (
-                        <div className="flex flex-col items-center gap-4 text-red-500">
-                            <AlertCircle size={48} />
+
+                    {/* Failed */}
+                    {step === 'failed' && (
+                        <div className="flex flex-col items-center gap-4 py-6">
+                            <AlertCircle size={48} className="text-red-500" />
                             <p className="font-black text-red-600 text-lg">Payment Failed</p>
                             <div className="flex gap-2">
-                                <button onClick={() => setStatus('idle')} className="px-4 py-2 bg-red-50 text-red-600 font-bold rounded-xl text-sm hover:bg-red-100 transition-colors">Retry</button>
-                                <button onClick={onClose} className="px-4 py-2 bg-gray-100 text-gray-600 font-bold rounded-xl text-sm hover:bg-gray-200 transition-colors">Cancel</button>
+                                <button onClick={() => setStep('scan')} className="px-4 py-2 bg-red-50 text-red-600 font-bold rounded-xl text-sm hover:bg-red-100 transition-colors">Retry</button>
+                                <button onClick={onClose}               className="px-4 py-2 bg-gray-100 text-gray-600 font-bold rounded-xl text-sm hover:bg-gray-200 transition-colors">Cancel</button>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {status === 'idle' && (
+                {(step === 'scan' || step === 'upi') && (
                     <div className="px-6 pb-5 text-center">
                         <button onClick={onClose} className="text-xs text-gray-400 hover:text-gray-700 font-semibold transition-colors">
                             Cancel payment
@@ -112,6 +188,15 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                     </div>
                 )}
             </div>
+
+            {/* Scan laser keyframe */}
+            <style>{`
+                @keyframes scanLine {
+                    0%   { top: 8px;  opacity: 1; }
+                    50%  { top: calc(100% - 8px); opacity: 0.7; }
+                    100% { top: 8px;  opacity: 1; }
+                }
+            `}</style>
         </div>
     );
 };
