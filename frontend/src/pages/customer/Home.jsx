@@ -452,14 +452,20 @@ const Home = () => {
                         <div className="flex justify-center py-10"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500"></div></div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                            {plans.map((plan, idx) => {
+                            {(plans.length > 0 ? plans : [
+                                { _id: 'p1', name: 'Starter', monthlyPrice: 49, yearlyPrice: 39, features: ['1 Branch', 'Basic POS Billing', 'QR Ordering', 'Email Support'] },
+                                { _id: 'p2', name: 'Professional', monthlyPrice: 99, yearlyPrice: 79, features: ['Up to 3 Branches', 'Kitchen Display System', 'Online Ordering', 'Advanced Analytics', 'Priority Support'] },
+                                { _id: 'p3', name: 'Enterprise', monthlyPrice: 199, yearlyPrice: 159, features: ['Unlimited Branches', 'Custom APIs & Webhooks', 'Dedicated Account Manager', '24/7 Support'] }
+                            ]).map((plan, idx) => {
                                 const isPopular = idx === 1; // Highlight the middle plan
-                                const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
-                                const savings = plan.monthlyPrice && plan.yearlyPrice
-                                    ? Math.round((1 - plan.yearlyPrice / plan.monthlyPrice) * 100)
+                                const mPrice = plan.monthlyPrice || plan.price || 0;
+                                const yPrice = plan.yearlyPrice || mPrice;
+                                const price = isYearly ? yPrice : mPrice;
+                                const savings = mPrice && yPrice && mPrice > yPrice
+                                    ? Math.round((1 - yPrice / mPrice) * 100)
                                     : 0;
                                 return (
-                                    <div key={plan._id} className={`p-8 rounded-3xl relative ${
+                                    <div key={plan._id || idx} className={`p-8 rounded-3xl relative flex flex-col justify-between ${
                                         isPopular
                                             ? 'bg-gray-900 text-white border border-gray-800 shadow-2xl transform md:-translate-y-4'
                                             : 'bg-white border border-gray-100 shadow-sm'
@@ -467,43 +473,40 @@ const Home = () => {
                                         {isPopular && (
                                             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">Most Popular</div>
                                         )}
-                                        <h3 className={`text-xl font-bold mb-2 ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
-                                        <div className={`text-4xl font-black mb-1 ${isPopular ? 'text-white' : 'text-gray-900'}`}>
-                                            ₹{(price || 0).toLocaleString('en-IN')}
-                                            <span className={`text-lg font-medium ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>/mo</span>
-                                        </div>
-                                        {isYearly && savings > 0 && (
-                                            <p className={`text-xs font-bold mb-6 ${isPopular ? 'text-green-400' : 'text-green-600'}`}>
-                                                Save {savings}% vs monthly billing
-                                            </p>
-                                        )}
-                                        {!isYearly && <p className={`text-xs mb-6 ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>Billed monthly. Cancel anytime.</p>}
-                                        <Link 
-                                            to={`/staff/register?plan=${encodeURIComponent(plan.name)}&billing=${isYearly ? 'yearly' : 'monthly'}`}
-                                            className={`w-full py-3 rounded-xl font-bold mb-8 flex justify-center items-center transition-colors ${
-                                                isPopular
-                                                    ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg shadow-white/10'
-                                                    : 'border-2 border-gray-200 text-gray-700 hover:border-gray-900'
-                                            }`}
-                                        >
-                                            Subscribe Now
-                                        </Link>
-                                        <div className="space-y-4">
-                                            {plan.features.map((f, i) => (
-                                                <div key={i} className="flex items-center gap-3">
-                                                    <CheckCircle2 size={18} className={isPopular ? 'text-red-400' : 'text-green-500'} />
-                                                    <span className={`font-medium text-sm ${isPopular ? 'text-gray-300' : 'text-gray-600'}`}>{f}</span>
-                                                </div>
-                                            ))}
+                                        <div>
+                                            <h3 className={`text-xl font-bold mb-2 ${isPopular ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+                                            <div className={`text-4xl font-black mb-1 ${isPopular ? 'text-white' : 'text-gray-900'}`}>
+                                                ₹{(price || 0).toLocaleString('en-IN')}
+                                                <span className={`text-lg font-medium ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>/mo</span>
+                                            </div>
+                                            {isYearly && savings > 0 && (
+                                                <p className={`text-xs font-bold mb-6 ${isPopular ? 'text-green-400' : 'text-green-600'}`}>
+                                                    Save {savings}% vs monthly billing
+                                                </p>
+                                            )}
+                                            {!isYearly && <p className={`text-xs mb-6 ${isPopular ? 'text-gray-400' : 'text-gray-400'}`}>Billed monthly. Cancel anytime.</p>}
+                                            <Link 
+                                                to={`/staff/register?plan=${encodeURIComponent(plan.name)}&billing=${isYearly ? 'yearly' : 'monthly'}`}
+                                                className={`w-full py-3 rounded-xl font-bold mb-8 flex justify-center items-center transition-colors ${
+                                                    isPopular
+                                                        ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg shadow-white/10'
+                                                        : 'border-2 border-gray-200 text-gray-700 hover:border-gray-900'
+                                                }`}
+                                            >
+                                                Subscribe Now
+                                            </Link>
+                                            <div className="space-y-4">
+                                                {(plan.features || []).map((f, i) => (
+                                                    <div key={i} className="flex items-center gap-3">
+                                                        <CheckCircle2 size={18} className={isPopular ? 'text-red-400' : 'text-green-500'} />
+                                                        <span className={`font-medium text-sm ${isPopular ? 'text-gray-300' : 'text-gray-600'}`}>{f}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 );
                             })}
-                            {plans.length === 0 && (
-                                <div className="col-span-3 text-center py-12 text-gray-400">
-                                    <p className="font-medium">No plans available. Please contact the administrator.</p>
-                                </div>
-                            )}
                         </div>
                     )}
                 </section>
