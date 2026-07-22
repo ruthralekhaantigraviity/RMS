@@ -82,7 +82,7 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                                         </div>
                                     ))}
                                 </div>
-                        
+                        </div>
                     )}
 
                     {/* STEP 2 — UPI App Selection */}
@@ -162,6 +162,7 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                         </button>
                     </div>
                 )}
+            </div>
         </div>
     );
 };
