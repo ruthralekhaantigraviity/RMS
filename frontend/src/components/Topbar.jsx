@@ -48,7 +48,19 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                         <>
                             <div className="text-4xl font-black text-gray-900 mb-1">₹{planPrice}</div>
                             <p className="text-xs text-gray-400 mb-6">per month · cancel anytime</p>
-                            <p className="text-xs font-bold text-gray-500 mb-3 self-start">Pay via UPI:</p>
+                            {/* QR Code — shown first */}
+                            <div className="flex flex-col items-center border border-gray-100 p-4 rounded-2xl bg-gray-50 w-full mb-5">
+                                <QrCode size={100} className="text-gray-800 mb-2" />
+                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Scan QR to pay on mobile</span>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="flex items-center gap-3 w-full mb-4">
+                                <div className="flex-1 h-px bg-gray-100" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Or pay via UPI app</span>
+                                <div className="flex-1 h-px bg-gray-100" />
+                            </div>
+
                             <div className="w-full flex flex-col gap-2">
                                 {[
                                     { name: 'Google Pay', src: 'https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg', color: 'hover:border-blue-500 hover:bg-blue-50' },
@@ -64,10 +76,6 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                                         {app.name}
                                     </button>
                                 ))}
-                            </div>
-                            <div className="mt-4 flex flex-col items-center border border-gray-100 p-3 rounded-2xl bg-gray-50 w-full">
-                                <QrCode size={80} className="text-gray-800 mb-1" />
-                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Or scan QR on mobile</span>
                             </div>
                         </>
                     )}
