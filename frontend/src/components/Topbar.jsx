@@ -31,6 +31,16 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
         }, 2000);
     };
 
+  // Auto-trigger payment after dummy scanner appears
+  useEffect(() => {
+    if (step === 'scan') {
+      const timer = setTimeout(() => {
+        handlePay();
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [step]);
+
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden">
@@ -60,17 +70,12 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
 
                     {/* STEP 1 — Dummy QR Scanner */}
                     {step === 'scan' && (
-                      <div className="w-full flex flex-col items-center gap-4">
-                        <div className="w-56 h-56 bg-gray-100 flex items-center justify-center rounded-2xl">
-                          <p className="text-gray-500">Dummy QR Scanner Active</p>
+                        <div className="w-full flex flex-col items-center gap-4">
+                            <div className="w-56 h-56 bg-gray-100 flex items-center justify-center rounded-2xl">
+                                <p className="text-gray-500">Dummy QR Scanner Active</p>
+                            </div>
+                            {/* Auto-trigger payment after scanner */}
                         </div>
-                        <button
-                          onClick={() => setStep('upi')}
-                          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                        >
-                          Continue to UPI Apps
-                        </button>
-                      </div>
                     )}
 
                     {/* STEP 2 — UPI App Selection */}
