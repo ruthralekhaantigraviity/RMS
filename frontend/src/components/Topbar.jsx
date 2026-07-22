@@ -58,31 +58,19 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
 
                 <div className="p-6 flex flex-col items-center justify-center">
 
-                    {/* STEP 1 — QR Scanner image */}
+                    {/* STEP 1 — Dummy QR Scanner */}
                     {step === 'scan' && (
-                        <div className="w-full flex flex-col items-center gap-4">
-                            {/* Pulsing scan frame */}
-                            <img
-                                    src="/upi_qr.png"
-                                    alt="UPI QR Code"
-                                    onClick={() => setStep('upi')}
-                                    className="w-56 h-56 object-contain rounded-2xl cursor-pointer hover:scale-105 transition-transform duration-200"
-                                    onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }}
-                                />
-                                {/* Fallback grid if image fails */}
-                                <div
-                                    onClick={() => setStep('upi')}
-                                    className="w-56 h-56 bg-gray-50 border-2 border-gray-200 rounded-2xl items-center justify-center hidden flex-col gap-1 cursor-pointer"
-                                >
-                                    {[...Array(5)].map((_,r) => (
-                                        <div key={r} className="flex gap-1">
-                                            {[...Array(5)].map((_,c) => (
-                                                <div key={c} className={`w-8 h-8 rounded-sm ${(r+c)%2===0 ? 'bg-gray-800' : 'bg-gray-100'}`} />
-                                            ))}
-                                        </div>
-                                    ))}
-                                </div>
+                      <div className="w-full flex flex-col items-center gap-4">
+                        <div className="w-56 h-56 bg-gray-100 flex items-center justify-center rounded-2xl">
+                          <p className="text-gray-500">Dummy QR Scanner Active</p>
                         </div>
+                        <button
+                          onClick={() => setStep('upi')}
+                          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        >
+                          Continue to UPI Apps
+                        </button>
+                      </div>
                     )}
 
                     {/* STEP 2 — UPI App Selection */}
