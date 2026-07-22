@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, Clock, CheckCircle2, ChefHat, Motorbike, Eye } from 'lucide-react';
+import { Search, Filter, Clock, CheckCircle2, ChefHat, Motorbike, Eye, Package } from 'lucide-react';
 
 const activeOrders = [
     { id: '#ORD-092', type: 'Dine-in', table: 'T-04', items: 3, total: '₹45.00', status: 'New', time: '10 mins ago', customer: 'Walk-in' },
@@ -142,6 +142,7 @@ const OrderCard = ({ order }) => (
         {/* Hover action */}
         <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-xl transition-opacity flex items-center justify-center gap-3 border border-green-500">
              <button className="bg-gray-100 p-2 rounded-full text-gray-600 hover:bg-gray-200 transition-colors" title="View Details"><Eye size={18} /></button>
+             <button className="bg-yellow-600 p-2 rounded-full text-white hover:bg-yellow-700 transition-colors" title="Self Pickup" onClick={() => {/* TODO: implement self-pickup logic */}}><Package size={18} /></button>
              <button className="bg-green-600 p-2 rounded-full text-white hover:bg-green-700 transition-colors" title="Advance Status"><CheckCircle2 size={18} /></button>
         </div>
     </div>

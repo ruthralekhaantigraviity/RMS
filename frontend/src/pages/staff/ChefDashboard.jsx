@@ -178,8 +178,15 @@ const ChefDashboard = () => {
                                     </button>
                                 )}
                                 {activeTab === 'Ready' && (
-                                    <button className="w-full bg-gray-600 text-gray-300 font-bold py-3 rounded-xl cursor-not-allowed flex justify-center items-center gap-2">
-                                        Waiting for Runner...
+                                    <button
+                                        onClick={() => {
+                                            if (order.source === 'Web' || order.orderType === 'Self Pickup') {
+                                                updateStatus(order._id, 'Completed');
+                                            }
+                                        }}
+                                        className={`w-full ${order.source === 'Web' || order.orderType === 'Self Pickup' ? 'bg-green-600 hover:bg-green-500 text-white' : 'bg-gray-600 text-gray-300 cursor-not-allowed'} font-bold py-3 rounded-xl transition-all flex justify-center items-center gap-2`}
+                                    >
+                                        {order.source === 'Web' || order.orderType === 'Self Pickup' ? 'Mark as Completed' : 'Waiting for Runner...'}
                                     </button>
                                 )}
                                 {activeTab === 'Completed' && (
