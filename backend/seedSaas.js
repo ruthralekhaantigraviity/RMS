@@ -37,9 +37,9 @@ const importData = async () => {
 
         console.log('Creating SaaS Plans...');
         await Plan.insertMany([
-            {name:'Starter', price:49, billingCycle:'Monthly', features:['1 Branch', 'Basic Reporting', 'Email Support'], isActive:true},
-            {name:'Professional', price:129, billingCycle:'Monthly', features:['3 Branches', 'Advanced Analytics', 'Priority Support'], isActive:true},
-            {name:'Enterprise', price:299, billingCycle:'Monthly', features:['Unlimited Branches', 'Custom Features', '24/7 Dedicated Support'], isActive:true}
+            {name:'Basic', monthlyPrice:49, yearlyPrice:390, features:['1 Branch', 'Basic Reporting', 'Email Support'], isActive:true},
+            {name:'Pro', monthlyPrice:129, yearlyPrice:990, features:['3 Branches', 'Advanced Analytics', 'Priority Support'], isActive:true},
+            {name:'Enterprise', monthlyPrice:299, yearlyPrice:2490, features:['Unlimited Branches', 'Custom Features', '24/7 Dedicated Support'], isActive:true}
         ]);
 
         console.log('Creating Super Admin...');
@@ -64,7 +64,7 @@ const importData = async () => {
             logo: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=200&auto=format&fit=crop',
             ownerId: owner._id,
             subscription: {
-                plan: 'Professional',
+                plan: 'Pro',
                 status: 'Active',
                 expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
             }
