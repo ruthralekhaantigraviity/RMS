@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Role from '../models/Role.js';
+import Restaurant from '../models/Restaurant.js';
 
 export const protect = async (req, res, next) => {
     let token;
