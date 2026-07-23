@@ -2,8 +2,13 @@ import { Outlet } from 'react-router-dom';
 import CashierSidebar from '../components/CashierSidebar';
 import CashierTopbar from '../components/CashierTopbar';
 import SubscriptionBanner from '../components/SubscriptionBanner';
+import { useAuth } from '../context/AuthContext';
+import VerificationBlockedOverlay from '../components/VerificationBlockedOverlay';
 
 const CashierLayout = () => {
+    const { restaurant } = useAuth();
+    const isUnverified = restaurant && restaurant.verificationStatus !== 'Verified';
+
     return (
         <div className="flex flex-col h-screen overflow-hidden font-sans">
             <SubscriptionBanner />
@@ -13,7 +18,11 @@ const CashierLayout = () => {
                 <CashierTopbar />
                 <main className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
                     <div className="h-full">
-                        <Outlet />
+                        {isUnverified ? (
+                            <VerificationBlockedOverlay />
+                        ) : (
+                            <Outlet />
+                        )}
                     </div>
                 </main>
             </div>

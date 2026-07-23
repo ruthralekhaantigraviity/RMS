@@ -23,6 +23,8 @@ import NotificationCenter from './pages/admin/NotificationCenter';
 import ActivityLogs from './pages/admin/ActivityLogs';
 import Settings from './pages/admin/Settings';
 import SubscriptionPortal from './pages/admin/SubscriptionPortal';
+import RestaurantVerification from './pages/admin/RestaurantVerification';
+import VerificationManagement from './pages/superadmin/VerificationManagement';
 import WaiterDashboard from './pages/staff/WaiterDashboard';
 import ChefDashboard from './pages/staff/ChefDashboard';
 import ChefPrepList from './pages/staff/ChefPrepList';
@@ -113,12 +115,14 @@ function App() {
           <Route path="restaurants" element={<PlatformRestaurants />} />
           <Route path="plans" element={<PlanManagement />} />
           <Route path="reports" element={<GlobalReports />} />
+          <Route path="verifications" element={<VerificationManagement />} />
         </Route>
 
         {/* Admin Dashboard Routes */}
         <Route path="/admin" element={<ProtectedRoute allowedRoles={['RestaurantAdmin', 'Admin']}><DashboardLayout /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           <Route path="activity" element={<ActivityLogs />} />
+          <Route path="verification" element={<RestaurantVerification />} />
           
           {/* Organization */}
           <Route path="branches" element={<BranchesManagement />} />

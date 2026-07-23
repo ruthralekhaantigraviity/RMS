@@ -39,8 +39,8 @@ const restaurantSchema = new mongoose.Schema({
         required: true,
     },
     subscription: {
-        status: { type: String, enum: ['Active', 'Frozen', 'Cancelled'], default: 'Active' },
-        plan: { type: String, enum: ['Basic', 'Pro', 'Enterprise'], default: 'Basic' },
+        status: { type: String, enum: ['Active', 'Frozen', 'Cancelled', 'Inactive'], default: 'Inactive' },
+        plan: { type: String, enum: ['Basic', 'Pro', 'Enterprise', 'Starter', 'Professional'], default: 'Basic' },
         billingCycle: { type: String, enum: ['monthly', 'yearly'], default: 'monthly' },
         trialActive: { type: Boolean, default: true },
         expiryDate: { type: Date }
@@ -48,6 +48,11 @@ const restaurantSchema = new mongoose.Schema({
     approvalStatus: {
         type: String,
         enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
+    },
+    verificationStatus: {
+        type: String,
+        enum: ['Pending', 'Under Review', 'Verified', 'Rejected', 'Re-upload Required', 'Expired'],
         default: 'Pending'
     },
     commissionRate: {
