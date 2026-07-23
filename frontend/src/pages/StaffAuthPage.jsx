@@ -284,42 +284,53 @@ const StaffAuthPage = () => {
                 {errors.phoneNumber && <p className="text-xs text-red-500 mt-1 pl-1">{errors.phoneNumber.message}</p>}
             </div>
 
-            <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-500">
-                    <Lock size={18} />
+            <div className="group">
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-500">
+                        <Lock size={18} />
+                    </div>
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Create Password"
+                        {...register('password', { 
+                            required: 'Password is required', 
+                            minLength: { value: 6, message: 'Password must be at least 6 characters long' } 
+                        })}
+                        className="w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 transition-all"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-green-600"
+                    >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                 </div>
-                <input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Create Password"
-                    {...register('password', { 
-                        required: 'Password is required', 
-                        minLength: { value: 6, message: 'Password must be at least 6 characters long' } 
-                    })}
-                    className="w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 transition-all"
-                />
-                <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-green-600"
-                >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
                 {errors.password && <p className="text-xs text-red-500 mt-1 pl-1">{errors.password.message}</p>}
             </div>
 
-            <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-500">
-                    <Lock size={18} />
+            <div className="group">
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-green-500">
+                        <Lock size={18} />
+                    </div>
+                    <input
+                        type={showConfirm ? 'text' : 'password'}
+                        placeholder="Confirm Password"
+                        {...register('confirmPassword', { 
+                            required: 'Please confirm password',
+                            validate: val => val === watch('password') || 'Passwords do not match'
+                        })}
+                        className="w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 transition-all"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => setShowConfirm(!showConfirm)}
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-green-600"
+                    >
+                        {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                 </div>
-                <input
-                    type={showConfirm ? 'text' : 'password'}
-                    placeholder="Confirm Password"
-                    {...register('confirmPassword', { 
-                        required: 'Please confirm password',
-                        validate: val => val === watch('password') || 'Passwords do not match'
-                    })}
-                    className="w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100 transition-all"
-                />
                 {errors.confirmPassword && <p className="text-xs text-red-500 mt-1 pl-1">{errors.confirmPassword.message}</p>}
             </div>
 
