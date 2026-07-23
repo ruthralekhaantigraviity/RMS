@@ -1,8 +1,24 @@
 import express from 'express';
 import { getRestaurants, createRestaurant, getBranches, createBranch, getMyRestaurant, updateMyRestaurant, updateSubscription, selfSubscribe } from '../controllers/restaurantController.js';
+import { submitVerification, getMyVerification, getAllVerifications, getVerificationById, reviewVerification, verificationUpload } from '../controllers/verificationController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+router.route('/verification/submit')
+    .post(protect, authorize('RestaurantAdmin'), verificationUpload, submitVerification);
+
+router.route('/verification/mine')
+    .get(protect, authorize('RestaurantAdmin'), getMyVerification);
+
+router.route('/verification/all')
+    .get(protect, authorize('SuperAdmin'), getAllVerifications);
+
+router.route('/verification/:id')
+    .get(protect, authorize('SuperAdmin'), getVerificationById);
+
+router.route('/verification/:id/review')
+    .put(protect, authorize('SuperAdmin'), reviewVerification);
 
 router.route('/mine')
     .get(protect, getMyRestaurant)

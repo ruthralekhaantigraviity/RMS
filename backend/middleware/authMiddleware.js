@@ -18,6 +18,26 @@ export const protect = async (req, res, next) => {
             if (!req.user) {
                 return res.status(401).json({ message: 'Not authorized, user not found' });
             }
+
+            // Verification Check for Restaurant users
+            if (req.user.restaurantId && req.user.role !== 'SuperAdmin') {
+                const isBypassUrl = req.originalUrl.includes('/verification') || 
+                                    (req.method === 'GET' && req.originalUrl.includes('/restaurants/mine')) ||
+                                    req.originalUrl.includes('/notifications') ||
+                                    req.originalUrl.includes('/auth/logout');
+
+                if (!isBypassUrl) {
+                    const restaurant = await Restaurant.findById(req.user.restaurantId);
+                    if (restaurant && restaurant.verificationStatus !== 'Verified') {
+                        return res.status(403).json({
+                            message: 'Restaurant verification is pending or incomplete.',
+                            requiresVerification: true,
+                            verificationStatus: restaurant.verificationStatus
+                        });
+                    }
+                }
+            }
+
             next();
         } catch (error) {
             res.status(401).json({ message: 'Not authorized, token failed' });
@@ -91,5 +111,41 @@ export const checkSubscription = async (req, res, next) => {
         next();
     } catch (error) {
         res.status(500).json({ message: 'Failed to verify subscription' });
+    }
+};
+
+// Check if restaurant is verified
+export const checkVerification = async (req, res, next) => {
+    if (!req.user || !req.user.restaurantId) {
+        return next(); // SuperAdmin or Customer, skip
+    }
+
+    // Bypass check for verification endpoints, restaurant info, and basic system calls
+    if (
+        req.originalUrl.includes('/verification') || 
+        (req.method === 'GET' && req.originalUrl.includes('/restaurants/mine')) ||
+        req.originalUrl.includes('/notifications') ||
+        req.originalUrl.includes('/auth/logout')
+    ) {
+        return next();
+    }
+
+    try {
+        const restaurant = await Restaurant.findById(req.user.restaurantId);
+        if (!restaurant) {
+            return res.status(404).json({ message: 'Restaurant not found' });
+        }
+
+        if (restaurant.verificationStatus !== 'Verified') {
+            return res.status(403).json({
+                message: 'Restaurant verification is pending or incomplete.',
+                requiresVerification: true,
+                verificationStatus: restaurant.verificationStatus
+            });
+        }
+
+        next();
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to check verification status' });
     }
 };

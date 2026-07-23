@@ -52,18 +52,44 @@ api.interceptors.response.use(
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('restosys_staff_user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (e) {
-                localStorage.removeItem('restosys_staff_user');
-            }
+    const fetchRestaurant = async (currentUser = user) => {
+        if (!currentUser || !currentUser.restaurantId || currentUser.role === 'SuperAdmin') {
+            setRestaurant(null);
+            return null;
         }
-        setLoading(false);
+        try {
+            const res = await api.get('/restaurants/mine');
+            setRestaurant(res.data);
+            return res.data;
+        } catch (error) {
+            if (error.response && error.response.status === 403 && error.response.data.requiresVerification) {
+                const partialRest = { verificationStatus: error.response.data.verificationStatus };
+                setRestaurant(partialRest);
+                return partialRest;
+            }
+            console.error('Failed to fetch restaurant in context:', error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        const initializeAuth = async () => {
+            const storedUser = localStorage.getItem('restosys_staff_user');
+            if (storedUser) {
+                try {
+                    const parsedUser = JSON.parse(storedUser);
+                    setUser(parsedUser);
+                    await fetchRestaurant(parsedUser);
+                } catch (e) {
+                    localStorage.removeItem('restosys_staff_user');
+                }
+            }
+            setLoading(false);
+        };
+        initializeAuth();
     }, []);
 
     const login = async (email, password) => {
@@ -71,10 +97,10 @@ export const AuthProvider = ({ children }) => {
             const { data } = await api.post('/auth/login', { email, password, loginType: 'staff' });
             setUser(data);
             localStorage.setItem('restosys_staff_user', JSON.stringify(data));
+            await fetchRestaurant(data);
             return { success: true, data };
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'Login failed';
-            // Only log actual network errors, not standard 401 unauthorized errors
             if (!error.response || error.response.status !== 401) {
                 console.error('Login error:', errorMsg);
             }
@@ -89,6 +115,7 @@ export const AuthProvider = ({ children }) => {
             });
             setUser(data);
             localStorage.setItem('restosys_staff_user', JSON.stringify(data));
+            await fetchRestaurant(data);
             return { success: true, data };
         } catch (error) {
             console.error('Register error:', error.response?.data || error.message);
@@ -103,12 +130,13 @@ export const AuthProvider = ({ children }) => {
             console.error('Logout error:', error);
         }
         setUser(null);
+        setRestaurant(null);
         localStorage.removeItem('restosys_staff_user');
         window.location.href = '/staff/login';
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, api }}>
+        <AuthContext.Provider value={{ user, restaurant, fetchRestaurant, login, register, logout, loading, api }}>
             {!loading && children}
         </AuthContext.Provider>
     );

@@ -43,26 +43,17 @@ export const registerUser = async (req, res) => {
         });
 
         if (role === 'RestaurantAdmin' && req.body.restaurantName) {
-            // Set subscription expiry date based on billing cycle
-            const expiryDate = new Date();
-            if (req.body.billingCycle === 'yearly') {
-                expiryDate.setDate(expiryDate.getDate() + 365);
-            } else {
-                // Monthly default
-                expiryDate.setDate(expiryDate.getDate() + 30);
-            }
-            
             const restaurant = await Restaurant.create({
                 name: req.body.restaurantName,
                 ownerId: user._id,
                 subscription: {
-                    status: 'Active',
+                    status: 'Inactive',
                     plan: req.body.plan || 'Basic',
                     billingCycle: req.body.billingCycle || 'monthly',
-                    trialActive: false,
-                    expiryDate: expiryDate
+                    trialActive: false
                 },
-                approvalStatus: 'Approved'
+                approvalStatus: 'Pending',
+                verificationStatus: 'Pending'
             });
             user.restaurantId = restaurant._id;
             await user.save();

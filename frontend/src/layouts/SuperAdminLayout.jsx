@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, CreditCard, 
-    Settings, Bell, LogOut, User, Menu, X 
+    Settings, Bell, LogOut, User, Menu, X, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -46,6 +46,7 @@ const SuperAdminLayout = () => {
         { name: 'Overview', href: '/super-admin', icon: LayoutDashboard },
         { name: 'Restaurants', href: '/super-admin/restaurants', icon: Store },
         { name: 'Plans', href: '/super-admin/plans', icon: CreditCard },
+        { name: 'Verifications', href: '/super-admin/verifications', icon: ShieldCheck },
         { name: 'Global Reports', href: '/super-admin/reports', icon: Settings },
     ];
 

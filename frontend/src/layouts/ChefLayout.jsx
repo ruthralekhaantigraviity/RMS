@@ -2,8 +2,13 @@ import { Outlet } from 'react-router-dom';
 import ChefSidebar from '../components/ChefSidebar';
 import ChefTopbar from '../components/ChefTopbar';
 import SubscriptionBanner from '../components/SubscriptionBanner';
+import { useAuth } from '../context/AuthContext';
+import VerificationBlockedOverlay from '../components/VerificationBlockedOverlay';
 
 const ChefLayout = () => {
+    const { restaurant } = useAuth();
+    const isUnverified = restaurant && restaurant.verificationStatus !== 'Verified';
+
     return (
         <div className="flex flex-col h-screen overflow-hidden font-sans text-gray-200 bg-[#151923]">
             <SubscriptionBanner />
@@ -14,7 +19,13 @@ const ChefLayout = () => {
                 <ChefTopbar />
                 
                 <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 bg-[#151923]">
-                    <Outlet />
+                    {isUnverified ? (
+                        <div className="text-gray-900">
+                            <VerificationBlockedOverlay />
+                        </div>
+                    ) : (
+                        <Outlet />
+                    )}
                 </main>
             </div>
             </div>

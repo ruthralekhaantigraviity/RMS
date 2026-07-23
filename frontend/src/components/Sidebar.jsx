@@ -58,6 +58,7 @@ const Sidebar = () => {
             items: [
                 { name: 'Settings', path: '/admin/settings', icon: Settings },
                 { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+                { name: 'Verification', path: '/admin/verification', icon: FileText },
             ]
         }
     ];
