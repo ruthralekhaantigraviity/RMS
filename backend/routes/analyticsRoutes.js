@@ -5,6 +5,6 @@ import { protect, authorize } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.route('/dashboard')
-    .get(protect, authorize('Admin', 'Branch Manager'), getDashboardAnalytics);
+    .get(protect, authorize('SuperAdmin', 'RestaurantAdmin', 'Branch Manager'), getDashboardAnalytics);
 
 export default router;

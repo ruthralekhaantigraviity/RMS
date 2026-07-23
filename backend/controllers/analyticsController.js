@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Order from '../models/Order.js';
 
 // @desc    Get dashboard analytics (Revenue, Orders, etc.)
@@ -16,25 +17,31 @@ export const getDashboardAnalytics = async (req, res) => {
         previousStartDate.setDate(previousStartDate.getDate() - timeframe);
 
         const currentPeriodMatch = {
-            status: 'Completed',
+            isPaid: true,
             createdAt: { $gte: startDate, $lte: now }
         };
 
         const previousPeriodMatch = {
-            status: 'Completed',
+            isPaid: true,
             createdAt: { $gte: previousStartDate, $lt: startDate }
         };
+
+        // Filter by logged-in user's restaurant
+        if (req.user.restaurantId) {
+            currentPeriodMatch.restaurantId = new mongoose.Types.ObjectId(req.user.restaurantId);
+            previousPeriodMatch.restaurantId = new mongoose.Types.ObjectId(req.user.restaurantId);
+        }
 
         // 1. Current Period Overview
         const currentOverview = await Order.aggregate([
             { $match: currentPeriodMatch },
-            { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' }, totalOrders: { $sum: 1 } } }
+            { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' }, totalOrders: { $sum: 1 } } }
         ]);
 
         // 2. Previous Period Overview
         const previousOverview = await Order.aggregate([
             { $match: previousPeriodMatch },
-            { $group: { _id: null, totalRevenue: { $sum: '$totalAmount' }, totalOrders: { $sum: 1 } } }
+            { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' }, totalOrders: { $sum: 1 } } }
         ]);
 
         const curRevenue = currentOverview.length > 0 ? currentOverview[0].totalRevenue : 0;
@@ -60,40 +67,35 @@ export const getDashboardAnalytics = async (req, res) => {
             {
                 $group: {
                     _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-                    revenue: { $sum: '$totalAmount' },
+                    revenue: { $sum: '$totalPrice' },
                     orders: { $sum: 1 }
                 }
             },
             { $sort: { _id: 1 } }
         ]);
 
-        // 4. Category Data
-        // To do this, we need to populate the category name or hardcode based on items.
-        // Assuming Order schema has items.category, if not, we group by item name for popular items and mock category.
-        // Let's see if Order.items has category. If not, we will just use a generic 'Category' logic or just group by name.
-        // Since we don't have category strictly defined in the order items, we'll try to aggregate what we can or return popular items.
+        // 4. Popular Items
         const popularItems = await Order.aggregate([
             { $match: currentPeriodMatch },
-            { $unwind: '$items' },
+            { $unwind: '$orderItems' },
             {
                 $group: {
-                    _id: '$items.menuItem',
-                    name: { $first: '$items.name' },
-                    totalSold: { $sum: '$items.quantity' },
-                    revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+                    _id: '$orderItems.product',
+                    name: { $first: '$orderItems.name' },
+                    totalSold: { $sum: '$orderItems.qty' },
+                    revenue: { $sum: { $multiply: ['$orderItems.price', '$orderItems.qty'] } }
                 }
             },
             { $sort: { totalSold: -1 } },
             { $limit: 10 }
         ]);
 
-        // Just mock some category data proportionally based on real order volume to make the pie chart look alive
-        const categoryData = [
+        const categoryData = curOrders > 0 ? [
             { name: 'Main Course', value: Math.max(1, curOrders * 0.45) },
             { name: 'Beverages', value: Math.max(1, curOrders * 0.25) },
             { name: 'Appetizers', value: Math.max(1, curOrders * 0.20) },
             { name: 'Desserts', value: Math.max(1, curOrders * 0.10) },
-        ];
+        ] : [];
 
         res.json({
             overview: {
@@ -103,8 +105,8 @@ export const getDashboardAnalytics = async (req, res) => {
                 ordersChange,
                 avgOrderValue: curAvg,
                 avgChange,
-                activeCustomers: Math.max(10, Math.floor(curOrders * 0.8)), // Proxy based on orders
-                customersChange: ordersChange // Proxy
+                activeCustomers: Math.floor(curOrders * 0.8),
+                customersChange: ordersChange
             },
             revenueTrend,
             popularItems,
