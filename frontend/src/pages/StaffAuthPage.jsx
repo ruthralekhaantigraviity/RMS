@@ -207,7 +207,7 @@ const StaffAuthPage = () => {
     // Force cache bust: v3
     useEffect(() => {
         let timeout;
-        if (mode === 'register' && step === 3 && paymentStatus === 'idle') {
+        if (mode === 'register' && step === 4 && paymentStatus === 'idle') {
             timeout = setTimeout(() => {
                 // If they haven't manually clicked anything after 15 seconds, assume they paid on their phone
                 startDummyScan();
