@@ -1,14 +1,8 @@
+import { useState, useEffect, useRef } from 'react';
+import { Bell, User, Menu, Crown, Zap, Star, X, CheckCircle2, Loader2, AlertCircle, ArrowUpRight, Check } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 import dummyScanner from '../assets/dummy_scanner.png';
-
-                         {/* STEP 1 — Dummy QR Scanner */}
-                         {step === 'scan' && (
-                           <div className="w-full flex flex-col items-center gap-4">
-                             <div className="w-56 h-56 flex items-center justify-center rounded-2xl">
-                               <img src={dummyScanner} alt="QR Scanner" className="w-full h-full object-contain" />
-                             </div>
-                             {/* Auto-trigger payment after scanner */}
-                           </div>
-                         )}
 /* ─── Plan styling helpers ───────────────────────────────────────── */
 const PLAN_META = {
     Starter:      { bg: 'bg-blue-100',   text: 'text-blue-700',   border: 'border-blue-300',   ring: 'ring-blue-400',   grad: 'from-blue-500 to-blue-600',   icon: Zap   },
@@ -77,8 +71,8 @@ const UpiModal = ({ plan, planPrice, onClose, onSuccess }) => {
                     {/* STEP 1 — Dummy QR Scanner */}
                     {step === 'scan' && (
                         <div className="w-full flex flex-col items-center gap-4">
-                            <div className="w-56 h-56 bg-gray-100 flex items-center justify-center rounded-2xl">
-                                <p className="text-gray-500">Dummy QR Scanner Active</p>
+                            <div className="w-56 h-56 flex items-center justify-center rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 animate-pulse">
+                                <img src={dummyScanner} alt="QR Scanner" className="w-full h-full object-cover" />
                             </div>
                             {/* Auto-trigger payment after scanner */}
                         </div>
