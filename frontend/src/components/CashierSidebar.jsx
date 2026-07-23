@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import clsx from 'clsx';
 
 const CashierSidebar = () => {
-    const { logout } = useAuth();
+    const { logout, restaurant } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -46,14 +46,24 @@ const CashierSidebar = () => {
             {/* Logo area */}
             <div className="h-20 flex items-center px-6 border-b border-gray-50">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/20">
-                        <Calculator className="text-white" size={24} strokeWidth={2.5} />
-                    </div>
+                    {restaurant && restaurant.logo ? (
+                        <div className="w-10 h-10 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0">
+                            <img 
+                                src={restaurant.logo.startsWith('http') ? restaurant.logo : `${new URL(import.meta.env.VITE_API_URL || 'http://localhost:5000/api').origin}${restaurant.logo}`} 
+                                alt="Logo" 
+                                className="w-full h-full object-cover" 
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-600/20 shrink-0">
+                            <Calculator className="text-white" size={24} strokeWidth={2.5} />
+                        </div>
+                    )}
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            RestoSys
+                        <h1 className="text-lg font-bold text-gray-900 tracking-tight leading-none truncate max-w-[140px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {restaurant && restaurant.name ? restaurant.name : 'RestoSys'}
                         </h1>
-                        <p className="text-[10px] font-bold text-purple-600 uppercase tracking-widest">Billing</p>
+                        <p className="text-[10px] font-bold text-purple-600 uppercase tracking-widest mt-1">Billing</p>
                     </div>
                 </div>
             </div>
