@@ -460,17 +460,6 @@ const StaffAuthPage = () => {
     );
 
     const renderRegisterStepDocs = () => {
-        const isDocsValid = 
-            fssaiFile && 
-            fssaiExpiryDate && 
-            new Date(fssaiExpiryDate) > new Date() &&
-            bizFile && 
-            panFile && 
-            aadhaarFile && 
-            addressText.trim() !== '' && 
-            addressFile && 
-            bankFile;
-
         const handleFileChange = (setter) => (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -485,6 +474,51 @@ const StaffAuthPage = () => {
                 }
                 setter(file);
             }
+        };
+
+        const handleDocsSubmit = () => {
+            if (!fssaiFile) {
+                alert("Please upload your FSSAI License document (Required).");
+                return;
+            }
+            if (!fssaiExpiryDate) {
+                alert("Please select the FSSAI License expiry date (Required).");
+                return;
+            }
+            const expiry = new Date(fssaiExpiryDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (isNaN(expiry.getTime()) || expiry < today) {
+                alert("FSSAI License expiry date must be today or a future date.");
+                return;
+            }
+            if (!bizFile) {
+                alert("Please upload your Business Registration Certificate (Required).");
+                return;
+            }
+            if (!panFile) {
+                alert("Please upload your Business/Owner PAN Card (Required).");
+                return;
+            }
+            if (!aadhaarFile) {
+                alert("Please upload the Owner Aadhaar Card (Required).");
+                return;
+            }
+            if (!addressText.trim()) {
+                alert("Please enter the restaurant's physical address (Required).");
+                return;
+            }
+            if (!addressFile) {
+                alert("Please upload the Business Address Proof document (Required).");
+                return;
+            }
+            if (!bankFile) {
+                alert("Please upload your Bank Account Proof (Required).");
+                return;
+            }
+            
+            // Proceed to scanning options
+            setStep(4);
         };
 
         return (
@@ -618,9 +652,8 @@ const StaffAuthPage = () => {
 
                 <button
                     type="button"
-                    disabled={!isDocsValid}
-                    onClick={() => setStep(4)}
-                    className="w-full mt-4 py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
+                    onClick={handleDocsSubmit}
+                    className="w-full mt-4 py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
                 >
                     Continue to Payment <ArrowRight size={18} />
                 </button>
