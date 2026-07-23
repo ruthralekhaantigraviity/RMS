@@ -24,6 +24,19 @@ const StaffAuthPage = () => {
     const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success', 'failed'
     const [plans, setPlans] = useState([]);
     const [plansLoading, setPlansLoading] = useState(true);
+
+    // KYC File upload states
+    const [fssaiFile, setFssaiFile] = useState(null);
+    const [fssaiExpiryDate, setFssaiExpiryDate] = useState('');
+    const [bizFile, setBizFile] = useState(null);
+    const [panFile, setPanFile] = useState(null);
+    const [aadhaarFile, setAadhaarFile] = useState(null);
+    const [addressText, setAddressText] = useState('');
+    const [addressFile, setAddressFile] = useState(null);
+    const [bankFile, setBankFile] = useState(null);
+    const [logoFile, setLogoFile] = useState(null);
+    const [menuFile, setMenuFile] = useState(null);
+    const [imagesFiles, setImagesFiles] = useState([]);
     
     const { login, register: registerUser } = useAuth();
     
@@ -125,7 +138,7 @@ const StaffAuthPage = () => {
                 setTimeout(() => {
                     setShowUpiModal(false);
                     setTimeout(() => {
-                        setStep(4);
+                        setStep(5);
                         submitRegistration();
                     }, 500);
                 }, 1500);
@@ -140,25 +153,54 @@ const StaffAuthPage = () => {
         setAuthError('');
         const data = getValues();
         
-        const result = await registerUser(
-            data.name, 
-            data.email, 
-            data.password, 
-            data.phoneNumber,
-            'RestaurantAdmin', // Hardcoded for SaaS signup
-            'staff',
-            data.restaurantName,
-            data.plan,
-            data.billingCycle
-        );
-        
-        setLoading(false);
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('email', data.email);
+        formData.append('password', data.password);
+        formData.append('phoneNumber', data.phoneNumber);
+        formData.append('roleName', 'RestaurantAdmin');
+        formData.append('loginType', 'staff');
+        formData.append('restaurantName', data.restaurantName);
+        formData.append('plan', data.plan);
+        formData.append('billingCycle', data.billingCycle);
 
-        if (result.success) {
-            navigate('/admin');
-        } else {
-            setAuthError(result.message || 'Failed to activate subscription. Please try again.');
-            setStep(5); // Go to error step instead of silently back to step 1
+        if (fssaiFile) formData.append('fssai', fssaiFile);
+        if (fssaiExpiryDate) formData.append('fssaiExpiryDate', fssaiExpiryDate);
+        if (bizFile) formData.append('businessRegistration', bizFile);
+        if (panFile) formData.append('panCard', panFile);
+        if (aadhaarFile) formData.append('aadhaarCard', aadhaarFile);
+        if (addressText) formData.append('addressText', addressText);
+        if (addressFile) formData.append('addressProof', addressFile);
+        if (bankFile) formData.append('bankProof', bankFile);
+        if (logoFile) formData.append('logo', logoFile);
+        if (menuFile) formData.append('menuPdf', menuFile);
+        if (imagesFiles && imagesFiles.length > 0) {
+            imagesFiles.forEach(img => {
+                formData.append('images', img);
+            });
+        }
+
+        try {
+            let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            if (API_URL.endsWith('/')) API_URL = API_URL.slice(0, -1);
+            if (!API_URL.endsWith('/api')) API_URL += '/api';
+
+            await axios.post(`${API_URL}/auth/register`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            const loginRes = await login(data.email, data.password);
+            setLoading(false);
+            if (loginRes.success) {
+                navigate('/admin');
+            } else {
+                setAuthError('Account registered but auto-login failed. Please sign in manually.');
+                setStep(6);
+            }
+        } catch (err) {
+            setLoading(false);
+            setAuthError(err.response?.data?.message || 'Registration and KYC submission failed. Please try again.');
+            setStep(6);
         }
     };
 
@@ -412,14 +454,183 @@ const StaffAuthPage = () => {
                 onClick={handleNextStep}
                 className="w-full mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"
             >
-                Continue to Payment <ArrowRight size={18} />
+                Continue to KYC Upload <ArrowRight size={18} />
             </button>
         </div>
     );
 
+    const renderRegisterStepDocs = () => {
+        const isDocsValid = 
+            fssaiFile && 
+            fssaiExpiryDate && 
+            new Date(fssaiExpiryDate) > new Date() &&
+            bizFile && 
+            panFile && 
+            aadhaarFile && 
+            addressText.trim() !== '' && 
+            addressFile && 
+            bankFile;
+
+        const handleFileChange = (setter) => (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("Maximum file size allowed is 5 MB per document.");
+                    return;
+                }
+                const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (!['.pdf', '.jpg', '.jpeg', '.png'].includes(ext)) {
+                    alert("Only PDF, JPG, JPEG, and PNG files are allowed.");
+                    return;
+                }
+                setter(file);
+            }
+        };
+
+        return (
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-500 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar text-left">
+                <button onClick={() => setStep(2)} className="text-sm font-medium text-gray-500 hover:text-gray-900 inline-flex items-center gap-1">
+                    &larr; Back
+                </button>
+                <div className="flex items-center gap-2 mb-1">
+                    <div className="bg-green-100 text-green-700 p-1.5 rounded-lg">
+                        <ShieldCheck size={20} />
+                    </div>
+                    <h2 className="text-lg font-bold text-gray-900">Upload KYC Documents</h2>
+                </div>
+                <p className="text-[11px] text-gray-500 leading-relaxed mb-2">All mandatory documents must be uploaded. Format: PDF, JPG, JPEG, PNG under 5 MB.</p>
+
+                {/* 1. FSSAI License */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
+                    <label className="text-xs font-bold text-gray-700 block">1. FSSAI License (Required)</label>
+                    <div className="flex flex-col gap-2">
+                        <input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={handleFileChange(setFssaiFile)}
+                            className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                        />
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-gray-400 font-bold shrink-0">EXPIRY DATE:</span>
+                            <input
+                                type="date"
+                                value={fssaiExpiryDate}
+                                onChange={(e) => setFssaiExpiryDate(e.target.value)}
+                                className="text-xs px-2 py-1 border border-gray-200 rounded-lg outline-none bg-white flex-1"
+                            />
+                        </div>
+                    </div>
+                    {fssaiFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {fssaiFile.name}</p>}
+                </div>
+
+                {/* 2. Business Registration */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                    <label className="text-xs font-bold text-gray-700 block">2. Business Registration Certificate (Required)</label>
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange(setBizFile)}
+                        className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    />
+                    {bizFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {bizFile.name}</p>}
+                </div>
+
+                {/* 3. PAN Card */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                    <label className="text-xs font-bold text-gray-700 block">3. Business/Owner PAN Card (Required)</label>
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange(setPanFile)}
+                        className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    />
+                    {panFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {panFile.name}</p>}
+                </div>
+
+                {/* 4. Aadhaar Card */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                    <label className="text-xs font-bold text-gray-700 block">4. Owner Aadhaar Card (Required)</label>
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange(setAadhaarFile)}
+                        className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    />
+                    {aadhaarFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {aadhaarFile.name}</p>}
+                </div>
+
+                {/* 5. Business Address */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
+                    <label className="text-xs font-bold text-gray-700 block">5. Business Address & Proof (Required)</label>
+                    <textarea
+                        placeholder="Enter full street address of the restaurant..."
+                        value={addressText}
+                        onChange={(e) => setAddressText(e.target.value)}
+                        className="w-full text-xs p-2 border border-gray-200 rounded-lg outline-none bg-white min-h-[50px] resize-none"
+                    />
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange(setAddressFile)}
+                        className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    />
+                    {addressFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {addressFile.name}</p>}
+                </div>
+
+                {/* 6. Bank Proof */}
+                <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                    <label className="text-xs font-bold text-gray-700 block">6. Bank Account Proof (Required)</label>
+                    <input
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        onChange={handleFileChange(setBankFile)}
+                        className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    />
+                    {bankFile && <p className="text-[10px] text-green-600 font-semibold truncate">✓ {bankFile.name}</p>}
+                </div>
+
+                {/* Optional items */}
+                <div className="bg-gray-50/50 p-3 rounded-xl border border-dashed border-gray-200 space-y-2">
+                    <label className="text-xs font-bold text-gray-400 block">Optional Brand Assets</label>
+                    <div className="space-y-2 text-xs">
+                        <div>
+                            <span className="text-[10px] text-gray-400 block mb-1">RESTAURANT LOGO (JPG/PNG)</span>
+                            <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png"
+                                onChange={handleFileChange(setLogoFile)}
+                                className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-gray-100 file:text-gray-600"
+                            />
+                            {logoFile && <p className="text-[10px] text-green-600 truncate mt-0.5">✓ {logoFile.name}</p>}
+                        </div>
+                        <div>
+                            <span className="text-[10px] text-gray-400 block mb-1">MENU PDF</span>
+                            <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={handleFileChange(setMenuFile)}
+                                className="text-xs w-full file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[11px] file:font-bold file:bg-gray-100 file:text-gray-600"
+                            />
+                            {menuFile && <p className="text-[10px] text-green-600 truncate mt-0.5">✓ {menuFile.name}</p>}
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    disabled={!isDocsValid}
+                    onClick={() => setStep(4)}
+                    className="w-full mt-4 py-3.5 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-green-500/20"
+                >
+                    Continue to Payment <ArrowRight size={18} />
+                </button>
+            </div>
+        );
+    };
+
     const renderRegisterStep3 = () => (
         <div className="text-center animate-in fade-in zoom-in-95 duration-500 py-4">
-            <button onClick={() => setStep(2)} disabled={scanActive} className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-6 inline-flex items-center gap-1 self-start mr-auto block">
+            <button onClick={() => setStep(3)} disabled={scanActive} className="text-sm font-medium text-gray-500 hover:text-gray-900 mb-6 inline-flex items-center gap-1 self-start mr-auto block">
                 &larr; Back
             </button>
             <h2 className="text-2xl font-black text-gray-900 mb-2">Choose Payment Method</h2>
@@ -430,7 +641,6 @@ const StaffAuthPage = () => {
                 onClick={!scanActive ? startDummyScan : undefined}
                 title="Click to simulate scanning the QR Code"
             >
-                {/* QR Code Graphic */}
                 <div className={`transition-all duration-1000 flex flex-col items-center justify-center ${scanActive ? 'scale-110 opacity-30 blur-sm' : ''}`}>
                     <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi%3A%2F%2Fpay%3Fpa%3Ddemo%40upi%26pn%3DRestoSys%26am%3D${getPlanAmount()}%26cu%3DINR&bgcolor=ffffff&color=1a73e8`} alt="QR Code" className="w-40 h-40" />
                     <div className="mt-4 flex items-center gap-1.5">
@@ -439,7 +649,6 @@ const StaffAuthPage = () => {
                     </div>
                 </div>
                 
-                {/* Scanner line animation */}
                 {scanActive && (
                     <div className="absolute top-0 left-0 w-full h-full">
                         <div className="w-full h-1 bg-green-500 shadow-[0_0_20px_#22c55e] animate-[scan_2s_ease-in-out_infinite]"></div>
@@ -457,8 +666,8 @@ const StaffAuthPage = () => {
             {paymentStatus === 'success' && (
                 <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-xl flex flex-col items-center gap-2 animate-in fade-in slide-in-from-bottom-4">
                     <CheckCircle2 size={32} className="text-green-500" />
-                    <p className="text-sm font-bold text-green-800">Subscription Activated Successfully!</p>
-                    <p className="text-xs text-green-600">Redirecting to setup...</p>
+                    <p className="text-sm font-bold text-green-800">Subscription Paid Successfully!</p>
+                    <p className="text-xs text-green-600">Registering account and KYC documents...</p>
                 </div>
             )}
 
@@ -470,8 +679,6 @@ const StaffAuthPage = () => {
                     </button>
                 </div>
             )}
-
-            {/* Removed the manual completion button to automate activation on QR click */}
         </div>
     );
 
@@ -480,8 +687,8 @@ const StaffAuthPage = () => {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Loader2 className="animate-spin text-green-500" size={40} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Setting up your restaurant...</h2>
-            <p className="text-gray-500 font-medium">Activating subscription for {getValues('restaurantName')}</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Creating your account...</h2>
+            <p className="text-gray-500 font-medium">Registering and uploading KYC for {getValues('restaurantName')}</p>
         </div>
     );
 
@@ -490,7 +697,7 @@ const StaffAuthPage = () => {
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <AlertCircle className="text-red-500" size={40} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Activation Failed</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Failed</h2>
             <p className="text-red-500 font-medium mb-6 px-4">{authError}</p>
             <p className="text-gray-500 text-sm mb-8">If you're testing, make sure to use a different email address each time, as accounts cannot share emails.</p>
             <button 
@@ -562,9 +769,10 @@ const StaffAuthPage = () => {
                     {mode === 'login' && renderLoginForm()}
                     {mode === 'register' && step === 1 && renderRegisterStep1()}
                     {mode === 'register' && step === 2 && renderRegisterStep2()}
-                    {mode === 'register' && step === 3 && renderRegisterStep3()}
-                    {mode === 'register' && step === 4 && renderRegisterStep4()}
-                    {mode === 'register' && step === 5 && renderRegisterStep5()}
+                    {mode === 'register' && step === 3 && renderRegisterStepDocs()}
+                    {mode === 'register' && step === 4 && renderRegisterStep3()}
+                    {mode === 'register' && step === 5 && renderRegisterStep4()}
+                    {mode === 'register' && step === 6 && renderRegisterStep5()}
                 </div>
             </div>
 

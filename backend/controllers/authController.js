@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import Role from '../models/Role.js';
 import Restaurant from '../models/Restaurant.js';
 import Notification from '../models/Notification.js';
+import RestaurantVerification from '../models/RestaurantVerification.js';
 
 // Generate JWT
 const generateToken = (id) => {
@@ -43,6 +44,9 @@ export const registerUser = async (req, res) => {
         });
 
         if (role === 'RestaurantAdmin' && req.body.restaurantName) {
+            const files = req.files || {};
+            const hasVerificationFiles = Object.keys(files).length > 0;
+
             const restaurant = await Restaurant.create({
                 name: req.body.restaurantName,
                 ownerId: user._id,
@@ -53,10 +57,80 @@ export const registerUser = async (req, res) => {
                     trialActive: false
                 },
                 approvalStatus: 'Pending',
-                verificationStatus: 'Pending'
+                verificationStatus: hasVerificationFiles ? 'Under Review' : 'Pending'
             });
             user.restaurantId = restaurant._id;
             await user.save();
+
+            if (hasVerificationFiles) {
+                const { addressText, fssaiExpiryDate } = req.body;
+                const documents = {};
+                const getFileUrl = (file) => `/uploads/verification/${file.filename}`;
+
+                const addField = (field, expiry = null) => {
+                    if (files[field] && files[field].length > 0) {
+                        documents[field] = {
+                            filePath: getFileUrl(files[field][0]),
+                            status: 'Pending',
+                            rejectReason: '',
+                            ...(expiry && { expiryDate: new Date(expiry) })
+                        };
+                    }
+                };
+
+                addField('fssai', fssaiExpiryDate);
+                addField('businessRegistration');
+                addField('panCard');
+                addField('aadhaarCard');
+                addField('bankProof');
+
+                if (files.addressProof && files.addressProof.length > 0) {
+                    documents.addressProof = {
+                        filePath: getFileUrl(files.addressProof[0]),
+                        addressText: addressText || '',
+                        status: 'Pending',
+                        rejectReason: ''
+                    };
+                } else if (addressText) {
+                    documents.addressProof = {
+                        filePath: '',
+                        addressText,
+                        status: 'Pending',
+                        rejectReason: ''
+                    };
+                }
+
+                if (files.logo && files.logo.length > 0) {
+                    documents.logo = { filePath: getFileUrl(files.logo[0]) };
+                    restaurant.logo = getFileUrl(files.logo[0]);
+                    await restaurant.save();
+                }
+
+                if (files.menuPdf && files.menuPdf.length > 0) {
+                    documents.menuPdf = { filePath: getFileUrl(files.menuPdf[0]) };
+                }
+
+                if (files.images && files.images.length > 0) {
+                    documents.images = files.images.map(img => ({ filePath: getFileUrl(img) }));
+                }
+
+                await RestaurantVerification.create({
+                    restaurantId: restaurant._id,
+                    documents,
+                    status: 'Under Review'
+                });
+
+                // Notify Super Admins
+                try {
+                    await Notification.create({
+                        title: 'Verification Under Review',
+                        desc: `Restaurant "${restaurant.name}" has submitted verification documents during signup.`,
+                        type: 'System'
+                    });
+                } catch (notifErr) {
+                    console.error("Failed to create signup verification notification", notifErr);
+                }
+            }
         }
 
         if (user) {
