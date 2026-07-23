@@ -9,6 +9,7 @@ import MenuItem from './models/MenuItem.js';
 import Order from './models/Order.js';
 import Table from './models/Table.js';
 import Plan from './models/Plan.js';
+import RestaurantVerification from './models/RestaurantVerification.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ const importData = async () => {
         await Order.deleteMany();
         await Table.deleteMany();
         await Plan.deleteMany();
+        await RestaurantVerification.deleteMany();
 
         console.log('Creating SaaS Plans...');
         await Plan.insertMany([
