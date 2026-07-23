@@ -79,8 +79,6 @@ export const authorize = (...roles) => {
     };
 };
 
-import Restaurant from '../models/Restaurant.js';
-
 // Check if restaurant subscription is active
 export const checkSubscription = async (req, res, next) => {
     if (!req.user || !req.user.restaurantId) {
