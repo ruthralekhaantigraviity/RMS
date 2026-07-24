@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
     LayoutDashboard, Store, Users, UtensilsCrossed, Settings, LogOut, 
     Activity, UserCheck, Key, ListTree, PackageSearch, Truck, Heart, 
     CalendarCheck, ShoppingBag, CreditCard, Tag, FileText, PieChart, 
-    Bell, ReceiptText
+    Bell, ReceiptText, Lock
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
+    const navigate = useNavigate();
     const { logout, restaurant } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
 
@@ -106,6 +107,42 @@ const Sidebar = () => {
                         <div className="space-y-1">
                             {group.items.map((item) => {
                                 const Icon = item.icon;
+                                
+                                const getPlanName = () => {
+                                    if (!restaurant || !restaurant.subscription || !restaurant.subscription.plan) {
+                                        return 'Basic';
+                                    }
+                                    return restaurant.subscription.plan;
+                                };
+
+                                const plan = getPlanName();
+                                let isAllowed = true;
+                                if (plan === 'Basic') {
+                                    isAllowed = !['Inventory', 'Suppliers', 'Reports', 'Analytics'].includes(item.name);
+                                } else if (plan === 'Premium') {
+                                    isAllowed = !['Reports', 'Analytics'].includes(item.name);
+                                }
+
+                                if (!isAllowed) {
+                                    return (
+                                        <button
+                                            key={item.name}
+                                            type="button"
+                                            onClick={() => {
+                                                alert(`Upgrade Plan Required: Please upgrade your subscription to access the ${item.name} module.`);
+                                                navigate('/admin/billing');
+                                            }}
+                                            className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all duration-200 group text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 font-medium"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <Icon size={18} className="shrink-0 opacity-70" />
+                                                <span>{item.name}</span>
+                                            </div>
+                                            <Lock size={14} className="text-gray-400 shrink-0" />
+                                        </button>
+                                    );
+                                }
+
                                 return (
                                     <NavLink
                                         key={item.name}
