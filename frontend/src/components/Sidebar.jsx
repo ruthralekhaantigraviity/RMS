@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -129,7 +130,7 @@ const Sidebar = () => {
                                             key={item.name}
                                             type="button"
                                             onClick={() => {
-                                                alert(`Upgrade Plan Required: Please upgrade your subscription to access the ${item.name} module.`);
+                                                toast.error(`Upgrade Plan Required: Please upgrade your subscription to access the ${item.name} module.`);
                                                 navigate('/admin/billing');
                                             }}
                                             className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all duration-200 group text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 font-medium"
