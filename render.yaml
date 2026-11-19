@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: f-hms
+    name: restaurant
     env: node
     rootDir: backend
     buildCommand: npm install && npm run build
-    startCommand: node dist/server.cjs
+    startCommand: node index.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
@@ -12,4 +12,4 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: frontend-restaurant-alpha.vercel.app
+        value: restaurant-restaurant-sigma.vercel.app
