@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Capacitor } from '@capacitor/core';
 
-export const PROD_API_URL = 'https://restaurant-dyxs.onrender.com/api';
+export const PROD_API_URL = 'https://restaurant-1-7400.onrender.com/api';
 
 /**
  * Checks whether the current runtime is a local development environment:
