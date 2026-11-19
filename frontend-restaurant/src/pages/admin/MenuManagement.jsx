@@ -7,21 +7,22 @@ import { useAuth } from '../../context/AuthContext';
 import { getItemImage } from '../../utils/imageHelper';
 
 const MenuManagement = () => {
-    const { api } = useAuth();
+    const { api, user, restaurant } = useAuth();
+    const currentRId = user?.restaurantId || restaurant?._id || (typeof user?.restaurant === 'object' ? user.restaurant?._id : user?.restaurant);
     const [activeSection, setActiveSection] = useState('items');
     const [menuItems, setMenuItems] = useState(() => {
         try {
-            const cached = sessionStorage.getItem('restosys_admin_menu_cache');
+            const cached = currentRId ? sessionStorage.getItem(`restosys_admin_menu_cache_${currentRId}`) : null;
             return cached ? JSON.parse(cached) : [];
         } catch { return []; }
     });
     const [categories, setCategories] = useState(() => {
         try {
-            const cached = sessionStorage.getItem('restosys_admin_categories_cache');
+            const cached = currentRId ? sessionStorage.getItem(`restosys_admin_categories_cache_${currentRId}`) : null;
             return cached ? JSON.parse(cached) : [];
         } catch { return []; }
     });
-    const [loading, setLoading] = useState(() => !sessionStorage.getItem('restosys_admin_menu_cache'));
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('All Categories');
     const [statusFilter, setStatusFilter] = useState('All Statuses');
@@ -49,18 +50,34 @@ const MenuManagement = () => {
 
     const fetchMenu = async () => {
         try {
+            const rId = user?.restaurantId || restaurant?._id || (typeof user?.restaurant === 'object' ? user.restaurant?._id : user?.restaurant);
+            const params = new URLSearchParams();
+            if (rId) params.append('restaurantId', rId);
+            params.append('forStaff', 'true');
+
             const [menuRes, catRes] = await Promise.all([
-                api.get('/menu').catch(() => ({ data: [] })),
+                api.get(`/menu?${params.toString()}`).catch(() => ({ data: [] })),
                 api.get('/categories').catch(() => ({ data: [] }))
             ]);
-            const mList = menuRes.data || [];
+            let mList = menuRes.data || [];
+            
+            // Strictly scope to current restaurant: never display items belonging to other outlets
+            if (rId && user?.role !== 'SuperAdmin') {
+                mList = mList.filter(item => {
+                    const itemRid = typeof item.restaurantId === 'object' ? item.restaurantId?._id : item.restaurantId;
+                    return !itemRid || String(itemRid) === String(rId);
+                });
+            }
+
             const cList = catRes.data || [];
             setMenuItems(mList);
             setCategories(cList);
-            try {
-                sessionStorage.setItem('restosys_admin_menu_cache', JSON.stringify(mList));
-                sessionStorage.setItem('restosys_admin_categories_cache', JSON.stringify(cList));
-            } catch (_) {}
+            if (rId) {
+                try {
+                    sessionStorage.setItem(`restosys_admin_menu_cache_${rId}`, JSON.stringify(mList));
+                    sessionStorage.setItem(`restosys_admin_categories_cache_${rId}`, JSON.stringify(cList));
+                } catch (_) {}
+            }
         } catch (error) {
             console.error('Failed to fetch menu items', error);
         } finally {
@@ -70,7 +87,7 @@ const MenuManagement = () => {
 
     useEffect(() => {
         fetchMenu();
-    }, [api]);
+    }, [api, currentRId]);
 
     const handleDelete = (id) => {
         setConfirmModal({
@@ -80,11 +97,13 @@ const MenuManagement = () => {
             onConfirm: async () => {
                 try {
                     await api.delete(`/menu/${id}`);
-                    fetchMenu();
+                    setMenuItems(prev => prev.filter(item => item._id !== id));
                     toast.success('Menu item deleted successfully');
+                    fetchMenu();
                 } catch (error) {
                     console.error('Failed to delete item', error);
-                    toast.error('Failed to delete item');
+                    const errorMsg = error.response?.data?.message || 'Failed to delete item';
+                    toast.error(errorMsg);
                 }
             },
             isDestructive: true
@@ -129,11 +148,18 @@ const MenuManagement = () => {
             return toast.error("Valid price is required");
         }
         
+        const rId = user?.restaurantId || restaurant?._id || (typeof user?.restaurant === 'object' ? user.restaurant?._id : user?.restaurant);
         const payload = {
             ...formData,
             price: Number(formData.price),
             tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : []
         };
+        if (rId) {
+            payload.restaurantId = rId;
+        }
+        if (user?.branchId) {
+            payload.branchId = user.branchId;
+        }
 
         try {
             if (editingItem) {

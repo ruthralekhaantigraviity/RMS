@@ -82,6 +82,12 @@ api.interceptors.request.use((config) => {
             delete config.headers.Authorization;
         }
     }
+    if (config.headers && typeof config.headers.set === 'function') {
+        config.headers.set('x-staff-portal', 'true');
+    } else {
+        config.headers = config.headers || {};
+        config.headers['x-staff-portal'] = 'true';
+    }
     return config;
 });
 

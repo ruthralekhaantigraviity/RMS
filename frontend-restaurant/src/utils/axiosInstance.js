@@ -118,6 +118,8 @@ api.interceptors.request.use(
             config.headers = config.headers || {};
             config.headers.Authorization = `Bearer ${token}`;
         }
+        config.headers = config.headers || {};
+        config.headers['x-staff-portal'] = 'true';
         return config;
     },
     (error) => Promise.reject(error)

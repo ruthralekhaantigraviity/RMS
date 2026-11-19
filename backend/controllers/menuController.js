@@ -12,52 +12,60 @@ export const clearMenuCache = () => {
 // @access  Public
 export const getMenuItems = async (req, res) => {
     try {
-        const cacheKey = `${req.query.restaurantId || ''}_${req.query.branchId || ''}_${req.user?.restaurantId || ''}_${req.user?.branchId || ''}`;
+        // Resolve user's restaurant ID if authenticated as staff/admin
+        let userRestaurantId = null;
+        if (req.user && req.user.role !== 'Customer' && req.user.role !== 'SuperAdmin') {
+            userRestaurantId = req.user.restaurantId;
+            if (!userRestaurantId && req.user.branchId) {
+                const Branch = (await import('../models/Branch.js')).default;
+                const bDoc = await Branch.findById(req.user.branchId).select('restaurantId');
+                if (bDoc) userRestaurantId = bDoc.restaurantId;
+            }
+        }
+
+        // Determine target restaurant ID
+        let targetRestaurantId = null;
+        if (req.query.restaurantId && req.query.restaurantId !== 'null' && req.query.restaurantId !== 'undefined') {
+            targetRestaurantId = req.query.restaurantId;
+        } else if (userRestaurantId) {
+            targetRestaurantId = userRestaurantId;
+        }
+
+        const isStaff = Boolean(
+            userRestaurantId ||
+            req.query.forStaff === 'true' || 
+            req.headers['x-staff-portal'] === 'true' || 
+            (req.user && req.user.role !== 'Customer' && req.user.role !== 'DeliveryPartner')
+        );
+
+        // Only cache public customer catalog responses to eliminate cross-restaurant data leakage
+        const cacheKey = !isStaff && targetRestaurantId ? `public_menu_${targetRestaurantId}_${req.query.branchId || ''}` : null;
         const now = Date.now();
-        if (menuCache.data && menuCache.key === cacheKey && menuCache.expiresAt > now) {
+        if (cacheKey && menuCache.data && menuCache.key === cacheKey && menuCache.expiresAt > now) {
             return res.json(menuCache.data);
         }
 
-        const filter = { isActive: true };
-        
-        // Determine if request is explicitly from staff dashboard management
-        const isStaffPortal = req.query.forStaff === 'true' || 
-            req.headers['x-staff-portal'] === 'true' || 
-            Boolean(req.headers.referer && (
-                req.headers.referer.includes('/admin') || 
-                req.headers.referer.includes('/staff') || 
-                req.headers.referer.includes('/manager') || 
-                req.headers.referer.includes('/chef') || 
-                req.headers.referer.includes('/cashier') || 
-                req.headers.referer.includes('/waiter') ||
-                req.headers.referer.includes('frontend-restaurant')
-            ));
+        const filter = {};
+        // Customers only see active dishes; staff/admin can view all (active and inactive) for management
+        if (!isStaff) {
+            filter.isActive = true;
+        } else if (req.query.status === 'active') {
+            filter.isActive = true;
+        } else if (req.query.status === 'inactive') {
+            filter.isActive = false;
+        }
 
-        // If explicit restaurantId is supplied in query (e.g. from customer QR scan or outlet filter),
-        // it must strictly take precedence over any residual staff/admin JWT in headers/cookies!
-        if (req.query.restaurantId && req.query.restaurantId !== 'null' && req.query.restaurantId !== 'undefined') {
-            filter.restaurantId = req.query.restaurantId;
-            if (req.query.branchId && req.query.branchId !== 'null' && req.query.branchId !== 'undefined') {
+        if (targetRestaurantId) {
+            filter.restaurantId = targetRestaurantId;
+            const targetBranchId = req.query.branchId || (isStaff && req.user?.branchId);
+            if (targetBranchId && targetBranchId !== 'null' && targetBranchId !== 'undefined') {
                 filter.$or = [
-                    { branchId: req.query.branchId },
-                    { branchId: { $exists: false } },
-                    { branchId: null }
-                ];
-            }
-        } else if (isStaffPortal && req.user && req.user.restaurantId && req.user.role !== 'Customer') {
-            // ONLY staff/admin logged into restaurant dashboard viewing their own internal menu
-            filter.restaurantId = req.user.restaurantId;
-            
-            // If they belong to a specific branch, allow global items OR branch-specific items
-            if (req.user.branchId) {
-                filter.$or = [
-                    { branchId: req.user.branchId },
+                    { branchId: targetBranchId },
                     { branchId: { $exists: false } },
                     { branchId: null }
                 ];
             }
         }
-        // Otherwise, it is a public customer view: do NOT restrict by restaurantId! Show all active dishes across registered outlets.
 
         let items = await MenuItem.find(filter)
             .populate('restaurantId', 'name city address approvalStatus subscription isActive isDeleted status')
@@ -88,7 +96,9 @@ export const getMenuItems = async (req, res) => {
             return true;
         });
 
-        menuCache = { data: validItems, expiresAt: now + 15000, key: cacheKey };
+        if (cacheKey) {
+            menuCache = { data: validItems, expiresAt: now + 15000, key: cacheKey };
+        }
         res.json(validItems);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -97,14 +107,23 @@ export const getMenuItems = async (req, res) => {
 
 // @desc    Create a menu item
 // @route   POST /api/menu
-// @access  Private (Admin/Manager)
+// @access  Private (Admin/Manager/Chef)
 export const createMenuItem = async (req, res) => {
     try {
         const payload = { ...req.body };
-        if (req.user && req.user.restaurantId) {
-            payload.restaurantId = req.user.restaurantId;
+        let rId = req.user?.restaurantId || payload.restaurantId;
+        if (!rId && req.user?.branchId) {
+            const Branch = (await import('../models/Branch.js')).default;
+            const bDoc = await Branch.findById(req.user.branchId).select('restaurantId');
+            if (bDoc) rId = bDoc.restaurantId;
         }
-        if (req.user && req.user.branchId) {
+        if (!rId && req.user?.role !== 'SuperAdmin') {
+            return res.status(400).json({ message: 'Restaurant ID is required to create a menu item' });
+        }
+        if (rId) {
+            payload.restaurantId = rId;
+        }
+        if (req.user?.branchId && !payload.branchId) {
             payload.branchId = req.user.branchId;
         }
         const item = await MenuItem.create(payload);
@@ -117,14 +136,20 @@ export const createMenuItem = async (req, res) => {
 
 // @desc    Update a menu item
 // @route   PUT /api/menu/:id
-// @access  Private (Admin/Manager)
+// @access  Private (Admin/Manager/Chef)
 export const updateMenuItem = async (req, res) => {
     try {
         const existing = await MenuItem.findById(req.params.id);
         if (!existing) {
             return res.status(404).json({ message: 'Menu item not found' });
         }
-        if (req.user.role !== 'SuperAdmin' && String(existing.restaurantId) !== String(req.user.restaurantId)) {
+        let userRestaurantId = req.user?.restaurantId;
+        if (!userRestaurantId && req.user?.branchId) {
+            const Branch = (await import('../models/Branch.js')).default;
+            const bDoc = await Branch.findById(req.user.branchId).select('restaurantId');
+            if (bDoc) userRestaurantId = bDoc.restaurantId;
+        }
+        if (req.user?.role !== 'SuperAdmin' && String(existing.restaurantId) !== String(userRestaurantId)) {
             return res.status(403).json({ message: 'Not authorized to modify this restaurant menu item' });
         }
         const updates = { ...req.body };
@@ -140,14 +165,20 @@ export const updateMenuItem = async (req, res) => {
 
 // @desc    Delete a menu item
 // @route   DELETE /api/menu/:id
-// @access  Private (Admin/Manager)
+// @access  Private (Admin/Manager/Chef)
 export const deleteMenuItem = async (req, res) => {
     try {
         const item = await MenuItem.findById(req.params.id);
         if (!item) {
             return res.status(404).json({ message: 'Menu item not found' });
         }
-        if (req.user.role !== 'SuperAdmin' && String(item.restaurantId) !== String(req.user.restaurantId)) {
+        let userRestaurantId = req.user?.restaurantId;
+        if (!userRestaurantId && req.user?.branchId) {
+            const Branch = (await import('../models/Branch.js')).default;
+            const bDoc = await Branch.findById(req.user.branchId).select('restaurantId');
+            if (bDoc) userRestaurantId = bDoc.restaurantId;
+        }
+        if (req.user?.role !== 'SuperAdmin' && String(item.restaurantId) !== String(userRestaurantId)) {
             return res.status(403).json({ message: 'Not authorized to delete this restaurant menu item' });
         }
         await item.deleteOne();

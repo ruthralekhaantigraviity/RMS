@@ -10,6 +10,6 @@ router.route('/')
 
 router.route('/:id')
     .put(protect, checkSubscription, authorize('SuperAdmin', 'RestaurantAdmin', 'Admin', 'BranchManager', 'Chef'), checkBillingModule('menuManagement'), updateMenuItem)
-    .delete(protect, checkSubscription, authorize('SuperAdmin', 'RestaurantAdmin', 'Admin', 'BranchManager'), checkBillingModule('menuManagement'), deleteMenuItem);
+    .delete(protect, checkSubscription, authorize('SuperAdmin', 'RestaurantAdmin', 'Admin', 'BranchManager', 'Chef'), checkBillingModule('menuManagement'), deleteMenuItem);
 
 export default router;
